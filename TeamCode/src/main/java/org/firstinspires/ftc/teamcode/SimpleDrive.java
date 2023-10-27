@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Simple Drive", group="Linear Opmode")
 
-// this is just a comment
-
 public class SimpleDrive extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
