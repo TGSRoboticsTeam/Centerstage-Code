@@ -117,15 +117,15 @@ public class IsaacDrive extends LinearOpMode {
 
             // This is all the controller inputs. Gamepad1 usually is for the driver, and gamepad2 is
             // for the person controlling the different mechanisms.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
-            boolean intakeIn = gamepad1.right_bumper;
-            boolean intakeOut = gamepad1.left_bumper; // On the off chance we intake more than two pixels, use this to send the extras back out
+            double axial        = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral      =  gamepad1.left_stick_x;
+            double yaw          =  gamepad1.right_stick_x;
+            boolean intakeIn    =  gamepad1.right_bumper;
+            boolean intakeOut   =  gamepad1.left_bumper; // On the off chance we intake more than two pixels, use this to send the extras back out
 
             double slideControl = -gamepad2.left_stick_y; // By using the joystick, we can move the slides up and down at different speeds to be more precise
-            boolean grabPixel = gamepad2.right_bumper;
-            boolean dropPixel = gamepad2.left_bumper;
+            boolean grabPixel   =  gamepad2.right_bumper;
+            boolean dropPixel   =  gamepad2.left_bumper;
             // Note: Ideally we will make the arm turn around completely automatically,
             // so we don't need to assign any controls for it.
 
@@ -194,7 +194,7 @@ public class IsaacDrive extends LinearOpMode {
                 rightArm.setPosition(1);
             }
 
-            
+
             // The rest of the code here is for running the drivetrain motors
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
