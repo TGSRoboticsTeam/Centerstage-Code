@@ -61,7 +61,6 @@ public class SimpleAuto extends LinearOpMode
 
     // Wheel constants
     public double ticksPerRotation = 537.6; // For AndyMark NeveRest 20
-    public double rpm = 340;
     public double diameter = 7.5; //cm
     public double circumference = Math.PI * diameter;
 
