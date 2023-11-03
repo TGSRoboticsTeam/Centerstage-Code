@@ -125,7 +125,14 @@ public class SimpleAuto extends LinearOpMode
         setUpHardware();
 
         while (!isStarted() && !isStopRequested()) {
-
+            if(gamepad2.a){
+                activeIntake.setPower(1);
+            }else{
+                activeIntake.setPower(0);
+            }
+            if(gamepad2.b){
+                deposit.setPosition(0);
+            }
         }
 
         moveInchesAtHeading(true, 48);
@@ -732,9 +739,9 @@ public class SimpleAuto extends LinearOpMode
         leftSlide.setMode(RUN_USING_ENCODER);
         rightSlide.setMode(RUN_USING_ENCODER);
 
-        leftArm.setPosition(1);
-        rightArm.setPosition(1);
-        deposit.setPosition(1);
+        leftArm.setPosition(0);
+        rightArm.setPosition(0);
+        deposit.setPosition(.5);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
