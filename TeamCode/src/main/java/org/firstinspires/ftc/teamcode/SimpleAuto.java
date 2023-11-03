@@ -22,16 +22,19 @@
 package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
 import android.annotation.SuppressLint;
 
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipe;
@@ -49,10 +52,19 @@ import java.util.ArrayList;
 @Autonomous(name = "Base Auto", group = "Linear Opmode")
 public class SimpleAuto extends LinearOpMode
 {
+    // Motor and servo initial setup
     public DcMotorEx leftDrive;
     public DcMotorEx rightDrive;
     public DcMotorEx leftBackDrive;
     public DcMotorEx rightBackDrive;
+
+    public DcMotorEx leftSlide;
+    public DcMotorEx rightSlide;
+    public DcMotor activeIntake;
+
+    public Servo leftArm;
+    public Servo rightArm;
+    public Servo deposit;
 
     // Sensors
     BNO055IMU imu;
@@ -68,6 +80,18 @@ public class SimpleAuto extends LinearOpMode
 
     public double angleCorrectionCW = 8.17;
     public double angleCorrectionCCW = 11.26;
+
+    // Linear slide constants
+    public double pulleyCircumference = 3.46; // In inches
+
+    public double tickPerInchForLift = ticksPerRotation / pulleyCircumference;
+
+    // Servo constants
+    static final double clawOpenPosition = 1;
+    static final double clawClosedPosition = 0;
+
+    static final double armDownPos = 0;
+    static final double armUpPos = .2;
 
     // General constants
     double oneFootCm = 30.48;
@@ -98,36 +122,122 @@ public class SimpleAuto extends LinearOpMode
     @Override
     public void runOpMode()
     {
+        setUpHardware();
+
         while (!isStarted() && !isStopRequested()) {
 
         }
 
-        moveInchesAtHeading(true, 60);
+        moveInchesAtHeading(true, 48);
+        waitTime(.5);
+        turnNinety(false);
+        waitTime(.5);
+        moveSlidesAndDrive(true, 55, 10);
+        waitTime(.5);
+        openDeposit();
+        waitTime(.5);
+        moveSlidesAndDrive(false, 8, 0);
+        waitTime(.5);
     }
 
-    public void setUpHardware() { // Assigns motor names in phone to the objects in code
-        leftDrive  = hardwareMap.get(DcMotorEx.class, "left_front_drive");
-        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back_drive");
-        rightDrive = hardwareMap.get(DcMotorEx.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back_drive");
+    /**
+     * Moves forward or backward the specified distance while moving linear slides to the specified height
+     * @param forward Forward or backward
+     * @param distance Distance for robot to move
+     * @param height Height to move to
+     */
+    public void moveSlidesAndDrive(boolean forward, double distance, double height){
+        int targetTick = (int) (tickPerInchForLift * height);
 
-        // Makes all motors go forward, if they don't, switch the direction
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        boolean correctionsDone = false;
+        boolean motorsOff = false;
+        boolean liftOff = false;
 
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // Drive train calculations
+        double driveTrainCorrection = 1;
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        // Technically this is the default, however specifying it is clearer
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        // Without this, data retrieving from the IMU throws an exception
-        imu.initialize(parameters);
+        double oneRotationDistance = diameter * Math.PI; // In cm
+        double rotationAmount = (oneFootCm / 12) / oneRotationDistance;
+        double totalTicks = rotationAmount * ticksPerRotation * distance * driveTrainCorrection;
+
+        resetEncoders();
+
+        slideTarget(targetTick);
+        slidePower(1);
+
+        runtime.reset();
+        if(forward){
+            motorsOn(.75);
+            while(opModeIsActive() && (!liftOff || !motorsOff)){
+                if(leftBackDrive.getCurrentPosition() >= totalTicks){
+                    motorsOff();
+                    motorsOff = true;
+                }
+                if(leftSlide.getCurrentPosition() > targetTick - 173 && leftSlide.getCurrentPosition() < targetTick + 173 && !correctionsDone){
+                    slideTarget(targetTick);
+                    slidePower(.25);
+                    correctionsDone = true;
+                }else if(leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3){
+                    slidePower(0);
+                    liftOff = true;
+                }
+                if(runtime.seconds() > 8){
+                    break;
+                }
+                telemetry.addData("Lift is busy:", leftSlide.isBusy());
+                telemetry.update();
+            }
+        }else{
+            totalTicks = -totalTicks;
+            motorsOn(-.75);
+            while(opModeIsActive() && (!liftOff || !motorsOff)){
+                if(leftBackDrive.getCurrentPosition() <= totalTicks){
+                    motorsOff();
+                    motorsOff = true;
+                }
+                if(leftSlide.getCurrentPosition() > targetTick - 173 && leftSlide.getCurrentPosition() < targetTick + 173 && !correctionsDone){
+                    slideTarget(targetTick);
+                    slidePower(.25);
+                    correctionsDone = true;
+                }else if(leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3){
+                    slidePower(0);
+                    liftOff = true;
+                }
+                if(runtime.seconds() > 8){
+                    break;
+                }
+                telemetry.addData("Lift is busy:", leftSlide.isBusy());
+                telemetry.update();
+            }
+        }
+        resetEncoders();
+    }
+
+    /**
+     * Opens end effector claw for deposit on the backboard
+     */
+    public void openDeposit(){
+        deposit.setPosition(clawOpenPosition);
+    }
+
+    /**
+     * Closes end effector claw for intaking pixels
+     */
+    public void closeDeposit(){
+        deposit.setPosition(clawClosedPosition);
+    }
+
+    public void slideTarget(int target){
+        leftSlide.setTargetPosition(target);
+        rightSlide.setTargetPosition(target);
+
+        leftSlide.setMode(RUN_TO_POSITION);
+        rightSlide.setMode(RUN_TO_POSITION);
+    }
+
+    public void slidePower(double power){
+        leftSlide.setPower(power);
+        rightSlide.setPower(power);
     }
 
     public void strafeVelo(boolean isLeft, double power, double time){
@@ -251,7 +361,6 @@ public class SimpleAuto extends LinearOpMode
         }
         motorsOff();
     }
-
 
     /**
      * Moves forward or backward for specified amount of inches at heading robot
@@ -502,6 +611,57 @@ public class SimpleAuto extends LinearOpMode
         }else{
             return z;
         }
+    }
+
+    public void setUpHardware() { // Assigns motor names in phone to the objects in code
+        leftDrive  = hardwareMap.get(DcMotorEx.class, "left_front_drive");
+        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back_drive");
+        rightDrive = hardwareMap.get(DcMotorEx.class, "right_front_drive");
+        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back_drive");
+
+        leftSlide = hardwareMap.get(DcMotorEx.class, "left_slide");
+        rightSlide = hardwareMap.get(DcMotorEx.class, "right_slide");
+        activeIntake = hardwareMap.get(DcMotor.class, "active_intake");
+
+        deposit = hardwareMap.get(Servo.class, "deposit");
+        leftArm = hardwareMap.get(Servo.class, "right_arm");
+        rightArm = hardwareMap.get(Servo.class, "left_arm");
+
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        leftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftArm.setDirection(Servo.Direction.FORWARD);
+        rightArm.setDirection(Servo.Direction.REVERSE);
+
+        activeIntake.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(RUN_USING_ENCODER);
+        rightSlide.setMode(RUN_USING_ENCODER);
+
+        leftArm.setPosition(1);
+        rightArm.setPosition(1);
+        deposit.setPosition(1);
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        // Technically this is the default, however specifying it is clearer
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        // Without this, data retrieving from the IMU throws an exception
+        imu.initialize(parameters);
     }
 
     @SuppressLint("DefaultLocale")
