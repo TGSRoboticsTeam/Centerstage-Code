@@ -21,6 +21,9 @@ public class YaelDrive extends LinearOpMode {
         DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
+        DcMotor activeIntake = hardwareMap.get(DcMotor.class, "active_intake");
+        DcMotor lift = hardwareMap.get(DcMotor.class, "lift_mechanism");
+
         // Claw/Linear slide setup
         Servo hookServo = hardwareMap.get(Servo.class, "claw");
         Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
@@ -34,6 +37,17 @@ public class YaelDrive extends LinearOpMode {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        lift.setDirection(DcMotor.Direction.FORWARD);
+        activeIntake.setDirection(DcMotor.Direction.FORWARD);
+
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         while (!isStarted()) {
 
         }
@@ -42,8 +56,8 @@ public class YaelDrive extends LinearOpMode {
             // Define variables
             // The hook position 0 to 1
             double hookPosition = 0.3;
-            // The minimum the joysticks have to be pressed to register as an input
-            double min = 0.5;
+            // The degrees it takes to make the thing automatically go up
+            double clawPosition = 200;
 
             // Define joystick controls
             // Drive
@@ -51,30 +65,26 @@ public class YaelDrive extends LinearOpMode {
             double rightWheels = -gamepad1.right_stick_y;
 
             // Pixel grabber mechanism
-            boolean hook = gamepad2.a;
-            boolean unhook = gamepad2.b;
             boolean loadPixel = gamepad2.x;
             boolean unloadPixel = gamepad2.y;
-            double linearSlide = gamepad2.right_trigger;
-            double linearSlideRetract = -gamepad2.left_trigger;
+            float linearSlide = gamepad2.right_trigger;
+            float linearSlideRetract = -gamepad2.left_trigger;
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
-            if (Math.abs(leftWheels) > min && Math.abs(rightWheels) > min) {
-                leftFrontDrive.setPower(leftWheels);
-                leftBackDrive.setPower(leftWheels);
-                rightFrontDrive.setPower(rightWheels);
-                rightBackDrive.setPower(rightWheels);
-            }
+            leftFrontDrive.setPower(leftWheels);
+            leftBackDrive.setPower(leftWheels);
+            rightFrontDrive.setPower(rightWheels);
+            rightBackDrive.setPower(rightWheels);
 
             // Linear slide
             leftLinearSlide.setPower(linearSlide - linearSlideRetract);
             rightLinearSlide.setPower(linearSlide - linearSlideRetract);
 
             // Claw
-            if (hook){
+            if (leftLinearSlide.getCurrentPosition() > clawPosition){
                 hookServo.setPosition(hookPosition);
-            }else if (unhook){
+            }else{
                 hookServo.setPosition(0);
             }
 
