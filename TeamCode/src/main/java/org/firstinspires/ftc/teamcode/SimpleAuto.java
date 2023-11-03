@@ -46,7 +46,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Baseline Auto", group = "Linear Opmode")
+@Autonomous(name = "Base Auto", group = "Linear Opmode")
 public class SimpleAuto extends LinearOpMode
 {
     public DcMotorEx leftDrive;
@@ -61,7 +61,6 @@ public class SimpleAuto extends LinearOpMode
 
     // Wheel constants
     public double ticksPerRotation = 537.6; // For AndyMark NeveRest 20
-    public double rpm = 340;
     public double diameter = 7.5; //cm
     public double circumference = Math.PI * diameter;
 
@@ -99,92 +98,11 @@ public class SimpleAuto extends LinearOpMode
     @Override
     public void runOpMode()
     {
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipe = new AprilTagDetectionPipe(tagsize, fx, fy, cx, cy);
-        setUpHardware();
-
-        camera.setPipeline(aprilTagDetectionPipe);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode)
-            {
-
-            }
-        });
-
-        telemetry.setMsTransmissionInterval(50);
-
-        /*
-         * The INIT-loop:
-         * This REPLACES waitForStart!
-         */
-        turnNinety(true);
-        telemetry.addData("angle:",getAngle());
-        telemetry.update();
         while (!isStarted() && !isStopRequested()) {
-            ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipe.getLatestDetections();
 
-            if (currentDetections.size() != 0) {
-                boolean tagFound = false;
-
-                for (AprilTagDetection tag : currentDetections) {
-                    if (tag.id == ID_TAG_OF_INTEREST_1 || tag.id == ID_TAG_OF_INTEREST_3 || tag.id == ID_TAG_OF_INTEREST_2) {
-                        tagOfInterest = tag;
-                        tagFound = true;
-                        break;
-                    }
-                }
-                if (tagFound) {
-                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
-                    tagToTelemetry(tagOfInterest);
-                } else {
-                    telemetry.addLine("Don't see tag of interest :(");
-
-                    if (tagOfInterest == null) {
-                        telemetry.addLine("(The tag has never been seen)");
-                    } else {
-                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                        tagToTelemetry(tagOfInterest);
-                    }
-                }
-            } else {
-                telemetry.addLine("Don't see tag of interest :(");
-
-                if(tagOfInterest == null) {
-                    telemetry.addLine("(The tag has never been seen)");
-                } else {
-                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                    tagToTelemetry(tagOfInterest);
-                }
-            }
-
-            telemetry.update();
-            sleep(20);
         }
 
-        /* Update the telemetry */
-        if(tagOfInterest != null) {
-            telemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(tagOfInterest);
-            telemetry.update();
-        } else {
-            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            telemetry.update();
-        }
-
-        moveInchAmount(true, 5);
-        waitTime(10);
-        moveInchAmount(true,12);
-        waitTime(10);
-        turnNinety(true);
+        moveInchesAtHeading(true, 60);
     }
 
     public void setUpHardware() { // Assigns motor names in phone to the objects in code
@@ -334,10 +252,76 @@ public class SimpleAuto extends LinearOpMode
         motorsOff();
     }
 
+
+    /**
+     * Moves forward or backward for specified amount of inches at heading robot
+     * is at on initialization of this function
+     * @param forward True or false
+     * @param inches Amount to move
+     */
+    public void moveInchesAtHeading(boolean forward, double inches){
+        double originHeading = getAngle();
+        double power = 0;
+
+        double driveTrainCorrection = 1;
+
+        double rotationAmount = (oneFootCm / 12) / circumference;
+        double totalTicks = rotationAmount * ticksPerRotation * inches * wheelRatio * driveTrainCorrection;
+
+        // This is used to slow down the robot when within three inches of target position
+        double threeInches = rotationAmount * ticksPerRotation * 3 * wheelRatio * driveTrainCorrection;
+
+        resetEncoders();
+
+        if(forward){
+            while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
+                if(leftBackDrive.getCurrentPosition() > totalTicks - threeInches){
+                    power = totalTicks / (totalTicks - threeInches);
+                    if(power < .25){
+                        power = .25;
+                    }
+                }else{
+                    power = 1;
+                }
+
+                double headingError = optimalAngleChange(originHeading);
+
+                leftVelo(power - (headingError * -.1));
+                rightVelo(power + (headingError * -.1));
+
+                telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
+                telemetry.update();
+            }
+        }else{
+            totalTicks = -totalTicks;
+            while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
+                if(leftBackDrive.getCurrentPosition() < totalTicks + threeInches){
+                    power = Math.abs(totalTicks / (totalTicks + threeInches));
+                    if(power < .25){
+                        power = .25;
+                    }
+                }else{
+                    power = 1;
+                }
+
+                double headingError = optimalAngleChange(originHeading);
+
+                leftVelo(-power - (headingError * -.1));
+                rightVelo(-power + (headingError * -.1));
+
+                telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
+                telemetry.update();
+            }
+        }
+        motorsOff();
+        resetEncoders();
+    }
+
+
     /**
      * Moves forward or backward depending on the amount specified in inches
      * @param forward True or false
-     * @param inches Amount to move forward
+     * @param inches Amount to move
      */
     public void moveInchAmount(boolean forward, double inches){
         //using motor encoders
