@@ -92,9 +92,9 @@ public class IsaacDrive extends LinearOpMode {
 
 
         // Setting servos to be at proper location on init
-        leftArm.setPosition(1); // This will be tuned to be facing exactly down
-        rightArm.setPosition(1);
-        deposit.setPosition(1); // Init position for this should be at open
+        leftArm.setPosition(0); // This will be tuned to be facing exactly down
+        rightArm.setPosition(0);
+        deposit.setPosition(.5); // Init position for this should be at open
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -148,7 +148,7 @@ public class IsaacDrive extends LinearOpMode {
             if(grabPixel){
                 deposit.setPosition(0); // Grabs the pixel
             }else if(dropPixel){
-                deposit.setPosition(1); // Drops the pixel
+                deposit.setPosition(.5); // Drops the pixel
             }
 
 
@@ -189,11 +189,11 @@ public class IsaacDrive extends LinearOpMode {
             // Checks to see if the linear slides have lifted high enough, and if so
             // it flips the arm around so the deposit is facing the board correctly.
             if(leftSlide.getCurrentPosition() > 100){ // Completely arbitrary, will need to test to find correct height
-                leftArm.setPosition(.5); // Also completely arbitrary
-                rightArm.setPosition(.5);
+                leftArm.setPosition(.2); // Also completely arbitrary
+                rightArm.setPosition(.2);
             }else if(leftSlide.getCurrentPosition() < 100){
-                leftArm.setPosition(1);
-                rightArm.setPosition(1);
+                leftArm.setPosition(0);
+                rightArm.setPosition(0);
             }
 
 
