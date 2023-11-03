@@ -278,6 +278,7 @@ public class SimpleAuto extends LinearOpMode
         while(opModeIsActive() && runtime.seconds() < time){
             activeIntake.setPower(1);
         }
+        activeIntake.setPower(0);
     }
 
     /**
@@ -289,6 +290,7 @@ public class SimpleAuto extends LinearOpMode
         while(opModeIsActive() && runtime.seconds() < time){
             activeIntake.setPower(-1);
         }
+        activeIntake.setPower(0);
     }
 
     /**
