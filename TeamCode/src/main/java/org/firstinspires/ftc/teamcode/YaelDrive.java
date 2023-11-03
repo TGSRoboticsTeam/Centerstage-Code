@@ -40,13 +40,17 @@ public class YaelDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Define variables
+            // The hook position 0 to 1
             double hookPosition = 0.3;
+            // The minimum the joysticks have to be pressed to register as an input
             double min = 0.5;
 
             // Define joystick controls
+            // Drive
             double leftWheels = -gamepad1.left_stick_y;
             double rightWheels = -gamepad1.right_stick_y;
 
+            // Pixel grabber mechanism
             boolean hook = gamepad2.a;
             boolean unhook = gamepad2.b;
             boolean loadPixel = gamepad2.x;
