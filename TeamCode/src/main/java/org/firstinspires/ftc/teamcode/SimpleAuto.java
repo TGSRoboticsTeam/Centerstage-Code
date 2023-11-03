@@ -270,6 +270,28 @@ public class SimpleAuto extends LinearOpMode
     }
 
     /**
+     * Intakes pixels for Time in seconds
+     * @param time Time to intake for
+     */
+    public void intakeIn(double time){
+        resetRuntime();
+        while(opModeIsActive() && runtime.seconds() < time){
+            activeIntake.setPower(1);
+        }
+    }
+
+    /**
+     * Reverse the intake for Time in seconds
+     * @param time Time to reverse intake for
+     */
+    public void intakeOut(double time){
+        resetRuntime();
+        while(opModeIsActive() && runtime.seconds() < time){
+            activeIntake.setPower(-1);
+        }
+    }
+
+    /**
      * Opens end effector claw for deposit on the backboard
      */
     public void openDeposit(){
