@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Yael Drive", groups = "Yael Drive")
+@TeleOp(name = "Yael Drive", group = "Yael Drive")
 
 public class YaelDrive extends LinearOpMode {
     @Override
@@ -24,7 +24,7 @@ public class YaelDrive extends LinearOpMode {
         // Claw/Linear slide setup
         Servo hookServo = hardwareMap.get(Servo.class, "claw");
         Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
-        Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation")
+        Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation");
         DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
         DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
 
@@ -41,6 +41,7 @@ public class YaelDrive extends LinearOpMode {
         while (opModeIsActive()) {
             // Define variables
             double hookPosition = 0.3;
+            double min = 0.5;
 
             // Define joystick controls
             double leftWheels = -gamepad1.left_stick_y;
@@ -55,10 +56,12 @@ public class YaelDrive extends LinearOpMode {
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
-            leftFrontDrive.setPower(leftWheels);
-            leftBackDrive.setPower(leftWheels);
-            rightFrontDrive.setPower(rightWheels);
-            rightBackDrive.setPower(rightWheels);
+            if (Math.abs(leftWheels) > min && Math.abs(rightWheels) > min) {
+                leftFrontDrive.setPower(leftWheels);
+                leftBackDrive.setPower(leftWheels);
+                rightFrontDrive.setPower(rightWheels);
+                rightBackDrive.setPower(rightWheels);
+            }
 
             // Linear slide
             leftLinearSlide.setPower(linearSlide - linearSlideRetract);
