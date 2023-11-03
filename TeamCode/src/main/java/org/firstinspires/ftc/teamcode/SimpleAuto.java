@@ -87,7 +87,7 @@ public class SimpleAuto extends LinearOpMode
     public double tickPerInchForLift = ticksPerRotation / pulleyCircumference;
 
     // Servo constants
-    static final double clawOpenPosition = 1;
+    static final double clawOpenPosition = .5;
     static final double clawClosedPosition = 0;
 
     static final double armDownPos = 0;
