@@ -156,9 +156,13 @@ public class SimpleAuto extends LinearOpMode
         // Drive train calculations
         double driveTrainCorrection = 1;
 
+        double originHeading = getAngle();
+        double power = 0;
+
         double oneRotationDistance = diameter * Math.PI; // In cm
         double rotationAmount = (oneFootCm / 12) / oneRotationDistance;
         double totalTicks = rotationAmount * ticksPerRotation * distance * driveTrainCorrection;
+        double threeInches = rotationAmount * ticksPerRotation * 3 * wheelRatio * driveTrainCorrection;
 
         resetEncoders();
 
@@ -169,10 +173,27 @@ public class SimpleAuto extends LinearOpMode
         if(forward){
             motorsOn(.75);
             while(opModeIsActive() && (!liftOff || !motorsOff)){
+                if(!motorsOff) {
+                    if (leftBackDrive.getCurrentPosition() >= totalTicks - threeInches) {
+                        power = totalTicks / (totalTicks - threeInches);
+                        if (power < .25) {
+                            power = .25;
+                        }
+                    } else {
+                        power = 1;
+                    }
+
+                    double headingError = optimalAngleChange(originHeading);
+
+                    leftVelo(power - (headingError * -.1));
+                    rightVelo(power + (headingError * -.1));
+                }
+
                 if(leftBackDrive.getCurrentPosition() >= totalTicks){
                     motorsOff();
                     motorsOff = true;
                 }
+
                 if(leftSlide.getCurrentPosition() > targetTick - 173 && leftSlide.getCurrentPosition() < targetTick + 173 && !correctionsDone){
                     slideTarget(targetTick);
                     slidePower(.25);
@@ -181,6 +202,15 @@ public class SimpleAuto extends LinearOpMode
                     slidePower(0);
                     liftOff = true;
                 }
+
+                if(leftSlide.getCurrentPosition() > 100){
+                    leftArm.setPosition(armUpPos);
+                    rightArm.setPosition(armUpPos);
+                }else{
+                    leftArm.setPosition(armDownPos);
+                    rightArm.setPosition(armDownPos);
+                }
+
                 if(runtime.seconds() > 8){
                     break;
                 }
@@ -191,10 +221,27 @@ public class SimpleAuto extends LinearOpMode
             totalTicks = -totalTicks;
             motorsOn(-.75);
             while(opModeIsActive() && (!liftOff || !motorsOff)){
+                if(!motorsOff) {
+                    if (leftBackDrive.getCurrentPosition() >= totalTicks - threeInches) {
+                        power = totalTicks / (totalTicks - threeInches);
+                        if (power < .25) {
+                            power = .25;
+                        }
+                    } else {
+                        power = 1;
+                    }
+
+                    double headingError = optimalAngleChange(originHeading);
+
+                    leftVelo(power - (headingError * -.1));
+                    rightVelo(power + (headingError * -.1));
+                }
+
                 if(leftBackDrive.getCurrentPosition() <= totalTicks){
                     motorsOff();
                     motorsOff = true;
                 }
+
                 if(leftSlide.getCurrentPosition() > targetTick - 173 && leftSlide.getCurrentPosition() < targetTick + 173 && !correctionsDone){
                     slideTarget(targetTick);
                     slidePower(.25);
@@ -203,6 +250,15 @@ public class SimpleAuto extends LinearOpMode
                     slidePower(0);
                     liftOff = true;
                 }
+
+                if(leftSlide.getCurrentPosition() > 100){
+                    leftArm.setPosition(armUpPos);
+                    rightArm.setPosition(armUpPos);
+                }else{
+                    leftArm.setPosition(armDownPos);
+                    rightArm.setPosition(armDownPos);
+                }
+
                 if(runtime.seconds() > 8){
                     break;
                 }
