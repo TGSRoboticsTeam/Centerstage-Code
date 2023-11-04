@@ -43,7 +43,7 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
         rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
 
-        // Makes the motors stop moving when they receipt receive an input of 0
+        // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -52,7 +52,7 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Makes the motors output there rotation
+        // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
