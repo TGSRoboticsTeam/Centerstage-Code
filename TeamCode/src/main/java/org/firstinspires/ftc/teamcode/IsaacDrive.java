@@ -76,10 +76,10 @@ public class IsaacDrive extends LinearOpMode {
         // would actually be reversed since they are facing the other direction. Test this using
         // the SimpleDrive program first, and use the button option to test the wheels individually
         // and to make sure they are wired correctly.
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
 
         // Same situation for linear slides, active intake is there just in case we need to flip it
