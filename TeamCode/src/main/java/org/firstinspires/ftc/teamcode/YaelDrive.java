@@ -32,10 +32,10 @@ public class YaelDrive extends LinearOpMode {
         DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
 
         // Sets the motor direction
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         lift.setDirection(DcMotor.Direction.FORWARD);
         activeIntake.setDirection(DcMotor.Direction.FORWARD);
