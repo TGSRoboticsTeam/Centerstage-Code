@@ -714,10 +714,10 @@ public class SimpleAuto extends LinearOpMode
         leftArm = hardwareMap.get(Servo.class, "right_arm");
         rightArm = hardwareMap.get(Servo.class, "left_arm");
 
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         leftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
         rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
