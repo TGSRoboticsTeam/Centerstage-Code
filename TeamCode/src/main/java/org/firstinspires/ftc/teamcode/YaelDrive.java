@@ -43,14 +43,16 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
         rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
 
+        // Makes the motors stop moving when they receipt receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // Makes the motors output there rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -74,7 +76,7 @@ public class YaelDrive extends LinearOpMode {
             boolean loadPixel = gamepad2.x;
             boolean unloadPixel = gamepad2.y;
             float linearSlide = gamepad2.right_trigger;
-            float linearSlideRetract = -gamepad2.left_trigger;
+            float linearSlideRetract = gamepad2.left_trigger;
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
@@ -84,8 +86,8 @@ public class YaelDrive extends LinearOpMode {
             rightBackDrive.setPower(rightWheels);
 
             // Linear slide
-            leftLinearSlide.setPower(linearSlide + linearSlideRetract);
-            rightLinearSlide.setPower(linearSlide + linearSlideRetract);
+            leftLinearSlide.setPower(linearSlide - linearSlideRetract);
+            rightLinearSlide.setPower(linearSlide - linearSlideRetract);
 
             // Claw
             if (leftLinearSlide.getCurrentPosition() > clawPosition){
