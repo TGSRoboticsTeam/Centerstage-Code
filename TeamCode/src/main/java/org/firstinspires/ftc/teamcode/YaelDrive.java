@@ -40,10 +40,16 @@ public class YaelDrive extends LinearOpMode {
         lift.setDirection(DcMotor.Direction.FORWARD);
         activeIntake.setDirection(DcMotor.Direction.FORWARD);
 
+        leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -78,8 +84,8 @@ public class YaelDrive extends LinearOpMode {
             rightBackDrive.setPower(rightWheels);
 
             // Linear slide
-            leftLinearSlide.setPower(linearSlide - linearSlideRetract);
-            rightLinearSlide.setPower(linearSlide - linearSlideRetract);
+            leftLinearSlide.setPower(linearSlide + linearSlideRetract);
+            rightLinearSlide.setPower(linearSlide + linearSlideRetract);
 
             // Claw
             if (leftLinearSlide.getCurrentPosition() > clawPosition){
