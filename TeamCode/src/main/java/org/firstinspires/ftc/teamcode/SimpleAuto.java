@@ -361,8 +361,8 @@ public class SimpleAuto extends LinearOpMode
         resetEncoders();
 
         // Set the target position for both motors
-        leftDrive.setTargetPosition(ticksToTurn);
-        rightDrive.setTargetPosition(-ticksToTurn); // Negative for opposite direction
+        leftBackDrive.setTargetPosition(ticksToTurn);
+        rightBackDrive.setTargetPosition(-ticksToTurn); // Negative for opposite direction
 
         // Set the run mode to RUN_TO_POSITION
         leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -373,7 +373,7 @@ public class SimpleAuto extends LinearOpMode
         motorsOn(power);
 
         // Wait until both motors reach their target positions
-        while (leftDrive.isBusy() && rightDrive.isBusy()) {
+        while (leftBackDrive.isBusy() && rightBackDrive.isBusy()) {
             // Do nothing
         }
 
@@ -458,7 +458,7 @@ public class SimpleAuto extends LinearOpMode
     public void moveInchesAtHeading(boolean forward, double inches){
         double originHeading = getAngle();
         double power = 0;
-
+        
         double driveTrainCorrection = 1;
 
         double rotationAmount = (oneFootCm / 12) / circumference;

@@ -179,12 +179,14 @@ public class IsaacDrive extends LinearOpMode {
             // This just checks to make sure the linear slides are not to far down,
             // and if they are it slowly brings them back up until the encoders are
             // greater than or equal to 0.
+            /*
             if(leftSlide.getCurrentPosition() < 0 && leftSlide.getPower() == 0){
                 leftSlide.setPower(.1); // This might be to slow, but we don't want it to be to fast
             }
             if(rightSlide.getCurrentPosition() < 0 && rightSlide.getPower() == 0){
                 rightSlide.setPower(.1);
             }
+            */
 
 
             // Checks to see if the linear slides have lifted high enough, and if so
