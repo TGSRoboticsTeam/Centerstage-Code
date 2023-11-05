@@ -41,7 +41,7 @@ public class YaelDrive extends LinearOpMode {
         activeIntake.setDirection(DcMotor.Direction.FORWARD);
 
         leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
-        rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
 
         // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

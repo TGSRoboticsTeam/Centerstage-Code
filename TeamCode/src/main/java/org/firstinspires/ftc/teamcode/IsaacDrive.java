@@ -42,15 +42,16 @@ public class IsaacDrive extends LinearOpMode {
 
         // These are the motors that will power the linear slides and active intake. We will
         // need to add the names of them into the driver station phone.
-        DcMotorEx leftSlide = hardwareMap.get(DcMotorEx.class, "left_slide");
-        DcMotorEx rightSlide = hardwareMap.get(DcMotorEx.class, "right_slide");
+        DcMotorEx leftSlide = hardwareMap.get(DcMotorEx.class, "left_linear_slide");
+        DcMotorEx rightSlide = hardwareMap.get(DcMotorEx.class, "right_linear_slide");
+        DcMotor lift = hardwareMap.get(DcMotor.class, "lift_mechanism");
         DcMotor activeIntake = hardwareMap.get(DcMotor.class, "active_intake");
 
 
         // These are the servos needed for our deposit and arm attached to the linear slide.
-        Servo deposit = hardwareMap.get(Servo.class, "deposit");
-        Servo leftArm = hardwareMap.get(Servo.class, "right_arm");
-        Servo rightArm = hardwareMap.get(Servo.class, "left_arm");
+        Servo deposit = hardwareMap.get(Servo.class, "claw");
+        Servo leftArm = hardwareMap.get(Servo.class, "right_claw_rotation");
+        Servo rightArm = hardwareMap.get(Servo.class, "left_claw_rotation");
 
 
         // These commands tell the motor to brake when there is no set power it should run at.

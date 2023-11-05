@@ -706,13 +706,13 @@ public class SimpleAuto extends LinearOpMode
         rightDrive = hardwareMap.get(DcMotorEx.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back_drive");
 
-        leftSlide = hardwareMap.get(DcMotorEx.class, "left_slide");
-        rightSlide = hardwareMap.get(DcMotorEx.class, "right_slide");
+        leftSlide = hardwareMap.get(DcMotorEx.class, "left_linear_slide");
+        rightSlide = hardwareMap.get(DcMotorEx.class, "right_linear_slide");
         activeIntake = hardwareMap.get(DcMotor.class, "active_intake");
 
-        deposit = hardwareMap.get(Servo.class, "deposit");
-        leftArm = hardwareMap.get(Servo.class, "right_arm");
-        rightArm = hardwareMap.get(Servo.class, "left_arm");
+        deposit = hardwareMap.get(Servo.class, "claw");
+        leftArm = hardwareMap.get(Servo.class, "right_claw_rotation");
+        rightArm = hardwareMap.get(Servo.class, "left_claw_rotation");
 
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
