@@ -56,6 +56,9 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         while (!isStarted()) {
 
         }
