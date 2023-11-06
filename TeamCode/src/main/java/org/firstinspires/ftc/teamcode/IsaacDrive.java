@@ -72,6 +72,9 @@ public class IsaacDrive extends LinearOpMode {
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         // This sets the proper direction of rotation for the drivetrain motors, as two of them
         // would actually be reversed since they are facing the other direction. Test this using
