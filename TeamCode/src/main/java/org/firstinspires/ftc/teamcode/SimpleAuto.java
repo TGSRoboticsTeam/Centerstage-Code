@@ -143,8 +143,17 @@ public class SimpleAuto extends LinearOpMode
         waitTime(.5);
         openDeposit();
         waitTime(.5);
-        moveSlidesAndDrive(false, 8, 0);
+        moveSlides(0);
         waitTime(.5);
+        intakeIn(1);
+        waitTime(.5);
+        closeDeposit();
+        waitTime(.5);
+        moveSlides(10);
+        waitTime(.5);
+        openDeposit();
+        waitTime(.5);
+        moveSlidesAndDrive(false, 4, 0);
     }
 
     /**
@@ -274,6 +283,38 @@ public class SimpleAuto extends LinearOpMode
             }
         }
         resetEncoders();
+    }
+
+    /**
+     * Moves the linear slides to the specified height in inches
+     * @param height
+     */
+    public void moveSlides(double height){
+        boolean correctionsDone = false;
+        boolean liftOff = false;
+        int targetTick = (int) (tickPerInchForLift * height);
+
+        slideTarget(targetTick);
+        slidePower(1);
+
+        while(!liftOff) {
+            if (leftSlide.getCurrentPosition() > targetTick - 173 && leftSlide.getCurrentPosition() < targetTick + 173 && !correctionsDone) {
+                slideTarget(targetTick);
+                slidePower(.25);
+                correctionsDone = true;
+            } else if (leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3) {
+                slidePower(0);
+                liftOff = true;
+            }
+
+            if(leftSlide.getCurrentPosition() > 100){
+                leftArm.setPosition(armUpPos);
+                rightArm.setPosition(armUpPos);
+            }else{
+                leftArm.setPosition(armDownPos);
+                rightArm.setPosition(armDownPos);
+            }
+        }
     }
 
     /**
