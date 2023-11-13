@@ -21,8 +21,9 @@ public class YaelDrive extends LinearOpMode {
         DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-        DcMotor activeIntake = hardwareMap.get(DcMotor.class, "active_intake");
         DcMotor lift = hardwareMap.get(DcMotor.class, "lift_mechanism");
+
+        DcMotor activeIntakeMotor = hardwareMap.get(DcMotor.class, "active_intake");
 
         // Claw/Linear slide setup
         Servo hookServo = hardwareMap.get(Servo.class, "claw");
@@ -38,7 +39,8 @@ public class YaelDrive extends LinearOpMode {
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         lift.setDirection(DcMotor.Direction.FORWARD);
-        activeIntake.setDirection(DcMotor.Direction.FORWARD);
+
+        activeIntakeMotor.setDirection(DcMotor.Direction.FORWARD);
 
         leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
         rightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
@@ -72,8 +74,15 @@ public class YaelDrive extends LinearOpMode {
 
             // Define joystick controls
             // Drive
-            double leftWheels = -gamepad1.left_stick_y;
-            double rightWheels = -gamepad1.right_stick_y;
+            double axial   = -gamepad1.left_stick_y;
+            double lateral =  gamepad1.left_stick_x;
+            double yaw     =  gamepad1.right_stick_x;
+
+            // Gives the joystick commands purpose
+            double rightFront = axial - lateral - yaw;
+            double rightBack  = axial + lateral - yaw;
+            double leftBack   = axial - lateral + yaw;
+            double leftFront  = axial + lateral + yaw;
 
             // Pixel grabber mechanism
             boolean loadPixel = gamepad2.x;
@@ -81,12 +90,21 @@ public class YaelDrive extends LinearOpMode {
             float linearSlide = gamepad2.right_trigger;
             float linearSlideRetract = gamepad2.left_trigger;
 
+            // Active intake
+            boolean rightBumper = gamepad1.right_bumper;
+            boolean leftBumper = gamepad1.left_bumper;
+            double activeIntake = 0;
+
+
+            // Does some mathy stuff
+
+
             // Associates buttons/joysticks to motors/servos:
             // Wheels
-            leftFrontDrive.setPower(leftWheels);
-            leftBackDrive.setPower(leftWheels);
-            rightFrontDrive.setPower(rightWheels);
-            rightBackDrive.setPower(rightWheels);
+            leftFrontDrive.setPower(leftFront);
+            leftBackDrive.setPower(leftBack);
+            rightFrontDrive.setPower(rightFront);
+            rightBackDrive.setPower(rightBack);
 
             // Linear slide
             leftLinearSlide.setPower(linearSlide - linearSlideRetract);
@@ -99,7 +117,7 @@ public class YaelDrive extends LinearOpMode {
                 hookServo.setPosition(0);
             }
 
-            // Claw direction
+            // Claw-Hook
             if (loadPixel){
                 leftClawRotate.setPosition(0.5);
                 rightClawRotate.setPosition(0.5);
@@ -107,6 +125,16 @@ public class YaelDrive extends LinearOpMode {
                 leftClawRotate.setPosition(0);
                 rightClawRotate.setPosition(0);
             }
+
+            // Active intake
+            if (rightBumper) {
+                activeIntake++;
+            }
+            if (leftBumper) {
+                activeIntake--;
+            }
+            activeIntakeMotor.setPower(activeIntake);
+
 
         }
 
