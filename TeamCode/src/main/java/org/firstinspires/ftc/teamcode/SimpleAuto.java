@@ -135,11 +135,11 @@ public class SimpleAuto extends LinearOpMode
             }
         }
 
-        /*moveInchesAtHeading(true, 48);
+        /*moveInchesAtHeading(true, 20);
         waitTime(.5);
         turnNinety(false);
         waitTime(.5);
-        moveSlidesAndDrive(true, 55, 10);
+        moveSlidesAndDrive(true, 38, 10);
         waitTime(.5);
         openDeposit();
         waitTime(.5);
@@ -155,7 +155,11 @@ public class SimpleAuto extends LinearOpMode
         waitTime(.5);
         moveSlidesAndDrive(false, 4, 0);*/
 
-        moveInchesAtHeading(true, 24);
+        moveInchAmount(true, 24);
+        waitTime(.5);
+        turnNinety(false);
+        waitTime(.5);
+        moveInchAmount(true,38);
     }
 
     /**
@@ -393,7 +397,7 @@ public class SimpleAuto extends LinearOpMode
      * @param CW True or false
      */
     public void turnNinety(boolean CW){
-        int adjustment = -1;
+        /*int adjustment = -1;
         if(CW){
             adjustment *= -1;
         }
@@ -421,9 +425,9 @@ public class SimpleAuto extends LinearOpMode
         }
 
         motorsOff();
-        resetEncoders();
+        resetEncoders();*/
 
-        /*double originalAngle = getAngle();
+        double originalAngle = getAngle();
 
         if(CW) {
             if(originalAngle - 90 < 0 && !(originalAngle < 0)) {
@@ -449,7 +453,7 @@ public class SimpleAuto extends LinearOpMode
                     rightVelo(.75);
                 }
             }
-        }*/
+        }
         motorsOff();
     }
 
@@ -508,25 +512,25 @@ public class SimpleAuto extends LinearOpMode
         double totalTicks = rotationAmount * ticksPerRotation * inches * wheelRatio * driveTrainCorrection;
 
         // This is used to slow down the robot when within three inches of target position
-        double threeInches = rotationAmount * ticksPerRotation * 3 * wheelRatio * driveTrainCorrection;
+        double fiveInches = rotationAmount * ticksPerRotation * 5 * wheelRatio * driveTrainCorrection;
 
         resetEncoders();
 
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
-                if(leftBackDrive.getCurrentPosition() > totalTicks - threeInches){
-                    power = totalTicks / (totalTicks - threeInches);
+                if(leftBackDrive.getCurrentPosition() > totalTicks - fiveInches){
+                    power = (totalTicks - leftBackDrive.getCurrentPosition()) / (totalTicks - fiveInches);
                     if(power < .25){
                         power = .25;
                     }
                 }else{
-                    power = 1;
+                    power = .5;
                 }
 
                 double headingError = optimalAngleChange(originHeading);
 
-                leftVelo(power - (headingError * -.1));
-                rightVelo(power + (headingError * -.1));
+                leftVelo(power + (headingError * -.1));
+                rightVelo(power - (headingError * -.1));
 
                 telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
                 telemetry.update();
@@ -534,8 +538,8 @@ public class SimpleAuto extends LinearOpMode
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                if(leftBackDrive.getCurrentPosition() < totalTicks + threeInches){
-                    power = Math.abs(totalTicks / (totalTicks + threeInches));
+                if(leftBackDrive.getCurrentPosition() < totalTicks + fiveInches){
+                    power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (totalTicks - fiveInches);
                     if(power < .25){
                         power = .25;
                     }
@@ -545,8 +549,8 @@ public class SimpleAuto extends LinearOpMode
 
                 double headingError = optimalAngleChange(originHeading);
 
-                leftVelo(-power - (headingError * -.1));
-                rightVelo(-power + (headingError * -.1));
+                leftVelo(-power + (headingError * -.1));
+                rightVelo(-power - (headingError * -.1));
 
                 telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
                 telemetry.update();
@@ -568,15 +572,14 @@ public class SimpleAuto extends LinearOpMode
 
         double rotationAmount = (oneFootCm / 12) / circumference;
         double totalTicks = rotationAmount * ticksPerRotation * inches * wheelRatio * driveTrainCorrection;
-
-        double threeInches = rotationAmount * ticksPerRotation * 3 * wheelRatio * driveTrainCorrection;
+        double fiveInches = rotationAmount * ticksPerRotation * 5 * wheelRatio * driveTrainCorrection;
 
         resetEncoders();
 
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
-                if(leftBackDrive.getCurrentPosition() > totalTicks - threeInches){
-                    double power = totalTicks / (totalTicks - threeInches);
+                if(leftBackDrive.getCurrentPosition() > totalTicks - fiveInches){
+                    double power = (totalTicks - leftBackDrive.getCurrentPosition()) / (totalTicks - fiveInches);
                     if(power < .25){
                         power = .25;
                     }
@@ -590,8 +593,8 @@ public class SimpleAuto extends LinearOpMode
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                if(leftBackDrive.getCurrentPosition() < totalTicks + threeInches){
-                    double power = Math.abs(totalTicks / (totalTicks + threeInches));
+                if(leftBackDrive.getCurrentPosition() < totalTicks + fiveInches){
+                    double power = (totalTicks - leftBackDrive.getCurrentPosition()) / (totalTicks - fiveInches);
                     if(power < .25){
                         power = .25;
                     }
