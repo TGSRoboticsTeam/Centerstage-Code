@@ -135,7 +135,7 @@ public class SimpleAuto extends LinearOpMode
             }
         }
 
-        moveInchesAtHeading(true, 48);
+        /*moveInchesAtHeading(true, 48);
         waitTime(.5);
         turnNinety(false);
         waitTime(.5);
@@ -153,7 +153,9 @@ public class SimpleAuto extends LinearOpMode
         waitTime(.5);
         openDeposit();
         waitTime(.5);
-        moveSlidesAndDrive(false, 4, 0);
+        moveSlidesAndDrive(false, 4, 0);*/
+
+        moveInchesAtHeading(true, 24);
     }
 
     /**
@@ -297,7 +299,7 @@ public class SimpleAuto extends LinearOpMode
         slideTarget(targetTick);
         slidePower(1);
 
-        while(!liftOff) {
+        while(!liftOff && opModeIsActive()) {
             if (leftSlide.getCurrentPosition() > targetTick - 173 && leftSlide.getCurrentPosition() < targetTick + 173 && !correctionsDone) {
                 slideTarget(targetTick);
                 slidePower(.25);
