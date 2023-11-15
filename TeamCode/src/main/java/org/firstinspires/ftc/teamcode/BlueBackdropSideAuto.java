@@ -27,30 +27,23 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 
 import android.annotation.SuppressLint;
 
-import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.AprilTagDetectionPipe;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import java.util.ArrayList;
-
-@Autonomous(name = "Base Auto", group = "Linear Opmode")
-public class SimpleAuto extends LinearOpMode
+@Autonomous(name = "Backdrop Side Blue Auto", group = "Linear Opmode")
+public class BlueBackdropSideAuto extends LinearOpMode
 {
     // Motor and servo initial setup
     public DcMotorEx leftDrive;
@@ -135,31 +128,26 @@ public class SimpleAuto extends LinearOpMode
             }
         }
 
-        /*moveInchesAtHeading(true, 20);
-        waitTime(.5);
-        turnNinety(false);
-        waitTime(.5);
-        moveSlidesAndDrive(true, 38, 10);
-        waitTime(.5);
-        openDeposit();
-        waitTime(.5);
-        moveSlides(0);
-        waitTime(.5);
-        intakeIn(1);
-        waitTime(.5);
-        closeDeposit();
-        waitTime(.5);
-        moveSlides(10);
-        waitTime(.5);
-        openDeposit();
-        waitTime(.5);
-        moveSlidesAndDrive(false, 4, 0);*/
-
         moveInchAmount(true, 24);
         waitTime(.5);
         turnNinety(false);
         waitTime(.5);
-        moveInchAmount(true,38);
+        moveInchAmount(true,36);
+        moveSlides(12);
+        waitTime(.5);
+        openDeposit();
+        waitTime(1);
+        moveSlides(0);
+        waitTime(.5);
+        intakeIn(2);
+        waitTime(.5);
+        closeDeposit();
+        waitTime(1);
+        moveSlides(12);
+        waitTime(.5);
+        openDeposit();
+        waitTime(1);
+        moveSlides(0);
     }
 
     /**
