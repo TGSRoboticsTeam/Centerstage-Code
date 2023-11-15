@@ -128,12 +128,12 @@ public class YaelDrive extends LinearOpMode {
 
             // Active intake
             if (rightBumper) {
-                activeIntake++;
+                activeIntakeMotor.setPower(1);
+            }else if (leftBumper) {
+                activeIntakeMotor.setPower(-1);
+            }else{
+                activeIntakeMotor.setPower(0);
             }
-            if (leftBumper) {
-                activeIntake--;
-            }
-            activeIntakeMotor.setPower(activeIntake);
 
 
         }
