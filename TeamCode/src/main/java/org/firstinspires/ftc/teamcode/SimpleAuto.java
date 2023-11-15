@@ -406,8 +406,8 @@ public class SimpleAuto extends LinearOpMode
         rightBackDrive.setTargetPosition(-ticksToTurn); // Negative for opposite direction
 
         // Set the run mode to RUN_TO_POSITION
-        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set the desired power for both motors
         double power = 0.5; // Adjust as needed
