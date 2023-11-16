@@ -639,9 +639,9 @@ public class BlueBackdropSideAuto extends LinearOpMode
      */
     public void motorsOff(){
         leftDrive.setPower(0);
-        leftBackDrive.setPower(0);
         rightDrive.setPower(0);
         rightBackDrive.setPower(0);
+        leftBackDrive.setPower(0);
     }
 
     /**
@@ -650,9 +650,9 @@ public class BlueBackdropSideAuto extends LinearOpMode
      */
     public void motorsOn(double power){
         leftDrive.setPower(power);
-        leftBackDrive.setPower(power);
         rightDrive.setPower(power);
         rightBackDrive.setPower(power);
+        leftBackDrive.setPower(power);
     }
 
     /**
