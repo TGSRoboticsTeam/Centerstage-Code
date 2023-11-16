@@ -77,7 +77,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
     // Linear slide constants
     public double pulleyCircumference = 3.46; // In inches
 
-    public double tickPerInchForLift = ticksPerRotation / pulleyCircumference;
+    public double tickPerInchForLift = 12 / pulleyCircumference;
 
     // Servo constants
     static final double clawOpenPosition = .5;
@@ -286,10 +286,10 @@ public class BlueBackdropSideAuto extends LinearOpMode
     public void moveSlides(double height){
         boolean correctionsDone = false;
         boolean liftOff = false;
-        int targetTick = (int) (tickPerInchForLift * height);
+        int targetTick = -(int) (height * 150); // 150 ticks is approximately one inch
 
         slideTarget(targetTick);
-        slidePower(1);
+        slidePower(.5);
 
         while(!liftOff && opModeIsActive()) {
             if (leftSlide.getCurrentPosition() > targetTick - 173 && leftSlide.getCurrentPosition() < targetTick + 173 && !correctionsDone) {
@@ -420,25 +420,25 @@ public class BlueBackdropSideAuto extends LinearOpMode
         if(CW) {
             if(originalAngle - 90 < 0 && !(originalAngle < 0)) {
                 while (opModeIsActive() && (getAngle() < originalAngle + 5 || getAngle() > originalAngle - 90 + angleCorrectionCW + 360)) {
-                    leftVelo(.75);
-                    rightVelo(-.75);
+                    leftVelo(.5);
+                    rightVelo(-.5);
                 }
             }else{
                 while (opModeIsActive() && getAngle() > originalAngle - 90 + angleCorrectionCW && getAngle() < originalAngle + 5) {
-                    leftVelo(.75);
-                    rightVelo(-.75);
+                    leftVelo(.5);
+                    rightVelo(-.5);
                 }
             }
         }else{
             if(originalAngle + 90 > 360) {
                 while (opModeIsActive() && (getAngle() > originalAngle - 5 || getAngle() < originalAngle + 90 - angleCorrectionCCW - 360)) {
-                    leftVelo(-.75);
-                    rightVelo(.75);
+                    leftVelo(-.5);
+                    rightVelo(.5);
                 }
             }else{
                 while (opModeIsActive() && getAngle() < originalAngle + 90 - angleCorrectionCCW && getAngle() > originalAngle - 5) {
-                    leftVelo(-.75);
-                    rightVelo(.75);
+                    leftVelo(-.5);
+                    rightVelo(.5);
                 }
             }
         }
