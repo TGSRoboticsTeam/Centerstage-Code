@@ -135,7 +135,8 @@ public class YaelDrive extends LinearOpMode {
                 activeIntakeMotor.setPower(0);
             }
 
-
+            telemetry.addData("Lift encoder", leftLinearSlide.getCurrentPosition());
+            telemetry.update();
         }
 
     }
