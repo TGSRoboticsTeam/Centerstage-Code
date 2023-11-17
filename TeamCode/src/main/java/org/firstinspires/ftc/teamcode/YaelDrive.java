@@ -70,7 +70,7 @@ public class YaelDrive extends LinearOpMode {
             // The hook position 0 to 1
             double hookPosition = 0.3;
             // The degrees it takes to make the thing automatically go up
-            double clawPosition = 200;
+            double clawPosition = -200;
 
             // Define joystick controls
             // Drive
@@ -78,11 +78,35 @@ public class YaelDrive extends LinearOpMode {
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
 
+            if (axial <= 0.1 && axial >= -0.1) {
+                axial = 0;
+            }
+
+            if (lateral <= 0.1 && lateral >= -0.1) {
+                lateral = 0;
+            }
+
+            if (yaw <= 0.1 && yaw >= -0.1) {
+                yaw = 0;
+            }
+
             // Gives the joystick commands purpose
             double rightFront = axial - lateral - yaw;
             double rightBack  = axial + lateral - yaw;
             double leftBack   = axial - lateral + yaw;
             double leftFront  = axial + lateral + yaw;
+            double max;
+
+            max = Math.max(Math.abs(leftFront), Math.abs(rightFront));
+            max = Math.max(max, Math.abs(leftBack));
+            max = Math.max(max, Math.abs(rightBack));
+
+            if (max > 1.0) {
+                leftFront  /= max;
+                rightFront /= max;
+                leftBack   /= max;
+                rightBack  /= max;
+            }
 
             // Pixel grabber mechanism
             boolean loadPixel = gamepad2.x;
@@ -95,10 +119,6 @@ public class YaelDrive extends LinearOpMode {
             boolean leftBumper = gamepad1.left_bumper;
             double activeIntake = 0;
 
-
-            // Does some mathy stuff
-
-
             // Associates buttons/joysticks to motors/servos:
             // Wheels
             leftFrontDrive.setPower(leftFront);
@@ -107,11 +127,13 @@ public class YaelDrive extends LinearOpMode {
             rightBackDrive.setPower(rightBack);
 
             // Linear slide
-            leftLinearSlide.setPower(linearSlide - linearSlideRetract);
-            rightLinearSlide.setPower(linearSlide - linearSlideRetract);
+            if (leftLinearSlide.getCurrentPosition() < 0) {
+                leftLinearSlide.setPower(linearSlide - linearSlideRetract);
+                rightLinearSlide.setPower(linearSlide - linearSlideRetract);
+            }
 
             // Claw
-            if (leftLinearSlide.getCurrentPosition() > clawPosition){
+            if (leftLinearSlide.getCurrentPosition() < clawPosition){
                 hookServo.setPosition(hookPosition);
             }else{
                 hookServo.setPosition(0);
