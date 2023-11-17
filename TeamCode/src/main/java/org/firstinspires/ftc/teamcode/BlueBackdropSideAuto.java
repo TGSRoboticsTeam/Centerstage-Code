@@ -75,9 +75,9 @@ public class BlueBackdropSideAuto extends LinearOpMode
     public double angleCorrectionCCW = 11.26;
 
     // Linear slide constants
-    public double pulleyCircumference = 3.46; // In inches
-
-    public double tickPerInchForLift = 12 / pulleyCircumference;
+    public double pulleyDiameter = 1.10236; // In inches
+    public double pulleyCircumference = Math.PI * pulleyDiameter;
+    public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation;
 
     // Servo constants
     static final double clawOpenPosition = .5;
@@ -286,7 +286,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
     public void moveSlides(double height){
         boolean correctionsDone = false;
         boolean liftOff = false;
-        int targetTick = -(int) (height * 150); // 150 ticks is approximately one inch
+        int targetTick = (int) (height * tickPerInchForLift);
 
         slideTarget(targetTick);
         slidePower(.5);
@@ -296,18 +296,20 @@ public class BlueBackdropSideAuto extends LinearOpMode
                 slideTarget(targetTick);
                 slidePower(.25);
                 correctionsDone = true;
-            } else if (leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3) {
+            } else if ((leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3) || !leftSlide.isBusy()) {
                 slidePower(0);
                 liftOff = true;
             }
 
-            if(leftSlide.getCurrentPosition() > 100){
+            if(leftSlide.getCurrentPosition() > 500){
                 leftArm.setPosition(armUpPos);
                 rightArm.setPosition(armUpPos);
             }else{
                 leftArm.setPosition(armDownPos);
                 rightArm.setPosition(armDownPos);
             }
+            telemetry.addData("Slide encoder: ", leftSlide.getCurrentPosition());
+            telemetry.update();
         }
     }
 
