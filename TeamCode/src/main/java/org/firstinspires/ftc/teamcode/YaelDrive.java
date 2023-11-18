@@ -34,17 +34,17 @@ public class YaelDrive extends LinearOpMode {
         //DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
 
         // Sets the motor direction
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         lift.setDirection(DcMotor.Direction.FORWARD);
 
         leftClawRotate.setDirection(Servo.Direction.REVERSE);
         rightClawRotate.setDirection(Servo.Direction.FORWARD);
 
-        activeIntakeMotor.setDirection(DcMotor.Direction.FORWARD);
+        activeIntakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
         //rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
@@ -66,7 +66,7 @@ public class YaelDrive extends LinearOpMode {
         //rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
-        hookServo.setPosition(.5);
+        hookServo.setPosition(.2);
 
         while (!isStarted()) {
 
@@ -75,7 +75,7 @@ public class YaelDrive extends LinearOpMode {
         while (opModeIsActive()) {
             // Define variables
             // The hook position 0 to 1
-            double hookPosition = 0.3;
+            double hookPosition = 0.1;
             // The degrees it takes to make the thing automatically go up
             double clawPosition = -1250;
 
@@ -83,7 +83,7 @@ public class YaelDrive extends LinearOpMode {
             // Drive
             double axial   = -gamepad1.left_stick_y;
             double lateral =  gamepad1.left_stick_x;
-            double yaw     =  -gamepad1.right_stick_x;
+            double yaw     =  gamepad1.right_stick_x;
 
             if (axial <= 0.1 && axial >= -0.1) {
                 axial = 0;
@@ -164,9 +164,9 @@ public class YaelDrive extends LinearOpMode {
             // Claw-Base
 
             if (loadBase) {
-                leftClawRotate.setPosition(0.5);
-            }else if (unloadBase) {
                 leftClawRotate.setPosition(0);
+            }else if (unloadBase) {
+                leftClawRotate.setPosition(-0.2);
             }
 
 
@@ -181,12 +181,13 @@ public class YaelDrive extends LinearOpMode {
             */
 
 
-             */
+
             // Claw-Hook
+
             if (loadPixel){
-                hookServo.setPosition(0);
+                hookServo.setPosition(0.45);
             }else if (unloadPixel) {
-                hookServo.setPosition(-hookPosition);
+                hookServo.setPosition(0);
             }
 
 
@@ -199,12 +200,6 @@ public class YaelDrive extends LinearOpMode {
                 activeIntakeMotor.setPower(0);
             }
 
-            if(gamepad1.a){
-                leftClawRotate.setPosition(1);
-            }
-            if(gamepad1.b){
-                leftClawRotate.setPosition(0);
-            }
             telemetry.addData("Lift encoder", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Servo voltage", hookServo.getConnectionInfo());
             telemetry.update();
