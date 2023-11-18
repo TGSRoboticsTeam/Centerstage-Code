@@ -164,9 +164,9 @@ public class YaelDrive extends LinearOpMode {
             // Claw-Base
 
             if (loadBase) {
-                leftClawRotate.setPosition(0);
+                leftClawRotate.setPosition(0.5);
             }else if (unloadBase) {
-                leftClawRotate.setPosition(-0.5);
+                leftClawRotate.setPosition(0);
             }
 
 
