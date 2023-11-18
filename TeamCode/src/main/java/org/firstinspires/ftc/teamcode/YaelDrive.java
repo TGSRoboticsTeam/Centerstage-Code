@@ -77,7 +77,7 @@ public class YaelDrive extends LinearOpMode {
             // The hook position 0 to 1
             double hookPosition = 0.3;
             // The degrees it takes to make the thing automatically go up
-            double clawPosition = -1000;
+            double clawPosition = -1250;
 
             // Define joystick controls
             // Drive
