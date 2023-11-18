@@ -40,6 +40,9 @@ public class YaelDrive extends LinearOpMode {
 
         lift.setDirection(DcMotor.Direction.FORWARD);
 
+        leftClawRotate.setDirection(Servo.Direction.FORWARD);
+        rightClawRotate.setDirection(Servo.Direction.REVERSE);
+
         activeIntakeMotor.setDirection(DcMotor.Direction.FORWARD);
 
         leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
@@ -145,20 +148,21 @@ public class YaelDrive extends LinearOpMode {
                 rightLinearSlide.setPower(linearSlide - linearSlideRetract);
             }
 
-            // Claw
+            // Claw-Base
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                hookServo.setPosition(hookPosition);
+                leftClawRotate.setPosition(0.5);
+                rightClawRotate.setPosition(0.5);
+
             }else{
-                hookServo.setPosition(0);
+                leftClawRotate.setPosition(0);
+                rightClawRotate.setPosition(0);
             }
 
             // Claw-Hook
             if (loadPixel){
-                leftClawRotate.setPosition(0.5);
-                rightClawRotate.setPosition(0.5);
+                hookServo.setPosition(hookPosition);
             }else if(unloadPixel){
-                leftClawRotate.setPosition(0);
-                rightClawRotate.setPosition(0);
+                hookServo.setPosition(0);
             }
 
             // Active intake
