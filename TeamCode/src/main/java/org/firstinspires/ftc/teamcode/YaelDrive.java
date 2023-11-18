@@ -112,8 +112,8 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Pixel grabber mechanism
-            boolean loadPixel = gamepad2.x;
-            boolean unloadPixel = gamepad2.y;
+            boolean loadPixel = gamepad2.a;
+            boolean unloadPixel = gamepad2.b;
             float linearSlide = gamepad2.right_trigger;
             float linearSlideRetract = gamepad2.left_trigger;
 
