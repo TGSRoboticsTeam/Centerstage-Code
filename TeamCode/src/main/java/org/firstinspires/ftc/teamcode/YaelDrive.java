@@ -127,7 +127,7 @@ public class YaelDrive extends LinearOpMode {
             rightBackDrive.setPower(rightBack);
 
             // Linear slide
-            if (leftLinearSlide.getCurrentPosition() > 0) {
+            if (leftLinearSlide.getCurrentPosition() < 0) {
                 leftLinearSlide.setPower(linearSlide);
                 rightLinearSlide.setPower(linearSlide);
             }else{
