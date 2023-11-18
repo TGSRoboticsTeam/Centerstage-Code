@@ -64,6 +64,9 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        // servo starting position
+        hookServo.setPosition(1);
+
         while (!isStarted()) {
 
         }
@@ -73,7 +76,7 @@ public class YaelDrive extends LinearOpMode {
             // The hook position 0 to 1
             double hookPosition = 0.3;
             // The degrees it takes to make the thing automatically go up
-            double clawPosition = -200;
+            double clawPosition = -1000;
 
             // Define joystick controls
             // Drive
@@ -150,12 +153,11 @@ public class YaelDrive extends LinearOpMode {
 
             // Claw-Base
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
+                leftClawRotate.setPosition(1);
+                rightClawRotate.setPosition(1);
+            }else{
                 leftClawRotate.setPosition(0.5);
                 rightClawRotate.setPosition(0.5);
-
-            }else{
-                leftClawRotate.setPosition(0);
-                rightClawRotate.setPosition(0);
             }
 
             // Claw-Hook
