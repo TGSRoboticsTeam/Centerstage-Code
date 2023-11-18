@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Yael Drive", group = "Yael Drive")
@@ -26,7 +27,7 @@ public class YaelDrive extends LinearOpMode {
         DcMotor activeIntakeMotor = hardwareMap.get(DcMotor.class, "active_intake");
 
         // Claw/Linear slide setup
-        Servo hookServo = hardwareMap.get(Servo.class, "claw");
+        ServoImpl hookServo = hardwareMap.get(ServoImpl.class, "claw");
         Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
         Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation");
         DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
@@ -76,7 +77,7 @@ public class YaelDrive extends LinearOpMode {
             // The hook position 0 to 1
             double hookPosition = 0.3;
             // The degrees it takes to make the thing automatically go up
-            double clawPosition = -2000;
+            double clawPosition = -1000;
 
             // Define joystick controls
             // Drive
@@ -163,7 +164,7 @@ public class YaelDrive extends LinearOpMode {
             // Claw-Hook
             if (loadPixel){
                 hookServo.setPosition(hookPosition);
-            }else if(unloadPixel){
+            }else if (unloadPixel) {
                 hookServo.setPosition(0);
             }
 
@@ -177,6 +178,7 @@ public class YaelDrive extends LinearOpMode {
             }
 
             telemetry.addData("Lift encoder", leftLinearSlide.getCurrentPosition());
+            telemetry.addData("Servo voltage", hookServo.getConnectionInfo());
             telemetry.update();
         }
 
