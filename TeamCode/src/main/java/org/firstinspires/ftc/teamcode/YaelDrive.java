@@ -124,7 +124,6 @@ public class YaelDrive extends LinearOpMode {
             // Active intake
             boolean rightBumper = gamepad1.right_bumper;
             boolean leftBumper = gamepad1.left_bumper;
-            double activeIntake = 0;
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
