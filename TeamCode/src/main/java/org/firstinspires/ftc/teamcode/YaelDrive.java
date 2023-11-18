@@ -40,8 +40,8 @@ public class YaelDrive extends LinearOpMode {
 
         lift.setDirection(DcMotor.Direction.FORWARD);
 
-        leftClawRotate.setDirection(Servo.Direction.FORWARD);
-        rightClawRotate.setDirection(Servo.Direction.REVERSE);
+        leftClawRotate.setDirection(Servo.Direction.REVERSE);
+        rightClawRotate.setDirection(Servo.Direction.FORWARD);
 
         activeIntakeMotor.setDirection(DcMotor.Direction.FORWARD);
 
@@ -76,7 +76,7 @@ public class YaelDrive extends LinearOpMode {
             // The hook position 0 to 1
             double hookPosition = 0.3;
             // The degrees it takes to make the thing automatically go up
-            double clawPosition = -1000;
+            double clawPosition = -2000;
 
             // Define joystick controls
             // Drive
@@ -153,11 +153,11 @@ public class YaelDrive extends LinearOpMode {
 
             // Claw-Base
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(1);
-                rightClawRotate.setPosition(1);
-            }else{
                 leftClawRotate.setPosition(0.5);
                 rightClawRotate.setPosition(0.5);
+            }else{
+                leftClawRotate.setPosition(1);
+                rightClawRotate.setPosition(1);
             }
 
             // Claw-Hook
