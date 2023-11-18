@@ -31,7 +31,7 @@ public class YaelDrive extends LinearOpMode {
         Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
         Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation");
         DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
-        DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
+        //DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
 
         // Sets the motor direction
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -47,7 +47,7 @@ public class YaelDrive extends LinearOpMode {
         activeIntakeMotor.setDirection(DcMotor.Direction.FORWARD);
 
         leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
-        rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        //rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
 
         // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -56,14 +56,14 @@ public class YaelDrive extends LinearOpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
         hookServo.setPosition(1);
@@ -143,6 +143,7 @@ public class YaelDrive extends LinearOpMode {
                 leftLinearSlide.setPower(linearSlide - linearSlideRetract);
             }
 
+            /*
             if (rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(linearSlide);
             }else if (rightLinearSlide.getCurrentPosition() < maxExtend) {
@@ -150,6 +151,7 @@ public class YaelDrive extends LinearOpMode {
             }else{
                 rightLinearSlide.setPower(linearSlide - linearSlideRetract);
             }
+             */
 
             // Claw-Base
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
