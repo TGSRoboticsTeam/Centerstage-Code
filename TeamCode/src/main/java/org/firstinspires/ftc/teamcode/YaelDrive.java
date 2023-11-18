@@ -163,9 +163,9 @@ public class YaelDrive extends LinearOpMode {
 
             // Claw-Hook
             if (loadPixel){
-                hookServo.setPosition(hookPosition);
-            }else if (unloadPixel) {
                 hookServo.setPosition(0);
+            }else if (unloadPixel) {
+                hookServo.setPosition(-hookPosition);
             }
 
             // Active intake
