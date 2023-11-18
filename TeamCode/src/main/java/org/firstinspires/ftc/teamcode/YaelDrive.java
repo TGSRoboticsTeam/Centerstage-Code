@@ -130,7 +130,7 @@ public class YaelDrive extends LinearOpMode {
             rightBackDrive.setPower(rightBack);
 
             // Linear slide
-            int maxExtend = -4000;
+            int maxExtend = -3000;
 
             if (leftLinearSlide.getCurrentPosition() > 0) {
                 leftLinearSlide.setPower(linearSlide);
