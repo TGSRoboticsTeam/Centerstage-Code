@@ -120,6 +120,9 @@ public class YaelDrive extends LinearOpMode {
             boolean unloadPixel = gamepad2.b;
             float linearSlide = gamepad2.right_trigger;
             float linearSlideRetract = gamepad2.left_trigger;
+            boolean loadBase = gamepad2.x;
+            boolean unloadBase = gamepad2.y;
+
 
             // Active intake
             boolean rightBumper = gamepad1.right_bumper;
@@ -159,6 +162,15 @@ public class YaelDrive extends LinearOpMode {
              */
 
             // Claw-Base
+
+            if (loadBase) {
+                leftClawRotate.setPosition(0);
+            }else if (unloadBase) {
+                leftClawRotate.setPosition(-0.5);
+            }
+
+
+            /*
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
                 leftClawRotate.setPosition(0.5);
                 rightClawRotate.setPosition(0.5);
@@ -166,7 +178,10 @@ public class YaelDrive extends LinearOpMode {
                 leftClawRotate.setPosition(1);
                 rightClawRotate.setPosition(1);
             }
+            */
 
+
+             */
             // Claw-Hook
             if (loadPixel){
                 hookServo.setPosition(0);
