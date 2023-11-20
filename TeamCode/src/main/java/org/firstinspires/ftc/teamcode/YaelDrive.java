@@ -66,7 +66,7 @@ public class YaelDrive extends LinearOpMode {
         //rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
-        hookServo.setPosition(.2);
+        hookServo.setPosition(0);
 
         while (!isStarted()) {
 
@@ -145,7 +145,7 @@ public class YaelDrive extends LinearOpMode {
             }else{
                 leftLinearSlide.setPower(linearSlide - linearSlideRetract);
             }
-            
+
             /*
             if (rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(linearSlide);
