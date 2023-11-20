@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.AutoClasses;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
@@ -39,11 +39,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.AutoClasses.AprilTagDetectionPipe;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 
-@Autonomous(name = "Backdrop Side Blue Auto", group = "Linear Opmode")
-public class BlueBackdropSideAuto extends LinearOpMode
+@Autonomous(name = "Backdrop Side Red Auto", group = "Linear Opmode")
+public class RedBackdropSideAuto extends LinearOpMode
 {
     // Motor and servo initial setup
     public DcMotorEx leftDrive;
@@ -130,7 +131,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
         moveInchAmount(true, 24);
         waitTime(.5);
-        turnNinety(false);
+        turnNinety(true);
         waitTime(.5);
         moveInchAmount(true,36);
         moveSlides(12);
@@ -308,8 +309,6 @@ public class BlueBackdropSideAuto extends LinearOpMode
                 leftArm.setPosition(armDownPos);
                 rightArm.setPosition(armDownPos);
             }
-            telemetry.addData("Slide encoder: ", leftSlide.getCurrentPosition());
-            telemetry.update();
         }
     }
 
@@ -427,7 +426,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
                 }
             }else{
                 while (opModeIsActive() && getAngle() > originalAngle - 90 + angleCorrectionCW && getAngle() < originalAngle + 5) {
-                    leftVelo(.5);
+                    leftVelo(.75);
                     rightVelo(-.5);
                 }
             }
@@ -495,7 +494,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
     public void moveInchesAtHeading(boolean forward, double inches){
         double originHeading = getAngle();
         double power = 0;
-        
+
         double driveTrainCorrection = 1;
 
         double rotationAmount = (oneFootCm / 12) / circumference;
@@ -641,9 +640,9 @@ public class BlueBackdropSideAuto extends LinearOpMode
      */
     public void motorsOff(){
         leftDrive.setPower(0);
+        leftBackDrive.setPower(0);
         rightDrive.setPower(0);
         rightBackDrive.setPower(0);
-        leftBackDrive.setPower(0);
     }
 
     /**
@@ -652,9 +651,9 @@ public class BlueBackdropSideAuto extends LinearOpMode
      */
     public void motorsOn(double power){
         leftDrive.setPower(power);
+        leftBackDrive.setPower(power);
         rightDrive.setPower(power);
         rightBackDrive.setPower(power);
-        leftBackDrive.setPower(power);
     }
 
     /**
