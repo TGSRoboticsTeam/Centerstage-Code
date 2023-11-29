@@ -414,37 +414,18 @@ public class BlueBackdropSideAuto extends LinearOpMode
      * @param CW True or false
      */
     public void turnNinety(boolean CW){
-        /*int adjustment = -1;
-        if(CW){
-            adjustment *= -1;
-        }
-        double distancePerRotation = circumference;
-        double distanceToTurn = 0.25 * distancePerRotation; // Assuming 90-degree turn
-        int ticksToTurn = (int) ((distanceToTurn / circumference) * ticksPerRotation) * adjustment;
-
-        resetEncoders();
-
-        // Set the target position for both motors
-        leftBackDrive.setTargetPosition(ticksToTurn);
-        rightBackDrive.setTargetPosition(-ticksToTurn); // Negative for opposite direction
-
-        // Set the run mode to RUN_TO_POSITION
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // Set the desired power for both motors
-        double power = 0.5; // Adjust as needed
-        motorsOn(power);
-
-        // Wait until both motors reach their target positions
-        while (leftBackDrive.isBusy() && rightBackDrive.isBusy()) {
-            // Do nothing
-        }
-
-        motorsOff();
-        resetEncoders();*/
-
         double originalAngle = getAngle();
+
+        /*
+         * Pseudo code for modular speed:
+         *
+         * if(angleToTarget < 45){
+         *     power = angleRemaining / 45;
+         * }
+         * if(power < .25){
+         *      power = .25
+         * }
+         */
 
         if(CW) {
             if(originalAngle - 90 < 0 && !(originalAngle < 0)) {
