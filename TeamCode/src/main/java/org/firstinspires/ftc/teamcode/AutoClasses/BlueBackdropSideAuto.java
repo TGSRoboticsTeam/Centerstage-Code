@@ -119,17 +119,23 @@ public class BlueBackdropSideAuto extends LinearOpMode
         setUpHardware();
 
         while (!isStarted() && !isStopRequested()) {
-            if(gamepad2.a){
-                activeIntake.setPower(1);
+            telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
+            telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            telemetry.update();
+
+            if(gamepad1.a){
+                leftSlide.setPower(.25);
+                rightSlide.setPower(1);
+            }else if(gamepad1.b){
+                leftSlide.setPower(-.25);
+                rightSlide.setPower(-.1);
             }else{
-                activeIntake.setPower(0);
-            }
-            if(gamepad2.b){
-                deposit.setPosition(0);
+                leftSlide.setPower(0);
+                rightSlide.setPower(0);
             }
         }
 
-        moveInchAmount(true, 24);
+        /*moveInchAmount(true, 24);
         waitTime(.5);
         turnNinety(false);
         waitTime(.5);
@@ -147,6 +153,12 @@ public class BlueBackdropSideAuto extends LinearOpMode
         moveSlides(12);
         waitTime(.5);
         openDeposit();
+        waitTime(1);
+        moveSlides(0);*/
+
+        moveSlides(5);
+        waitTime(1);
+        moveSlides(10);
         waitTime(1);
         moveSlides(0);
     }
@@ -285,31 +297,45 @@ public class BlueBackdropSideAuto extends LinearOpMode
      * @param height
      */
     public void moveSlides(double height){
-        boolean correctionsDone = false;
         boolean liftOff = false;
+
+        double initialTick = leftSlide.getCurrentPosition();
+
         int targetTick = (int) (height * tickPerInchForLift);
+        double fiveInches = (int) (5 * tickPerInchForLift);
+
+        double power = .25;
 
         slideTarget(targetTick);
-        slidePower(.5);
+        slidePower(power);
 
         while(!liftOff && opModeIsActive()) {
-            if (leftSlide.getCurrentPosition() > targetTick - 173 && leftSlide.getCurrentPosition() < targetTick + 173 && !correctionsDone) {
-                slideTarget(targetTick);
-                slidePower(.25);
-                correctionsDone = true;
-            } else if ((leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3) || !leftSlide.isBusy()) {
+            /*power = Math.abs(targetTick - leftSlide.getCurrentPosition()) / (fiveInches);
+
+            if(power > 1){
+                power = 1;
+            }
+            if(power < .25){
+                power = .25;
+            }
+
+            slidePower(power);*/
+
+            if ((leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3) || !leftSlide.isBusy()) {
                 slidePower(0);
                 liftOff = true;
             }
 
-            if(leftSlide.getCurrentPosition() > 500){
+            if(leftSlide.getCurrentPosition() > 1250){
                 leftArm.setPosition(armUpPos);
                 rightArm.setPosition(armUpPos);
             }else{
                 leftArm.setPosition(armDownPos);
                 rightArm.setPosition(armDownPos);
             }
-            telemetry.addData("Slide encoder: ", leftSlide.getCurrentPosition());
+
+            telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
+            telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
             telemetry.update();
         }
     }
@@ -509,13 +535,14 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
-                if(leftBackDrive.getCurrentPosition() > totalTicks - fiveInches){
-                    power = (totalTicks - leftBackDrive.getCurrentPosition()) / (totalTicks - fiveInches);
-                    if(power < .25){
-                        power = .25;
-                    }
-                }else{
-                    power = .5;
+                power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (fiveInches);
+
+                if(power > 1){
+                    power = 1;
+                }
+
+                if(power < .25){
+                    power = .25;
                 }
 
                 double headingError = optimalAngleChange(originHeading);
@@ -529,13 +556,14 @@ public class BlueBackdropSideAuto extends LinearOpMode
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                if(leftBackDrive.getCurrentPosition() < totalTicks + fiveInches){
-                    power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (totalTicks - fiveInches);
-                    if(power < .25){
-                        power = .25;
-                    }
-                }else{
+                power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (fiveInches);
+
+                if(power > 1){
                     power = 1;
+                }
+
+                if(power < .25){
+                    power = .25;
                 }
 
                 double headingError = optimalAngleChange(originHeading);
@@ -569,30 +597,35 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
-                if(leftBackDrive.getCurrentPosition() > totalTicks - fiveInches){
-                    double power = (totalTicks - leftBackDrive.getCurrentPosition()) / (totalTicks - fiveInches);
-                    if(power < .25){
-                        power = .25;
-                    }
-                    motorsOn(power);
-                }else{
-                    motorsOn(1);
+                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (fiveInches);
+
+                if(power > 1){
+                    power = 1;
                 }
+
+                if(power < .25){
+                    power = .25;
+                }
+
+                motorsOn(power);
                 telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
                 telemetry.update();
             }
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                if(leftBackDrive.getCurrentPosition() < totalTicks + fiveInches){
-                    double power = (totalTicks - leftBackDrive.getCurrentPosition()) / (totalTicks - fiveInches);
-                    if(power < .25){
-                        power = .25;
-                    }
-                    motorsOn(-power);
-                }else{
-                    motorsOn(-1);
+                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (fiveInches);
+
+                if(power > 1){
+                    power = 1;
                 }
+
+                if(power < .25){
+                    power = .25;
+                }
+
+                motorsOn(-power);
+
                 telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
                 telemetry.update();
             }
@@ -756,8 +789,8 @@ public class BlueBackdropSideAuto extends LinearOpMode
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         leftArm.setDirection(Servo.Direction.FORWARD);
         rightArm.setDirection(Servo.Direction.REVERSE);
 
