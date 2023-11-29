@@ -125,10 +125,10 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
             if(gamepad1.a){
                 leftSlide.setPower(.25);
-                rightSlide.setPower(1);
+                rightSlide.setPower(.25);
             }else if(gamepad1.b){
                 leftSlide.setPower(-.25);
-                rightSlide.setPower(-.1);
+                rightSlide.setPower(-.25);
             }else{
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
