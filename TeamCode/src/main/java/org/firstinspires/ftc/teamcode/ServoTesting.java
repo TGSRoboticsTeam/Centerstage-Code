@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class ServoTesting extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
+    @Override
     public void runOpMode() {
         Servo servoOne = hardwareMap.get(Servo.class, "servo_1");
         Servo servoTwo = hardwareMap.get(Servo.class, "servo_2");
@@ -27,19 +28,19 @@ public class ServoTesting extends LinearOpMode {
             boolean servo3 = gamepad1.x;
 
             if (servo1) {
-                servoOne.setPosition(10);
+                servoOne.setPosition(0.5);
             }else{
                 servoOne.setPosition(0);
             }
 
             if (servo2) {
-                servoTwo.setPosition(10);
+                servoTwo.setPosition(0.5);
             }else{
                 servoTwo.setPosition(0);
             }
 
             if (servo3) {
-                servoThree.setPosition(10);
+                servoThree.setPosition(0.5);
             }else{
                 servoThree.setPosition(0);
             }
