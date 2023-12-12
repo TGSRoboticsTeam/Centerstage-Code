@@ -23,15 +23,11 @@ public class YaelDrive extends LinearOpMode {
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
         DcMotor lift = hardwareMap.get(DcMotor.class, "lift_mechanism");
+        Servo launcher = hardwareMap.get(ServoImpl.class, "plane_launcher");
 
-        DcMotor activeIntakeMotor = hardwareMap.get(DcMotor.class, "active_intake");
-
-        // Claw/Linear slide setup
-        ServoImpl hookServo = hardwareMap.get(ServoImpl.class, "claw");
-        Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
-        Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation");
+        // Grabber/Linear slide setup
+        ServoImpl grabberServo = hardwareMap.get(ServoImpl.class, "grabber");
         DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
-        //DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
 
         // Sets the motor direction
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -40,11 +36,6 @@ public class YaelDrive extends LinearOpMode {
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         lift.setDirection(DcMotor.Direction.FORWARD);
-
-        leftClawRotate.setDirection(Servo.Direction.REVERSE);
-        rightClawRotate.setDirection(Servo.Direction.FORWARD);
-
-        activeIntakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
         //rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
@@ -56,17 +47,16 @@ public class YaelDrive extends LinearOpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
-        hookServo.setPosition(0);
+        grabberServo.setPosition(0);
+
+        int pixelsReleased = 0;
 
         while (!isStarted()) {
 
@@ -116,22 +106,16 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Pixel grabber mechanism
-            boolean loadPixel = gamepad2.a;
-            boolean unloadPixel = gamepad2.b;
-            float linearSlide = gamepad2.right_trigger;
-            float linearSlideRetract = gamepad2.left_trigger;
-            boolean loadBase = gamepad2.x;
-            boolean unloadBase = gamepad2.y;
-
-
-            // Active intake
-            boolean rightBumper = gamepad1.right_bumper;
-            boolean leftBumper = gamepad1.left_bumper;
+            boolean grabPixel = gamepad2.a;
+            boolean releasePixel = gamepad2.b;
+            float linearSlide = -gamepad2.left_stick_y;
 
             // Lift
-            float liftExtend = gamepad1.right_trigger;
-            float liftRetract = gamepad1.left_trigger;
+            float liftExtend = gamepad2.right_trigger - gamepad2.left_trigger;
             double liftMaxExtend = 10000;
+
+            // Plane launcher
+            boolean launch = gamepad2.x;
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
@@ -141,76 +125,55 @@ public class YaelDrive extends LinearOpMode {
             rightBackDrive.setPower(rightBack);
 
             // Linear slide
-            int maxExtend = -3000;
+            int maxExtend = 3000;
 
-            if (leftLinearSlide.getCurrentPosition() > 0) {
-                leftLinearSlide.setPower(linearSlide);
-            }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                leftLinearSlide.setPower(-linearSlideRetract);
+            if (-leftLinearSlide.getCurrentPosition() <= 0) {
+                if (linearSlide > 0) {
+                    leftLinearSlide.setPower(linearSlide);
+                }
+            }else if (-leftLinearSlide.getCurrentPosition() >= maxExtend) {
+                if (linearSlide < 0) {
+                    leftLinearSlide.setPower(linearSlide);
+                }
             }else{
-                leftLinearSlide.setPower(linearSlide - linearSlideRetract);
+                leftLinearSlide.setPower(linearSlide);
             }
 
             // Lift
             if (leftLinearSlide.getCurrentPosition() > 0) {
                 lift.setPower(linearSlide);
-            }else if (lift.getCurrentPosition() < liftMaxExtend) {
-                lift.setPower(-liftRetract);
+            }
+
+            // Grabber
+            if (grabPixel){
+                grabberServo.setPosition(1);
+                pixelsReleased = 0;
+            }else if (releasePixel) {
+                if (pixelsReleased == 0) {
+                    grabberServo.setPosition(0.5);
+                    pixelsReleased = 1;
+                }else if (pixelsReleased == 2) {
+                    grabberServo.setPosition(0);
+                }
+            }
+
+            if (!grabPixel && !releasePixel && pixelsReleased == 1) {
+                pixelsReleased = 2;
+            }
+
+            // Launches Plane
+            if (launch) {
+                launcher.setPosition(0.1);
             }else{
-                lift.setPower(liftExtend - liftRetract);
+                launcher.setPosition(0);
             }
 
-            /*
-            if (rightLinearSlide.getCurrentPosition() > 0) {
-                rightLinearSlide.setPower(linearSlide);
-            }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                rightLinearSlide.setPower(-linearSlideRetract);
-            }else{
-                rightLinearSlide.setPower(linearSlide - linearSlideRetract);
-            }
-             */
+            // Hook
+            // Isaac can you add some code here? Ihdk how this hook thing works...
 
-            // Claw-Base
-
-            if (loadBase) {
-                leftClawRotate.setPosition(0);
-            }else if (unloadBase) {
-                leftClawRotate.setPosition(0.2);
-            }
-
-
-            /*
-            if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.5);
-                rightClawRotate.setPosition(0.5);
-            }else{
-                leftClawRotate.setPosition(1);
-                rightClawRotate.setPosition(1);
-            }
-            */
-
-
-
-            // Claw-Hook
-
-            if (loadPixel){
-                hookServo.setPosition(0.47);
-            }else if (unloadPixel) {
-                hookServo.setPosition(0);
-            }
-
-
-            // Active intake
-            if (rightBumper) {
-                activeIntakeMotor.setPower(1);
-            }else if (leftBumper) {
-                activeIntakeMotor.setPower(-1);
-            }else{
-                activeIntakeMotor.setPower(0);
-            }
 
             telemetry.addData("Lift encoder", leftLinearSlide.getCurrentPosition());
-            telemetry.addData("Servo voltage", hookServo.getConnectionInfo());
+            telemetry.addData("Servo voltage", grabberServo.getConnectionInfo());
             telemetry.update();
         }
 
