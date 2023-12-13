@@ -128,6 +128,11 @@ public class YaelDrive extends LinearOpMode {
             boolean rightBumper = gamepad1.right_bumper;
             boolean leftBumper = gamepad1.left_bumper;
 
+            // Lift
+            float liftExtend = gamepad1.right_trigger;
+            float liftRetract = gamepad1.left_trigger;
+            double liftMaxExtend = 10000;
+
             // Associates buttons/joysticks to motors/servos:
             // Wheels
             leftFrontDrive.setPower(leftFront);
@@ -146,6 +151,19 @@ public class YaelDrive extends LinearOpMode {
                 leftLinearSlide.setPower(linearSlide - linearSlideRetract);
             }
 
+<<<<<<< HEAD
+=======
+            // Lift
+            if (leftLinearSlide.getCurrentPosition() > 0) {
+                lift.setPower(linearSlide);
+            }else if (lift.getCurrentPosition() < liftMaxExtend) {
+                lift.setPower(-liftRetract);
+            }else{
+                lift.setPower(liftExtend - liftRetract);
+            }
+
+//<<<<<<< HEAD
+>>>>>>> d84a3faa97abfb7975dd635e0834fb7dc141b4e8
             /*
             if (rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(linearSlide);
