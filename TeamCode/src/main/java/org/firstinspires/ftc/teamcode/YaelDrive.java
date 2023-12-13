@@ -23,15 +23,17 @@ public class YaelDrive extends LinearOpMode {
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
         DcMotor lift = hardwareMap.get(DcMotor.class, "lift_mechanism");
-
-        DcMotor activeIntakeMotor = hardwareMap.get(DcMotor.class, "active_intake");
+        Servo liftRotation = hardwareMap.get(Servo.class, "lift_rotation");
 
         // Claw/Linear slide setup
         ServoImpl hookServo = hardwareMap.get(ServoImpl.class, "claw");
         Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
         Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation");
+
         DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
-        //DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
+        DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
+
+        Servo plane = hardwareMap.get(Servo.class, "plane_launcher");
 
         // Sets the motor direction
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -44,10 +46,8 @@ public class YaelDrive extends LinearOpMode {
         leftClawRotate.setDirection(Servo.Direction.REVERSE);
         rightClawRotate.setDirection(Servo.Direction.FORWARD);
 
-        activeIntakeMotor.setDirection(DcMotor.Direction.REVERSE);
-
         leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
-        //rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
 
         // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -56,17 +56,20 @@ public class YaelDrive extends LinearOpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
         hookServo.setPosition(0);
+        plane.setPosition(0);
+
+        boolean liftFlipped = false;
 
         while (!isStarted()) {
 
@@ -118,20 +121,15 @@ public class YaelDrive extends LinearOpMode {
             // Pixel grabber mechanism
             boolean loadPixel = gamepad2.a;
             boolean unloadPixel = gamepad2.b;
-            float linearSlide = gamepad2.right_trigger;
-            float linearSlideRetract = gamepad2.left_trigger;
-            boolean loadBase = gamepad2.x;
-            boolean unloadBase = gamepad2.y;
 
+            boolean launchPlane = gamepad2.x;
 
-            // Active intake
-            boolean rightBumper = gamepad1.right_bumper;
-            boolean leftBumper = gamepad1.left_bumper;
+            boolean flipLift = gamepad1.a;
+            float raiseLift = gamepad1.right_trigger;
+            float lowerLift = gamepad1.left_trigger;
 
-            // Lift
-            float liftExtend = gamepad1.right_trigger;
-            float liftRetract = gamepad1.left_trigger;
-            double liftMaxExtend = 10000;
+            double moveSlide = -gamepad2.left_stick_y;
+            double slidesMaxExtend = 10000;
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
@@ -143,47 +141,26 @@ public class YaelDrive extends LinearOpMode {
             // Linear slide
             int maxExtend = -3000;
 
+            leftLinearSlide.setPower(moveSlide);
+            rightLinearSlide.setPower(moveSlide);
+
             if (leftLinearSlide.getCurrentPosition() > 0) {
-                leftLinearSlide.setPower(linearSlide);
+                leftLinearSlide.setPower(Math.abs(moveSlide));
             }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                leftLinearSlide.setPower(-linearSlideRetract);
+                leftLinearSlide.setPower(-Math.abs(moveSlide));
             }else{
-                leftLinearSlide.setPower(linearSlide - linearSlideRetract);
+                leftLinearSlide.setPower(moveSlide);
             }
 
-<<<<<<< HEAD
-=======
-            // Lift
-            if (leftLinearSlide.getCurrentPosition() > 0) {
-                lift.setPower(linearSlide);
-            }else if (lift.getCurrentPosition() < liftMaxExtend) {
-                lift.setPower(-liftRetract);
-            }else{
-                lift.setPower(liftExtend - liftRetract);
-            }
-
-//<<<<<<< HEAD
->>>>>>> d84a3faa97abfb7975dd635e0834fb7dc141b4e8
-            /*
             if (rightLinearSlide.getCurrentPosition() > 0) {
-                rightLinearSlide.setPower(linearSlide);
+                rightLinearSlide.setPower(Math.abs(moveSlide));
             }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                rightLinearSlide.setPower(-linearSlideRetract);
+                rightLinearSlide.setPower(-Math.abs(moveSlide));
             }else{
-                rightLinearSlide.setPower(linearSlide - linearSlideRetract);
-            }
-             */
-
-            // Claw-Base
-
-            if (loadBase) {
-                leftClawRotate.setPosition(0);
-            }else if (unloadBase) {
-                leftClawRotate.setPosition(0.2);
+                rightLinearSlide.setPower(moveSlide);
             }
 
-
-            /*
+            // Deposit rotation
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
                 leftClawRotate.setPosition(0.5);
                 rightClawRotate.setPosition(0.5);
@@ -191,26 +168,21 @@ public class YaelDrive extends LinearOpMode {
                 leftClawRotate.setPosition(1);
                 rightClawRotate.setPosition(1);
             }
-            */
-
-
 
             // Claw-Hook
-
             if (loadPixel){
                 hookServo.setPosition(0.47);
             }else if (unloadPixel) {
                 hookServo.setPosition(0);
             }
 
+            if(flipLift && !liftFlipped){
+                liftRotation.setPosition(.5);
+                liftFlipped = true;
+            }
 
-            // Active intake
-            if (rightBumper) {
-                activeIntakeMotor.setPower(1);
-            }else if (leftBumper) {
-                activeIntakeMotor.setPower(-1);
-            }else{
-                activeIntakeMotor.setPower(0);
+            if(liftFlipped){
+                lift.setPower(raiseLift - lowerLift);
             }
 
             telemetry.addData("Lift encoder", leftLinearSlide.getCurrentPosition());
