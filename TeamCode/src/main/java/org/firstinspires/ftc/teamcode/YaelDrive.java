@@ -23,11 +23,25 @@ public class YaelDrive extends LinearOpMode {
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
         DcMotor lift = hardwareMap.get(DcMotor.class, "lift_mechanism");
+<<<<<<< HEAD
         Servo launcher = hardwareMap.get(ServoImpl.class, "plane_launcher");
 
         // Grabber/Linear slide setup
         ServoImpl grabberServo = hardwareMap.get(ServoImpl.class, "grabber");
         DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
+=======
+        Servo liftRotation = hardwareMap.get(Servo.class, "lift_rotation");
+
+        // Claw/Linear slide setup
+        ServoImpl hookServo = hardwareMap.get(ServoImpl.class, "claw");
+        Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
+        Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation");
+
+        DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
+        DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
+
+        Servo plane = hardwareMap.get(Servo.class, "plane_launcher");
+>>>>>>> master
 
         // Sets the motor direction
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -37,8 +51,14 @@ public class YaelDrive extends LinearOpMode {
 
         lift.setDirection(DcMotor.Direction.FORWARD);
 
+<<<<<<< HEAD
+=======
+        leftClawRotate.setDirection(Servo.Direction.REVERSE);
+        rightClawRotate.setDirection(Servo.Direction.FORWARD);
+
+>>>>>>> master
         leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
-        //rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
 
         // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -47,6 +67,7 @@ public class YaelDrive extends LinearOpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+<<<<<<< HEAD
 
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -57,6 +78,22 @@ public class YaelDrive extends LinearOpMode {
         grabberServo.setPosition(0);
 
         int pixelsReleased = 0;
+=======
+        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Makes the motors output their rotation
+        leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // servo starting position
+        hookServo.setPosition(0);
+        plane.setPosition(0);
+
+        boolean liftFlipped = false;
+>>>>>>> master
 
         while (!isStarted()) {
 
@@ -106,6 +143,7 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Pixel grabber mechanism
+<<<<<<< HEAD
             boolean grabPixel = gamepad2.a;
             boolean releasePixel = gamepad2.b;
             float linearSlide = -gamepad2.left_stick_y;
@@ -113,6 +151,19 @@ public class YaelDrive extends LinearOpMode {
             // Lift
             float liftExtend = gamepad2.right_trigger - gamepad2.left_trigger;
             double liftMaxExtend = 10000;
+=======
+            boolean loadPixel = gamepad2.a;
+            boolean unloadPixel = gamepad2.b;
+
+            boolean launchPlane = gamepad2.x;
+
+            boolean flipLift = gamepad1.a;
+            float raiseLift = gamepad1.right_trigger;
+            float lowerLift = gamepad1.left_trigger;
+
+            double moveSlide = -gamepad2.left_stick_y;
+            double slidesMaxExtend = 10000;
+>>>>>>> master
 
             // Plane launcher
             boolean launch = gamepad2.x;
@@ -125,6 +176,7 @@ public class YaelDrive extends LinearOpMode {
             rightBackDrive.setPower(rightBack);
 
             // Linear slide
+<<<<<<< HEAD
             int maxExtend = 3000;
 
             if (-leftLinearSlide.getCurrentPosition() <= 0) {
@@ -164,13 +216,58 @@ public class YaelDrive extends LinearOpMode {
             // Launches Plane
             if (launch) {
                 launcher.setPosition(0.1);
+=======
+            int maxExtend = -3000;
+
+            leftLinearSlide.setPower(moveSlide);
+            rightLinearSlide.setPower(moveSlide);
+
+            if (leftLinearSlide.getCurrentPosition() > 0) {
+                leftLinearSlide.setPower(Math.abs(moveSlide));
+            }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
+                leftLinearSlide.setPower(-Math.abs(moveSlide));
+            }else{
+                leftLinearSlide.setPower(moveSlide);
+            }
+
+            if (rightLinearSlide.getCurrentPosition() > 0) {
+                rightLinearSlide.setPower(Math.abs(moveSlide));
+            }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
+                rightLinearSlide.setPower(-Math.abs(moveSlide));
+            }else{
+                rightLinearSlide.setPower(moveSlide);
+            }
+
+            // Deposit rotation
+            if (leftLinearSlide.getCurrentPosition() < clawPosition){
+                leftClawRotate.setPosition(0.5);
+                rightClawRotate.setPosition(0.5);
+>>>>>>> master
             }else{
                 launcher.setPosition(0);
             }
 
+<<<<<<< HEAD
             // Hook
             // Isaac can you add some code here? Ihdk how this hook thing works...
 
+=======
+            // Claw-Hook
+            if (loadPixel){
+                hookServo.setPosition(0.47);
+            }else if (unloadPixel) {
+                hookServo.setPosition(0);
+            }
+
+            if(flipLift && !liftFlipped){
+                liftRotation.setPosition(.5);
+                liftFlipped = true;
+            }
+
+            if(liftFlipped){
+                lift.setPower(raiseLift - lowerLift);
+            }
+>>>>>>> master
 
             telemetry.addData("Lift encoder", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Servo voltage", grabberServo.getConnectionInfo());
