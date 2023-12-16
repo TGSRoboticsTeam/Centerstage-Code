@@ -24,16 +24,11 @@ public class YaelDrive extends LinearOpMode {
 
         DcMotor lift = hardwareMap.get(DcMotor.class, "lift_mechanism");
 
-        Servo launcher = hardwareMap.get(ServoImpl.class, "plane_launcher");
-
         // Grabber/Linear slide setup
-        ServoImpl grabberServo = hardwareMap.get(ServoImpl.class, "grabber");
-        DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
-
-        Servo liftRotation = hardwareMap.get(Servo.class, "lift_rotation");
+        ServoImpl liftServo = hardwareMap.get(ServoImpl.class, "lift_flipper");
 
         // Claw/Linear slide setup
-        ServoImpl hookServo = hardwareMap.get(ServoImpl.class, "claw");
+        ServoImpl deposit = hardwareMap.get(ServoImpl.class, "claw");
         Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
         Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation");
 
@@ -42,7 +37,6 @@ public class YaelDrive extends LinearOpMode {
 
         Servo plane = hardwareMap.get(Servo.class, "plane_launcher");
 
-
         // Sets the motor direction
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -50,7 +44,6 @@ public class YaelDrive extends LinearOpMode {
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         lift.setDirection(DcMotor.Direction.FORWARD);
-
 
         leftClawRotate.setDirection(Servo.Direction.REVERSE);
         rightClawRotate.setDirection(Servo.Direction.FORWARD);
@@ -65,18 +58,9 @@ public class YaelDrive extends LinearOpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Makes the motors output their rotation
-        leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        // servo starting position
-        grabberServo.setPosition(0);
+        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         int pixelsReleased = 0;
-
-        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -86,11 +70,10 @@ public class YaelDrive extends LinearOpMode {
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
-        hookServo.setPosition(0);
+        liftServo.setPosition(0);
         plane.setPosition(0);
 
         boolean liftFlipped = false;
-
 
         while (!isStarted()) {
 
@@ -140,14 +123,10 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Pixel grabber mechanism
-            boolean grabPixel = gamepad2.a;
-            boolean releasePixel = gamepad2.b;
-            float linearSlide = -gamepad2.left_stick_y;
+            float raiseSlides = gamepad2.right_trigger;
+            float lowerSlides = gamepad2.left_trigger;
 
             // Lift
-            float liftExtend = gamepad2.right_trigger - gamepad2.left_trigger;
-            double liftMaxExtend = 10000;
-
             boolean loadPixel = gamepad2.a;
             boolean unloadPixel = gamepad2.b;
 
@@ -158,10 +137,7 @@ public class YaelDrive extends LinearOpMode {
             float lowerLift = gamepad1.left_trigger;
 
             double moveSlide = -gamepad2.left_stick_y;
-            double slidesMaxExtend = 10000;
-
-            // Plane launcher
-            boolean launch = gamepad2.x;
+            double maxExtend = -3000;
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
@@ -170,102 +146,73 @@ public class YaelDrive extends LinearOpMode {
             rightFrontDrive.setPower(rightFront);
             rightBackDrive.setPower(rightBack);
 
-            // Linear slide
-            int maxExtend = 3000;
-
-            if (-leftLinearSlide.getCurrentPosition() <= 0) {
-                if (linearSlide > 0) {
-                    leftLinearSlide.setPower(linearSlide);
-                }
-            }else if (-leftLinearSlide.getCurrentPosition() >= maxExtend) {
-                if (linearSlide < 0) {
-                    leftLinearSlide.setPower(linearSlide);
-                }
-            }else{
-                leftLinearSlide.setPower(linearSlide);
-            }
-
             // Lift
-            if (leftLinearSlide.getCurrentPosition() > 0) {
-                lift.setPower(linearSlide);
+            lift.setPower(raiseLift-lowerLift);
+
+            if((lift.getPower() <= .05) && (lift.getPower() >= -.05)){
+                lift.setPower(0);
             }
 
             // Grabber
-            if (grabPixel){
-                grabberServo.setPosition(1);
+            if (loadPixel){
+                deposit.setPosition(1);
                 pixelsReleased = 0;
-            }else if (releasePixel) {
+            }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    grabberServo.setPosition(0.5);
+                    deposit.setPosition(0.5);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    grabberServo.setPosition(0);
+                    deposit.setPosition(0);
                 }
             }
 
-            if (!grabPixel && !releasePixel && pixelsReleased == 1) {
+            if (!loadPixel && !unloadPixel && pixelsReleased == 1) {
                 pixelsReleased = 2;
             }
 
             // Launches Plane
-            if (launch) {
-                launcher.setPosition(0.1);
-
-            int maxExtend = -3000;
-
-            leftLinearSlide.setPower(moveSlide);
-            rightLinearSlide.setPower(moveSlide);
+            if (launchPlane) {
+                plane.setPosition(0.1);
+            }
 
             if (leftLinearSlide.getCurrentPosition() > 0) {
-                leftLinearSlide.setPower(Math.abs(moveSlide));
+                leftLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                leftLinearSlide.setPower(-Math.abs(moveSlide));
+                leftLinearSlide.setPower(lowerSlides);
             }else{
-                leftLinearSlide.setPower(moveSlide);
+                leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
             if (rightLinearSlide.getCurrentPosition() > 0) {
-                rightLinearSlide.setPower(Math.abs(moveSlide));
+                rightLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                rightLinearSlide.setPower(-Math.abs(moveSlide));
+                rightLinearSlide.setPower(lowerSlides);
             }else{
-                rightLinearSlide.setPower(moveSlide);
+                rightLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
             // Deposit rotation
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
                 leftClawRotate.setPosition(0.5);
                 rightClawRotate.setPosition(0.5);
-
             }else{
-                launcher.setPosition(0);
-            }
-
-            // Hook
-            // Isaac can you add some code here? Ihdk how this hook thing works...
-
-
-            // Claw-Hook
-            if (loadPixel){
-                hookServo.setPosition(0.47);
-            }else if (unloadPixel) {
-                hookServo.setPosition(0);
+                leftClawRotate.setPosition(0);
+                rightClawRotate.setPosition(0);
             }
 
             if(flipLift && !liftFlipped){
-                liftRotation.setPosition(.5);
+                liftServo.setPosition(.5);
                 liftFlipped = true;
             }
 
-            if(liftFlipped){
-                lift.setPower(raiseLift - lowerLift);
+            lift.setPower(raiseLift-lowerLift);
+
+            if((lift.getPower() <= .05) && (lift.getPower() >= -.05)){
+                lift.setPower(0);
             }
 
-
-            telemetry.addData("Lift encoder", leftLinearSlide.getCurrentPosition());
-            telemetry.addData("Servo voltage", grabberServo.getConnectionInfo());
-            telemetry.update();
+            telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
+            telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
         }
-
     }
 }
