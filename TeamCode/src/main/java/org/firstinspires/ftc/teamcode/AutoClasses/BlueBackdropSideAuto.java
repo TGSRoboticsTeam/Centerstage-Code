@@ -159,7 +159,6 @@ public class BlueBackdropSideAuto extends LinearOpMode
         waitTime(1);
         moveSlides(0);*/
 
-        /* pixel on tape and park
         moveInchAmount(true,24);
         waitTime(.5);
         moveInchAmount(false, 15);
@@ -167,14 +166,15 @@ public class BlueBackdropSideAuto extends LinearOpMode
         turnNinety(false);
         waitTime(.5);
         moveInchAmount(true, 40);
-         */
 
-
+/*
         moveSlides(5);
         waitTime(1);
         moveSlides(10);
         waitTime(1);
         moveSlides(0);
+        
+ */
     }
 
     /**
