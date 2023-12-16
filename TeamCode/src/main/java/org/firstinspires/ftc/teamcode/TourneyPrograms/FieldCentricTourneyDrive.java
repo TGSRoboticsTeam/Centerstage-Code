@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TourneyPrograms;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -8,7 +9,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.ServoImpl;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name = "FieldCentric Tourney Drive", group = "aa")
 
@@ -59,8 +64,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        int pixelsReleased = 0;
-
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -68,11 +71,21 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        // Retrieve the IMU from the hardware map
+        IMU imu = hardwareMap.get(IMU.class, "imu");
+        // Adjust the orientation parameters to match your robot
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD, // Change to left if doesn't work
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
+        // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
+        imu.initialize(parameters);
+
         // servo starting position
         liftServo.setPosition(0);
         plane.setPosition(0);
 
         boolean liftFlipped = false;
+        int pixelsReleased = 0;
 
         while (!isStarted()) {
 
@@ -87,9 +100,9 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             // Define joystick controls
             // Drive
-            double axial   = -gamepad1.left_stick_y;
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double y   = -gamepad1.left_stick_y;
+            double x   =  gamepad1.left_stick_x;
+            double rx  =  gamepad1.right_stick_x;
 
             // Pixel grabber mechanism
             float raiseSlides = gamepad2.right_trigger;
@@ -108,42 +121,29 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             double moveSlide = -gamepad2.left_stick_y;
             double maxExtend = -3000;
 
-            if (axial <= 0.1 && axial >= -0.1) {
-                axial = 0;
+            if(gamepad1.dpad_up){
+                imu.resetYaw();
             }
 
-            if (lateral <= 0.1 && lateral >= -0.1) {
-                lateral = 0;
-            }
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-            if (yaw <= 0.1 && yaw >= -0.1) {
-                yaw = 0;
-            }
+            // Rotate the movement direction counter to the bots rotation
+            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-            // Gives the joystick commands purpose
-            double rightFront = axial - lateral - yaw;
-            double rightBack  = axial + lateral - yaw;
-            double leftBack   = axial - lateral + yaw;
-            double leftFront  = axial + lateral + yaw;
-            double max;
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio, but only when
+            // at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double frontLeftPower = (rotY + rotX + rx) / denominator;
+            double backLeftPower = (rotY - rotX + rx) / denominator;
+            double frontRightPower = (rotY - rotX - rx) / denominator;
+            double backRightPower = (rotY + rotX - rx) / denominator;
 
-            max = Math.max(Math.abs(leftFront), Math.abs(rightFront));
-            max = Math.max(max, Math.abs(leftBack));
-            max = Math.max(max, Math.abs(rightBack));
-
-            if (max > 1.0) {
-                leftFront  /= max;
-                rightFront /= max;
-                leftBack   /= max;
-                rightBack  /= max;
-            }
-
-            // Associates buttons/joysticks to motors/servos:
-            // Wheels
-            leftFrontDrive.setPower(leftFront);
-            leftBackDrive.setPower(leftBack);
-            rightFrontDrive.setPower(rightFront);
-            rightBackDrive.setPower(rightBack);
+            leftFrontDrive.setPower(frontLeftPower);
+            leftBackDrive.setPower(backLeftPower);
+            rightFrontDrive.setPower(frontRightPower);
+            rightBackDrive.setPower(backRightPower);
 
             // Lift
             lift.setPower(raiseLift-lowerLift);
