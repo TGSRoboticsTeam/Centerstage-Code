@@ -69,10 +69,14 @@ public class StandardTourneyDrive extends LinearOpMode {
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
-        liftServo.setPosition(0);
-        plane.setPosition(0);
+        liftServo.setPosition(.48);
 
         boolean liftFlipped = false;
+        boolean depositPosInited = false;
+
+        double rotationPosition = .5;
+
+        leftClawRotate.setPosition(.8);
 
         while (!isStarted()) {
 
@@ -131,7 +135,8 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             boolean launchPlane = gamepad2.x;
 
-            boolean flipLift = gamepad1.a;
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
             float raiseLift = gamepad1.right_trigger;
             float lowerLift = gamepad1.left_trigger;
 
@@ -154,14 +159,14 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             // Grabber
             if (loadPixel){
-                deposit.setPosition(1);
+                deposit.setPosition(0.16);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(0.5);
+                    deposit.setPosition(.26);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(0);
+                    deposit.setPosition(.36);
                 }
             }
 
@@ -171,7 +176,7 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             // Launches Plane
             if (launchPlane) {
-                plane.setPosition(0.1);
+                plane.setPosition(0);
             }
 
             if (leftLinearSlide.getCurrentPosition() > 0) {
@@ -182,26 +187,43 @@ public class StandardTourneyDrive extends LinearOpMode {
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            if (rightLinearSlide.getCurrentPosition() < 0) {
+            /*if (rightLinearSlide.getCurrentPosition() < 0) {
                 rightLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() > -maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
+            }*/
 
             // Deposit rotation
             /*if (leftLinearSlide.getCurrentPosition() < clawPosition){
                 leftClawRotate.setPosition(0.5);
-                rightClawRotate.setPosition(0.5);
+                //rightClawRotate.setPosition(0.5);
             }else{
                 leftClawRotate.setPosition(0);
-                rightClawRotate.setPosition(0);
+                //rightClawRotate.setPosition(0);
             }*/
 
-            if(flipLift && !liftFlipped){
-                liftServo.setPosition(.5);
+            /*if(gamepad2.dpad_up){
+                rotationPosition += .1;
+            }else if (gamepad2.dpad_down){
+                rotationPosition -= .1;
+            }
+
+            if(clawPosition > 1){
+                rotationPosition = 1;
+            }else if(clawPosition <= -.1){
+                rotationPosition = 0;
+            }
+
+            leftClawRotate.setPosition(rotationPosition);*/
+
+            if(flipLift){
+                liftServo.setPosition(.3);
                 liftFlipped = true;
+            }else if (unflipLift) {
+                liftServo.setPosition(.48);
+                liftFlipped = false;
             }
 
             lift.setPower(raiseLift-lowerLift);
@@ -212,6 +234,8 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
+            telemetry.addData("Lift Flipped: ", liftFlipped);
+            telemetry.addData("Claw Position: ", rotationPosition);
             telemetry.update();
         }
     }

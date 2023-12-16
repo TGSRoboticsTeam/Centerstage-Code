@@ -75,14 +75,13 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD, // Change to left if doesn't work
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT, // Change to left if doesn't work
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
         // servo starting position
-        liftServo.setPosition(0);
-        plane.setPosition(0);
+        liftServo.setPosition(.45);
 
         boolean liftFlipped = false;
         int pixelsReleased = 0;
@@ -92,12 +91,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-            // Define variables
-            // The hook position 0 to 1
-            double hookPosition = 0.1;
-            // The degrees it takes to make the thing automatically go up
-            double clawPosition = -1250;
-
             // Define joystick controls
             // Drive
             double y   = -gamepad1.left_stick_y;
@@ -114,7 +107,8 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             boolean launchPlane = gamepad2.x;
 
-            boolean flipLift = gamepad1.a;
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
             float raiseLift = gamepad1.right_trigger;
             float lowerLift = gamepad1.left_trigger;
 
@@ -171,7 +165,7 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             // Launches Plane
             if (launchPlane) {
-                plane.setPosition(0.1);
+                plane.setPosition(0);
             }
 
             if (leftLinearSlide.getCurrentPosition() > 0) {
@@ -182,26 +176,29 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            if (rightLinearSlide.getCurrentPosition() < 0) {
+            /*if (rightLinearSlide.getCurrentPosition() < 0) {
                 rightLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() > -maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
+            }*/
 
             // Deposit rotation
-            /*if (leftLinearSlide.getCurrentPosition() < clawPosition){
+            if (leftLinearSlide.getCurrentPosition() < 2000){
                 leftClawRotate.setPosition(0.5);
                 rightClawRotate.setPosition(0.5);
             }else{
                 leftClawRotate.setPosition(0);
                 rightClawRotate.setPosition(0);
-            }*/
+            }
 
             if(flipLift && !liftFlipped){
-                liftServo.setPosition(.5);
+                liftServo.setPosition(.3);
                 liftFlipped = true;
+            }else if (unflipLift) {
+                liftServo.setPosition(.45);
+                liftFlipped = false;
             }
 
             lift.setPower(raiseLift-lowerLift);
@@ -212,6 +209,7 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
+            telemetry.addData("Lift Flipped:", liftFlipped);
             telemetry.update();
         }
     }

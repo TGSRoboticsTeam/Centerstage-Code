@@ -69,15 +69,15 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        telemetry.addData("Servo Position: ", deposit.getPosition());
         // servo starting position
-        liftServo.setPosition(0);
+        liftServo.setPosition(.2);
         plane.setPosition(0);
 
-        boolean liftFlipped = false;
+        deposit.setPosition(.35);
 
         while (!isStarted()) {
-
+            telemetry.addData("Servo Position: ", deposit.getPosition());
+            telemetry.update();
         }
 
         while (opModeIsActive()) {
@@ -133,7 +133,8 @@ public class YaelDrive extends LinearOpMode {
 
             boolean launchPlane = gamepad2.x;
 
-            boolean flipLift = gamepad1.a;
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
             float raiseLift = gamepad1.right_trigger;
             float lowerLift = gamepad1.left_trigger;
 
@@ -156,14 +157,14 @@ public class YaelDrive extends LinearOpMode {
 
             // Grabber
             if (loadPixel){
-                deposit.setPosition(1);
+                deposit.setPosition(0.16);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(0.5);
+                    deposit.setPosition(.26);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(0);
+                    deposit.setPosition(.36);
                 }
             }
 
@@ -201,9 +202,10 @@ public class YaelDrive extends LinearOpMode {
                 rightClawRotate.setPosition(0);
             }*/
 
-            if(flipLift && !liftFlipped){
-                liftServo.setPosition(.5);
-                liftFlipped = true;
+            if(flipLift){
+                liftServo.setPosition(.2);
+            }else if (unflipLift){
+                liftServo.setPosition(0);
             }
 
             lift.setPower(raiseLift-lowerLift);
@@ -212,11 +214,13 @@ public class YaelDrive extends LinearOpMode {
                 lift.setPower(0);
             }
 
+            /*
             if(gamepad2.dpad_left){
                 leftClawRotate.setPosition(1);
             }else if(gamepad2.dpad_right){
                 leftClawRotate.setPosition(0);
             }
+             */
 
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
