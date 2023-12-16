@@ -43,7 +43,7 @@ import org.firstinspires.ftc.teamcode.AutoClasses.AprilTagDetectionPipe;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 
-@Autonomous(name = "Backdrop Side Blue Auto", group = "Linear Opmode")
+@Autonomous(name = "Blue Backdrop Side", group = "Linear Opmode")
 public class BlueBackdropSideAuto extends LinearOpMode
 {
     // Motor and servo initial setup
@@ -122,59 +122,15 @@ public class BlueBackdropSideAuto extends LinearOpMode
             telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
             telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
             telemetry.update();
-
-            if(gamepad1.a){
-                leftSlide.setPower(.25);
-                rightSlide.setPower(.25);
-            }else if(gamepad1.b){
-                leftSlide.setPower(-.25);
-                rightSlide.setPower(-.25);
-            }else{
-                leftSlide.setPower(0);
-                rightSlide.setPower(0);
-            }
         }
 
-
-        // dual pixel deposit and park
-
-        /*moveInchAmount(true, 24);
+        moveInchAmount(true,26);
+        waitTime(.5);
+        moveInchAmount(false, 20);
         waitTime(.5);
         turnNinety(false);
         waitTime(.5);
-        moveInchAmount(true,36);
-        moveSlides(12);
-        waitTime(.5);
-        openDeposit();
-        waitTime(1);
-        moveSlides(0);
-        waitTime(.5);
-        intakeIn(2);
-        waitTime(.5);
-        closeDeposit();
-        waitTime(1);
-        moveSlides(12);
-        waitTime(.5);
-        openDeposit();
-        waitTime(1);
-        moveSlides(0);*/
-
-        moveInchAmount(true,24);
-        waitTime(.5);
-        moveInchAmount(false, 15);
-        waitTime(.5);
-        turnNinety(false);
-        waitTime(.5);
-        moveInchAmount(true, 40);
-
-/*
-        moveSlides(5);
-        waitTime(1);
-        moveSlides(10);
-        waitTime(1);
-        moveSlides(0);
-
- */
+        moveInchAmount(true, 42);
     }
 
     /**
