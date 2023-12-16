@@ -219,6 +219,7 @@ public class YaelDrive extends LinearOpMode {
 
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
+            telemetry.addData("Pixels Released Var: ", pixelsReleased);
             telemetry.update();
         }
     }
