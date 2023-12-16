@@ -69,7 +69,6 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        telemetry.addData("Servo Position: ", deposit.getPosition());
         // servo starting position
         liftServo.setPosition(0);
         plane.setPosition(0);
