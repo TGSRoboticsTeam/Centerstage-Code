@@ -178,27 +178,27 @@ public class YaelDrive extends LinearOpMode {
             if (leftLinearSlide.getCurrentPosition() > 0) {
                 leftLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                leftLinearSlide.setPower(lowerSlides);
+                leftLinearSlide.setPower(-lowerSlides);
             }else{
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            if (rightLinearSlide.getCurrentPosition() > 0) {
+            if (rightLinearSlide.getCurrentPosition() < 0) {
                 rightLinearSlide.setPower(raiseSlides);
-            }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                rightLinearSlide.setPower(lowerSlides);
+            }else if (leftLinearSlide.getCurrentPosition() > -maxExtend) {
+                rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
             // Deposit rotation
-            if (leftLinearSlide.getCurrentPosition() < clawPosition){
+            /*if (leftLinearSlide.getCurrentPosition() < clawPosition){
                 leftClawRotate.setPosition(0.5);
                 rightClawRotate.setPosition(0.5);
             }else{
                 leftClawRotate.setPosition(0);
                 rightClawRotate.setPosition(0);
-            }
+            }*/
 
             if(flipLift && !liftFlipped){
                 liftServo.setPosition(.5);
@@ -211,8 +211,15 @@ public class YaelDrive extends LinearOpMode {
                 lift.setPower(0);
             }
 
+            if(gamepad2.dpad_left){
+                leftClawRotate.setPosition(1);
+            }else if(gamepad2.dpad_right){
+                leftClawRotate.setPosition(0);
+            }
+
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
+            telemetry.update();
         }
     }
 }
