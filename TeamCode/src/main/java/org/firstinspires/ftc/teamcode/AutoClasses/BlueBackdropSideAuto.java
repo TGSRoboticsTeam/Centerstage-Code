@@ -173,7 +173,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
         moveSlides(10);
         waitTime(1);
         moveSlides(0);
-        
+
  */
     }
 
@@ -773,7 +773,6 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
         leftSlide = hardwareMap.get(DcMotorEx.class, "left_linear_slide");
         rightSlide = hardwareMap.get(DcMotorEx.class, "right_linear_slide");
-        activeIntake = hardwareMap.get(DcMotor.class, "active_intake");
 
         deposit = hardwareMap.get(Servo.class, "claw");
         leftArm = hardwareMap.get(Servo.class, "right_claw_rotation");
@@ -788,8 +787,6 @@ public class BlueBackdropSideAuto extends LinearOpMode
         rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         leftArm.setDirection(Servo.Direction.FORWARD);
         rightArm.setDirection(Servo.Direction.REVERSE);
-
-        activeIntake.setDirection(DcMotorSimple.Direction.FORWARD);
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
