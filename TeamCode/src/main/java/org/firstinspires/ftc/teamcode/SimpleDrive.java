@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@Disabled
 @TeleOp(name="Simple Drive", group="Linear Opmode")
-
 public class SimpleDrive extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
