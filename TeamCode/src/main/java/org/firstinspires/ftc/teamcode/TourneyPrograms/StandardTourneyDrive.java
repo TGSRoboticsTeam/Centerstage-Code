@@ -71,12 +71,7 @@ public class StandardTourneyDrive extends LinearOpMode {
         // servo starting position
         liftServo.setPosition(.48);
 
-        boolean liftFlipped = false;
-        boolean depositPosInited = false;
-
-        double rotationPosition = .5;
-
-        leftClawRotate.setPosition(.8);
+        leftClawRotate.setPosition(.06);
 
         while (!isStarted()) {
 
@@ -84,16 +79,30 @@ public class StandardTourneyDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Define variables
-            // The hook position 0 to 1
-            double hookPosition = 0.1;
+
             // The degrees it takes to make the thing automatically go up
             double clawPosition = -1250;
+            double maxExtend = -3000;
 
             // Define joystick controls
             // Drive
             double axial   = -gamepad1.left_stick_y;
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
+
+            float raiseSlides = gamepad2.right_trigger;
+            float lowerSlides = gamepad2.left_trigger;
+
+            // Lift
+            boolean loadPixel = gamepad2.a;
+            boolean unloadPixel = gamepad2.b;
+
+            boolean launchPlane = gamepad2.x;
+
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
+            float raiseLift = gamepad1.right_trigger;
+            float lowerLift = gamepad1.left_trigger;
 
             if (axial <= 0.1 && axial >= -0.1) {
                 axial = 0;
@@ -124,24 +133,6 @@ public class StandardTourneyDrive extends LinearOpMode {
                 leftBack   /= max;
                 rightBack  /= max;
             }
-
-            // Pixel grabber mechanism
-            float raiseSlides = gamepad2.right_trigger;
-            float lowerSlides = gamepad2.left_trigger;
-
-            // Lift
-            boolean loadPixel = gamepad2.a;
-            boolean unloadPixel = gamepad2.b;
-
-            boolean launchPlane = gamepad2.x;
-
-            boolean flipLift = gamepad1.y;
-            boolean unflipLift = gamepad1.b;
-            float raiseLift = gamepad1.right_trigger;
-            float lowerLift = gamepad1.left_trigger;
-
-            double moveSlide = -gamepad2.left_stick_y;
-            double maxExtend = -3000;
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
@@ -196,13 +187,13 @@ public class StandardTourneyDrive extends LinearOpMode {
             }*/
 
             // Deposit rotation
-            /*if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.5);
+            if (leftLinearSlide.getCurrentPosition() < clawPosition){
+                leftClawRotate.setPosition(0.17);
                 //rightClawRotate.setPosition(0.5);
             }else{
-                leftClawRotate.setPosition(0);
+                leftClawRotate.setPosition(.06);
                 //rightClawRotate.setPosition(0);
-            }*/
+            }
 
             /*if(gamepad2.dpad_up){
                 rotationPosition += .1;
@@ -220,10 +211,8 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             if(flipLift){
                 liftServo.setPosition(.3);
-                liftFlipped = true;
             }else if (unflipLift) {
                 liftServo.setPosition(.48);
-                liftFlipped = false;
             }
 
             lift.setPower(raiseLift-lowerLift);
@@ -234,8 +223,6 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
-            telemetry.addData("Lift Flipped: ", liftFlipped);
-            telemetry.addData("Claw Position: ", rotationPosition);
             telemetry.update();
         }
     }

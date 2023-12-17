@@ -112,8 +112,8 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             float raiseLift = gamepad1.right_trigger;
             float lowerLift = gamepad1.left_trigger;
 
-            double moveSlide = -gamepad2.left_stick_y;
             double maxExtend = -3000;
+            double clawPosition = -1250;
 
             if(gamepad1.dpad_up){
                 imu.resetYaw();
@@ -185,19 +185,19 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             }*/
 
             // Deposit rotation
-            if (leftLinearSlide.getCurrentPosition() < 2000){
-                leftClawRotate.setPosition(0.5);
-                rightClawRotate.setPosition(0.5);
+            if (leftLinearSlide.getCurrentPosition() < clawPosition){
+                leftClawRotate.setPosition(0.17);
+                //rightClawRotate.setPosition(0.5);
             }else{
-                leftClawRotate.setPosition(0);
-                rightClawRotate.setPosition(0);
+                leftClawRotate.setPosition(.06);
+                //rightClawRotate.setPosition(0);
             }
 
             if(flipLift && !liftFlipped){
                 liftServo.setPosition(.3);
                 liftFlipped = true;
             }else if (unflipLift) {
-                liftServo.setPosition(.45);
+                liftServo.setPosition(.48);
                 liftFlipped = false;
             }
 

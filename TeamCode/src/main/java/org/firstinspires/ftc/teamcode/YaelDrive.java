@@ -82,16 +82,30 @@ public class YaelDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Define variables
-            // The hook position 0 to 1
-            double hookPosition = 0.1;
+
             // The degrees it takes to make the thing automatically go up
             double clawPosition = -1250;
+            double maxExtend = -3000;
 
             // Define joystick controls
             // Drive
             double axial   = -gamepad1.left_stick_y;
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
+
+            float raiseSlides = gamepad2.right_trigger;
+            float lowerSlides = gamepad2.left_trigger;
+
+            // Lift
+            boolean loadPixel = gamepad2.a;
+            boolean unloadPixel = gamepad2.b;
+
+            boolean launchPlane = gamepad2.x;
+
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
+            float raiseLift = gamepad1.right_trigger;
+            float lowerLift = gamepad1.left_trigger;
 
             if (axial <= 0.1 && axial >= -0.1) {
                 axial = 0;
@@ -122,24 +136,6 @@ public class YaelDrive extends LinearOpMode {
                 leftBack   /= max;
                 rightBack  /= max;
             }
-
-            // Pixel grabber mechanism
-            float raiseSlides = gamepad2.right_trigger;
-            float lowerSlides = gamepad2.left_trigger;
-
-            // Lift
-            boolean loadPixel = gamepad2.a;
-            boolean unloadPixel = gamepad2.b;
-
-            boolean launchPlane = gamepad2.x;
-
-            boolean flipLift = gamepad1.y;
-            boolean unflipLift = gamepad1.b;
-            float raiseLift = gamepad1.right_trigger;
-            float lowerLift = gamepad1.left_trigger;
-
-            double moveSlide = -gamepad2.left_stick_y;
-            double maxExtend = -3000;
 
             // Associates buttons/joysticks to motors/servos:
             // Wheels
@@ -174,7 +170,7 @@ public class YaelDrive extends LinearOpMode {
 
             // Launches Plane
             if (launchPlane) {
-                plane.setPosition(0.1);
+                plane.setPosition(0);
             }
 
             if (leftLinearSlide.getCurrentPosition() > 0) {
@@ -185,27 +181,41 @@ public class YaelDrive extends LinearOpMode {
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            if (rightLinearSlide.getCurrentPosition() < 0) {
+            /*if (rightLinearSlide.getCurrentPosition() < 0) {
                 rightLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() > -maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
-
-            // Deposit rotation
-            /*if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.5);
-                rightClawRotate.setPosition(0.5);
-            }else{
-                leftClawRotate.setPosition(0);
-                rightClawRotate.setPosition(0);
             }*/
 
+            // Deposit rotation
+            if (leftLinearSlide.getCurrentPosition() < clawPosition){
+                leftClawRotate.setPosition(0.17);
+                //rightClawRotate.setPosition(0.5);
+            }else{
+                leftClawRotate.setPosition(.06);
+                //rightClawRotate.setPosition(0);
+            }
+
+            /*if(gamepad2.dpad_up){
+                rotationPosition += .1;
+            }else if (gamepad2.dpad_down){
+                rotationPosition -= .1;
+            }
+
+            if(clawPosition > 1){
+                rotationPosition = 1;
+            }else if(clawPosition <= -.1){
+                rotationPosition = 0;
+            }
+
+            leftClawRotate.setPosition(rotationPosition);*/
+
             if(flipLift){
-                liftServo.setPosition(.2);
-            }else if (unflipLift){
-                liftServo.setPosition(0);
+                liftServo.setPosition(.3);
+            }else if (unflipLift) {
+                liftServo.setPosition(.48);
             }
 
             lift.setPower(raiseLift-lowerLift);
@@ -214,17 +224,8 @@ public class YaelDrive extends LinearOpMode {
                 lift.setPower(0);
             }
 
-            /*
-            if(gamepad2.dpad_left){
-                leftClawRotate.setPosition(1);
-            }else if(gamepad2.dpad_right){
-                leftClawRotate.setPosition(0);
-            }
-             */
-
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
-            telemetry.addData("Pixels Released Var: ", pixelsReleased);
             telemetry.update();
         }
     }
