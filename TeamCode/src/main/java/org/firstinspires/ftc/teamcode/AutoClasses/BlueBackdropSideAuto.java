@@ -426,7 +426,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
     }
 
     /**
-     * Turns to the desired angle as specified in targetAngle, assuming starting position is 0 degrees
+     * Turns to the desired heading as specified in targetAngle, assuming starting position is 0 degrees
      * @param targetAngle Target angle to rotate to
      */
     public void turnToAngle(double targetAngle){
@@ -665,20 +665,24 @@ public class BlueBackdropSideAuto extends LinearOpMode
     }
 
     /**
-     * Calculates the angle the robot is at and returns the orientation
-     * @return Current Orientation
+     * Retrieves IMU heading (+-180 deg), changes the angle to a 360 degree
+     * measurement, and returns that heading.
+     * @return Current Heading
      */
     public double getAngle(){
-        if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0){
-            return 0;
+        double curHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        if(curHeading < 0){
+            curHeading = 360 + curHeading;
         }
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        return curHeading;
     }
 
     /**
-     * Finds whether turning clockwise or counterclockwise reaches the target angle faster.
+     * Finds whether turning clockwise or counterclockwise reaches the target heading faster.
      * Returns true for clockwise and false for counterclockwise
-     * @param target Target angle to rotate to
+     * @param target Target heading to face
      * @return true (CW) or false (CCW)
      */
     public boolean optimalDirection(double target){
