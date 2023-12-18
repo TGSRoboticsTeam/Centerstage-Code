@@ -47,6 +47,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 public class BlueFarSideAuto extends LinearOpMode
 {
     // Motor and servo initial setup
+    // Motor and servo initial setup
     public DcMotorEx leftDrive;
     public DcMotorEx rightDrive;
     public DcMotorEx leftBackDrive;
@@ -54,7 +55,6 @@ public class BlueFarSideAuto extends LinearOpMode
 
     public DcMotorEx leftSlide;
     public DcMotorEx rightSlide;
-    public DcMotor activeIntake;
 
     public Servo leftArm;
     public Servo rightArm;
@@ -81,8 +81,10 @@ public class BlueFarSideAuto extends LinearOpMode
     public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation;
 
     // Servo constants
-    static final double clawOpenPosition = .5;
-    static final double clawClosedPosition = 0;
+    static final double zeroPixelPos    = .36;
+    static final double onePixelPos     = .26;
+    static final double twoPixelPos     = .16;
+    public double pixelsHeld = 0;
 
     static final double armDownPos = 0;
     static final double armUpPos = .2;
@@ -311,41 +313,26 @@ public class BlueFarSideAuto extends LinearOpMode
     }
 
     /**
-     * Intakes pixels for Time in seconds
-     * @param time Time to intake for
+     * Brings deposit down to hold two pixels.
      */
-    public void intakeIn(double time){
-        resetRuntime();
-        while(opModeIsActive() && runtime.seconds() < time){
-            activeIntake.setPower(1);
+    public void intake(){
+        if(pixelsHeld == 0) {
+            deposit.setPosition(twoPixelPos);
+            pixelsHeld = 2;
         }
-        activeIntake.setPower(0);
     }
 
     /**
-     * Reverse the intake for Time in seconds
-     * @param time Time to reverse intake for
+     * Deposits pixels on the backdrop relative to the amount of pixels held.
      */
-    public void intakeOut(double time){
-        resetRuntime();
-        while(opModeIsActive() && runtime.seconds() < time){
-            activeIntake.setPower(-1);
+    public void deposit(){
+        if(pixelsHeld == 2){
+            deposit.setPosition(onePixelPos);
+            pixelsHeld = 1;
+        }else if (pixelsHeld == 1){
+            deposit.setPosition(zeroPixelPos);
+            pixelsHeld = 0;
         }
-        activeIntake.setPower(0);
-    }
-
-    /**
-     * Opens end effector claw for deposit on the backboard
-     */
-    public void openDeposit(){
-        deposit.setPosition(clawOpenPosition);
-    }
-
-    /**
-     * Closes end effector claw for intaking pixels
-     */
-    public void closeDeposit(){
-        deposit.setPosition(clawClosedPosition);
     }
 
     public void slideTarget(int target){
@@ -426,7 +413,7 @@ public class BlueFarSideAuto extends LinearOpMode
     }
 
     /**
-     * Turns to the desired angle as specified in targetAngle, assuming starting position is 0 degrees
+     * Turns to the desired heading as specified in targetAngle, assuming starting position is 0 degrees
      * @param targetAngle Target angle to rotate to
      */
     public void turnToAngle(double targetAngle){
@@ -665,20 +652,24 @@ public class BlueFarSideAuto extends LinearOpMode
     }
 
     /**
-     * Calculates the angle the robot is at and returns the orientation
-     * @return Current Orientation
+     * Retrieves IMU heading (+-180 deg), changes the angle to a 360 degree
+     * measurement, and returns that heading.
+     * @return Current Heading
      */
     public double getAngle(){
-        if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0){
-            return 0;
+        double curHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        if(curHeading < 0){
+            curHeading = 360 + curHeading;
         }
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        return curHeading;
     }
 
     /**
-     * Finds whether turning clockwise or counterclockwise reaches the target angle faster.
+     * Finds whether turning clockwise or counterclockwise reaches the target heading faster.
      * Returns true for clockwise and false for counterclockwise
-     * @param target Target angle to rotate to
+     * @param target Target heading to face
      * @return true (CW) or false (CCW)
      */
     public boolean optimalDirection(double target){
@@ -759,7 +750,7 @@ public class BlueFarSideAuto extends LinearOpMode
 
         leftArm.setPosition(0);
         rightArm.setPosition(0);
-        deposit.setPosition(.5);
+        deposit.setPosition(.36);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
