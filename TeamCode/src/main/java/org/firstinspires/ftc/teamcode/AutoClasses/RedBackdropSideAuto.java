@@ -77,7 +77,7 @@ public class RedBackdropSideAuto extends LinearOpMode
     // Linear slide constants
     public double pulleyDiameter = 1.10236; // In inches
     public double pulleyCircumference = Math.PI * pulleyDiameter;
-    public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation;
+    public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation; // 155.23
 
     // Servo constants
     static final double zeroPixelPos    = .36;
