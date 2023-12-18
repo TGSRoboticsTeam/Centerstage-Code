@@ -75,14 +75,13 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD, // Change to left if doesn't work
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT, // Change to left if doesn't work
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
         // servo starting position
-        liftServo.setPosition(0);
-        plane.setPosition(0);
+        liftServo.setPosition(.45);
 
         boolean liftFlipped = false;
         int pixelsReleased = 0;
@@ -92,12 +91,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-            // Define variables
-            // The hook position 0 to 1
-            double hookPosition = 0.1;
-            // The degrees it takes to make the thing automatically go up
-            double clawPosition = -1250;
-
             // Define joystick controls
             // Drive
             double y   = -gamepad1.left_stick_y;
@@ -114,12 +107,13 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             boolean launchPlane = gamepad2.x;
 
-            boolean flipLift = gamepad1.a;
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
             float raiseLift = gamepad1.right_trigger;
             float lowerLift = gamepad1.left_trigger;
 
-            double moveSlide = -gamepad2.left_stick_y;
             double maxExtend = -3000;
+            double clawPosition = -1250;
 
             if(gamepad1.dpad_up){
                 imu.resetYaw();
@@ -154,14 +148,14 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             // Grabber
             if (loadPixel){
-                deposit.setPosition(1);
+                deposit.setPosition(0.16);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(0.5);
+                    deposit.setPosition(.26);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(0);
+                    deposit.setPosition(.36);
                 }
             }
 
@@ -171,7 +165,7 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             // Launches Plane
             if (launchPlane) {
-                plane.setPosition(0.1);
+                plane.setPosition(0);
             }
 
             if (leftLinearSlide.getCurrentPosition() > 0) {
@@ -182,26 +176,27 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            if (rightLinearSlide.getCurrentPosition() < 0) {
+            /*if (rightLinearSlide.getCurrentPosition() < 0) {
                 rightLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() > -maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
-
-            // Deposit rotation
-            /*if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.5);
-                rightClawRotate.setPosition(0.5);
-            }else{
-                leftClawRotate.setPosition(0);
-                rightClawRotate.setPosition(0);
             }*/
 
-            if(flipLift && !liftFlipped){
-                liftServo.setPosition(.5);
-                liftFlipped = true;
+            // Deposit rotation
+            if (leftLinearSlide.getCurrentPosition() < clawPosition){
+                leftClawRotate.setPosition(0.17);
+                //rightClawRotate.setPosition(0.5);
+            }else{
+                leftClawRotate.setPosition(.06);
+                //rightClawRotate.setPosition(0);
+            }
+
+            if(flipLift){
+                liftServo.setPosition(.3);
+            }else if (unflipLift) {
+                liftServo.setPosition(.48);
             }
 
             lift.setPower(raiseLift-lowerLift);

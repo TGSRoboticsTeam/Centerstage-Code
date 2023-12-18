@@ -69,10 +69,9 @@ public class StandardTourneyDrive extends LinearOpMode {
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
-        liftServo.setPosition(0);
-        plane.setPosition(0);
+        liftServo.setPosition(.48);
 
-        boolean liftFlipped = false;
+        leftClawRotate.setPosition(.06);
 
         while (!isStarted()) {
 
@@ -80,16 +79,30 @@ public class StandardTourneyDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Define variables
-            // The hook position 0 to 1
-            double hookPosition = 0.1;
+
             // The degrees it takes to make the thing automatically go up
             double clawPosition = -1250;
+            double maxExtend = -3000;
 
             // Define joystick controls
             // Drive
             double axial   = -gamepad1.left_stick_y;
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
+
+            float raiseSlides = gamepad2.right_trigger;
+            float lowerSlides = gamepad2.left_trigger;
+
+            // Lift
+            boolean loadPixel = gamepad2.a;
+            boolean unloadPixel = gamepad2.b;
+
+            boolean launchPlane = gamepad2.x;
+
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
+            float raiseLift = gamepad1.right_trigger;
+            float lowerLift = gamepad1.left_trigger;
 
             if (axial <= 0.1 && axial >= -0.1) {
                 axial = 0;
@@ -121,23 +134,6 @@ public class StandardTourneyDrive extends LinearOpMode {
                 rightBack  /= max;
             }
 
-            // Pixel grabber mechanism
-            float raiseSlides = gamepad2.right_trigger;
-            float lowerSlides = gamepad2.left_trigger;
-
-            // Lift
-            boolean loadPixel = gamepad2.a;
-            boolean unloadPixel = gamepad2.b;
-
-            boolean launchPlane = gamepad2.x;
-
-            boolean flipLift = gamepad1.a;
-            float raiseLift = gamepad1.right_trigger;
-            float lowerLift = gamepad1.left_trigger;
-
-            double moveSlide = -gamepad2.left_stick_y;
-            double maxExtend = -3000;
-
             // Associates buttons/joysticks to motors/servos:
             // Wheels
             leftFrontDrive.setPower(leftFront);
@@ -154,14 +150,14 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             // Grabber
             if (loadPixel){
-                deposit.setPosition(1);
+                deposit.setPosition(0.16);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(0.5);
+                    deposit.setPosition(.26);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(0);
+                    deposit.setPosition(.36);
                 }
             }
 
@@ -171,7 +167,7 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             // Launches Plane
             if (launchPlane) {
-                plane.setPosition(0.1);
+                plane.setPosition(0);
             }
 
             if (leftLinearSlide.getCurrentPosition() > 0) {
@@ -182,26 +178,27 @@ public class StandardTourneyDrive extends LinearOpMode {
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            if (rightLinearSlide.getCurrentPosition() < 0) {
+            /*if (rightLinearSlide.getCurrentPosition() < 0) {
                 rightLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() > -maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
-
-            // Deposit rotation
-            /*if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.5);
-                rightClawRotate.setPosition(0.5);
-            }else{
-                leftClawRotate.setPosition(0);
-                rightClawRotate.setPosition(0);
             }*/
 
-            if(flipLift && !liftFlipped){
-                liftServo.setPosition(.5);
-                liftFlipped = true;
+            // Deposit rotation
+            if (leftLinearSlide.getCurrentPosition() < clawPosition){
+                leftClawRotate.setPosition(0.17);
+                //rightClawRotate.setPosition(0.5);
+            }else{
+                leftClawRotate.setPosition(.06);
+                //rightClawRotate.setPosition(0);
+            }
+
+            if(flipLift){
+                liftServo.setPosition(.3);
+            }else if (unflipLift) {
+                liftServo.setPosition(.48);
             }
 
             lift.setPower(raiseLift-lowerLift);

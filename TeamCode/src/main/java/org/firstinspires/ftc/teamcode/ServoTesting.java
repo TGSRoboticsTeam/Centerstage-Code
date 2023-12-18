@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@Disabled
 public class ServoTesting extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     @Override

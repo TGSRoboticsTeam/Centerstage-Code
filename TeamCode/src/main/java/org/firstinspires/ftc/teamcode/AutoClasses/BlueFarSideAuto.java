@@ -47,6 +47,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 public class BlueFarSideAuto extends LinearOpMode
 {
     // Motor and servo initial setup
+    // Motor and servo initial setup
     public DcMotorEx leftDrive;
     public DcMotorEx rightDrive;
     public DcMotorEx leftBackDrive;
@@ -54,7 +55,6 @@ public class BlueFarSideAuto extends LinearOpMode
 
     public DcMotorEx leftSlide;
     public DcMotorEx rightSlide;
-    public DcMotor activeIntake;
 
     public Servo leftArm;
     public Servo rightArm;
@@ -78,14 +78,16 @@ public class BlueFarSideAuto extends LinearOpMode
     // Linear slide constants
     public double pulleyDiameter = 1.10236; // In inches
     public double pulleyCircumference = Math.PI * pulleyDiameter;
-    public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation;
+    public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation; // 155.23
 
     // Servo constants
-    static final double clawOpenPosition = .5;
-    static final double clawClosedPosition = 0;
+    static final double zeroPixelPos    = .36;
+    static final double onePixelPos     = .26;
+    static final double twoPixelPos     = .16;
+    public double pixelsHeld = 0;
 
-    static final double armDownPos = 0;
-    static final double armUpPos = .2;
+    static final double armDownPos = .06;
+    static final double armUpPos = .17;
 
     // General constants
     double oneFootCm = 30.48;
@@ -124,13 +126,13 @@ public class BlueFarSideAuto extends LinearOpMode
             telemetry.update();
         }
 
-        moveInchAmount(true,26);
+        moveInchAmount(true,30);
         waitTime(.5);
-        moveInchAmount(false, 3);
+        moveInchAmount(false, 4);
         waitTime(.5);
         turnNinety(false);
         waitTime(.5);
-        moveInchAmount(true, 80);
+        moveInchAmount(true, 79);
     }
 
     /**
@@ -285,8 +287,8 @@ public class BlueFarSideAuto extends LinearOpMode
             if(power > 1){
                 power = 1;
             }
-            if(power < .25){
-                power = .25;
+            if(power < .15){
+                power = .15;
             }
 
             slidePower(power);*/
@@ -296,7 +298,7 @@ public class BlueFarSideAuto extends LinearOpMode
                 liftOff = true;
             }
 
-            if(leftSlide.getCurrentPosition() > 1250){
+            if(leftSlide.getCurrentPosition() < -1250){
                 leftArm.setPosition(armUpPos);
                 rightArm.setPosition(armUpPos);
             }else{
@@ -305,47 +307,33 @@ public class BlueFarSideAuto extends LinearOpMode
             }
 
             telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            //telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            telemetry.addData("Target Slide Pos: ", targetTick);
             telemetry.update();
         }
     }
 
     /**
-     * Intakes pixels for Time in seconds
-     * @param time Time to intake for
+     * Brings deposit down to hold two pixels.
      */
-    public void intakeIn(double time){
-        resetRuntime();
-        while(opModeIsActive() && runtime.seconds() < time){
-            activeIntake.setPower(1);
+    public void intake(){
+        if(pixelsHeld == 0) {
+            deposit.setPosition(twoPixelPos);
+            pixelsHeld = 2;
         }
-        activeIntake.setPower(0);
     }
 
     /**
-     * Reverse the intake for Time in seconds
-     * @param time Time to reverse intake for
+     * Deposits pixels on the backdrop relative to the amount of pixels held.
      */
-    public void intakeOut(double time){
-        resetRuntime();
-        while(opModeIsActive() && runtime.seconds() < time){
-            activeIntake.setPower(-1);
+    public void deposit(){
+        if(pixelsHeld == 2){
+            deposit.setPosition(onePixelPos);
+            pixelsHeld = 1;
+        }else if (pixelsHeld == 1){
+            deposit.setPosition(zeroPixelPos);
+            pixelsHeld = 0;
         }
-        activeIntake.setPower(0);
-    }
-
-    /**
-     * Opens end effector claw for deposit on the backboard
-     */
-    public void openDeposit(){
-        deposit.setPosition(clawOpenPosition);
-    }
-
-    /**
-     * Closes end effector claw for intaking pixels
-     */
-    public void closeDeposit(){
-        deposit.setPosition(clawClosedPosition);
     }
 
     public void slideTarget(int target){
@@ -426,7 +414,7 @@ public class BlueFarSideAuto extends LinearOpMode
     }
 
     /**
-     * Turns to the desired angle as specified in targetAngle, assuming starting position is 0 degrees
+     * Turns to the desired heading as specified in targetAngle, assuming starting position is 0 degrees
      * @param targetAngle Target angle to rotate to
      */
     public void turnToAngle(double targetAngle){
@@ -542,20 +530,20 @@ public class BlueFarSideAuto extends LinearOpMode
 
         double rotationAmount = (oneFootCm / 12) / circumference;
         double totalTicks = rotationAmount * ticksPerRotation * inches * wheelRatio * driveTrainCorrection;
-        double fiveInches = rotationAmount * ticksPerRotation * 5 * wheelRatio * driveTrainCorrection;
+        double oneFoot = rotationAmount * ticksPerRotation * 12 * wheelRatio * driveTrainCorrection;
 
         resetEncoders();
 
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
-                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (fiveInches);
+                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (oneFoot);
 
                 if(power > 1){
                     power = 1;
                 }
 
-                if(power < .25){
-                    power = .25;
+                if(power < .15){
+                    power = .15;
                 }
 
                 motorsOn(power);
@@ -565,14 +553,14 @@ public class BlueFarSideAuto extends LinearOpMode
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (fiveInches);
+                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (oneFoot);
 
                 if(power > 1){
                     power = 1;
                 }
 
-                if(power < .25){
-                    power = .25;
+                if(power < .15){
+                    power = .15;
                 }
 
                 motorsOn(-power);
@@ -665,20 +653,24 @@ public class BlueFarSideAuto extends LinearOpMode
     }
 
     /**
-     * Calculates the angle the robot is at and returns the orientation
-     * @return Current Orientation
+     * Retrieves IMU heading (+-180 deg), changes the angle to a 360 degree
+     * measurement, and returns that heading.
+     * @return Current Heading
      */
     public double getAngle(){
-        if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0){
-            return 0;
+        double curHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        if(curHeading < 0){
+            curHeading = 360 + curHeading;
         }
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        return curHeading;
     }
 
     /**
-     * Finds whether turning clockwise or counterclockwise reaches the target angle faster.
+     * Finds whether turning clockwise or counterclockwise reaches the target heading faster.
      * Returns true for clockwise and false for counterclockwise
-     * @param target Target angle to rotate to
+     * @param target Target heading to face
      * @return true (CW) or false (CCW)
      */
     public boolean optimalDirection(double target){
@@ -759,7 +751,7 @@ public class BlueFarSideAuto extends LinearOpMode
 
         leftArm.setPosition(0);
         rightArm.setPosition(0);
-        deposit.setPosition(.5);
+        deposit.setPosition(.36);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
