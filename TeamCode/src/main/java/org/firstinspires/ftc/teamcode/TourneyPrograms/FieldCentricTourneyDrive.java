@@ -148,14 +148,14 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             // Grabber
             if (loadPixel){
-                deposit.setPosition(1);
+                deposit.setPosition(0.16);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(0.5);
+                    deposit.setPosition(.26);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(0);
+                    deposit.setPosition(.36);
                 }
             }
 
@@ -193,12 +193,10 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
                 //rightClawRotate.setPosition(0);
             }
 
-            if(flipLift && !liftFlipped){
+            if(flipLift){
                 liftServo.setPosition(.3);
-                liftFlipped = true;
             }else if (unflipLift) {
                 liftServo.setPosition(.48);
-                liftFlipped = false;
             }
 
             lift.setPower(raiseLift-lowerLift);
@@ -209,7 +207,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
-            telemetry.addData("Lift Flipped:", liftFlipped);
             telemetry.update();
         }
     }
