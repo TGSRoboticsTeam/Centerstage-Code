@@ -125,7 +125,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
             telemetry.update();
         }
 
-        moveInchAmount(true,26);
+        moveInchAmount(true,30);
         waitTime(.5);
         moveInchAmount(false, 20);
         waitTime(.5);

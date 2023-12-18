@@ -126,13 +126,13 @@ public class BlueFarSideAuto extends LinearOpMode
             telemetry.update();
         }
 
-        moveInchAmount(true,26);
+        moveInchAmount(true,30);
         waitTime(.5);
-        moveInchAmount(false, 3);
+        moveInchAmount(false, 4);
         waitTime(.5);
         turnNinety(false);
         waitTime(.5);
-        moveInchAmount(true, 80);
+        moveInchAmount(true, 79);
     }
 
     /**
