@@ -86,8 +86,8 @@ public class BlueFarSideAuto extends LinearOpMode
     static final double twoPixelPos     = .16;
     public double pixelsHeld = 0;
 
-    static final double armDownPos = 0;
-    static final double armUpPos = .2;
+    static final double armDownPos = .06;
+    static final double armUpPos = .17;
 
     // General constants
     double oneFootCm = 30.48;
@@ -287,8 +287,8 @@ public class BlueFarSideAuto extends LinearOpMode
             if(power > 1){
                 power = 1;
             }
-            if(power < .25){
-                power = .25;
+            if(power < .15){
+                power = .15;
             }
 
             slidePower(power);*/
@@ -298,7 +298,7 @@ public class BlueFarSideAuto extends LinearOpMode
                 liftOff = true;
             }
 
-            if(leftSlide.getCurrentPosition() > 1250){
+            if(leftSlide.getCurrentPosition() < -1250){
                 leftArm.setPosition(armUpPos);
                 rightArm.setPosition(armUpPos);
             }else{
@@ -307,7 +307,8 @@ public class BlueFarSideAuto extends LinearOpMode
             }
 
             telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            //telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            telemetry.addData("Target Slide Pos: ", targetTick);
             telemetry.update();
         }
     }
