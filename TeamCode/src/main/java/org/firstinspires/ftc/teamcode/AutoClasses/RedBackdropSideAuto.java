@@ -529,20 +529,20 @@ public class RedBackdropSideAuto extends LinearOpMode
 
         double rotationAmount = (oneFootCm / 12) / circumference;
         double totalTicks = rotationAmount * ticksPerRotation * inches * wheelRatio * driveTrainCorrection;
-        double fiveInches = rotationAmount * ticksPerRotation * 5 * wheelRatio * driveTrainCorrection;
+        double oneFoot = rotationAmount * ticksPerRotation * 12 * wheelRatio * driveTrainCorrection;
 
         resetEncoders();
 
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
-                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (fiveInches);
+                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (oneFoot);
 
                 if(power > 1){
                     power = 1;
                 }
 
-                if(power < .25){
-                    power = .25;
+                if(power < .15){
+                    power = .15;
                 }
 
                 motorsOn(power);
@@ -552,14 +552,14 @@ public class RedBackdropSideAuto extends LinearOpMode
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (fiveInches);
+                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (oneFoot);
 
                 if(power > 1){
                     power = 1;
                 }
 
-                if(power < .25){
-                    power = .25;
+                if(power < .15){
+                    power = .15;
                 }
 
                 motorsOn(-power);
