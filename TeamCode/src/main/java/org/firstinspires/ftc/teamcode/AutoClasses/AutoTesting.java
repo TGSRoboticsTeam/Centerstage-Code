@@ -546,18 +546,16 @@ public class AutoTesting extends LinearOpMode
         double totalTicks = rotationAmount * ticksPerRotation * inches * wheelRatio * driveTrainCorrection;
         double oneFoot = rotationAmount * ticksPerRotation * 12 * wheelRatio * driveTrainCorrection;
 
+        double power;
+
         resetEncoders();
 
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
-                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (oneFoot);
-
-                if(power > 1){
+                if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
+                    power = calculateModularPower(1, .1, (totalTicks - leftBackDrive.getCurrentPosition()), oneFoot, .3);
+                }else{
                     power = 1;
-                }
-
-                if(power < .15){
-                    power = .15;
                 }
 
                 motorsOn(power);
@@ -567,14 +565,10 @@ public class AutoTesting extends LinearOpMode
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (oneFoot);
-
-                if(power > 1){
+                if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
+                    power = calculateModularPower(1, .1, (totalTicks - leftBackDrive.getCurrentPosition()), oneFoot, .3);
+                }else{
                     power = 1;
-                }
-
-                if(power < .15){
-                    power = .15;
                 }
 
                 motorsOn(-power);
@@ -619,7 +613,7 @@ public class AutoTesting extends LinearOpMode
     @SuppressWarnings("StatementWithEmptyBody")
     public void waitTime(double time){ // Waits for time (seconds)
         runtime.reset();
-        while(opModeIsActive() && runtime.seconds()<time){
+        while(opModeIsActive() && runtime.seconds() < time){
         }
     }
 
@@ -635,13 +629,44 @@ public class AutoTesting extends LinearOpMode
 
     /**
      * Turns all wheels on at specified power
-     * @param power Percent of power to run at
+     * @param power Power to run at
      */
     public void motorsOn(double power){
         leftDrive.setPower(power);
         rightDrive.setPower(power);
         rightBackDrive.setPower(power);
         leftBackDrive.setPower(power);
+    }
+
+    /**
+     * Uses a special Sin wave with a modular steepness (how quickly it drops from its peak) to
+     * run smoother and more accurate power changes. By using the Sin wave, the power will be at
+     * a lower level for longer than with linear movement allowing encoders to update more frequently
+     * per inch travelled and making it more precise.
+     * (Desmos graph example: https://www.desmos.com/calculator/gsujcy9qjs)
+     * @param maxPower Maximum power allowed to return (0-1)
+     * @param minPower Minimum power to return
+     * @param distanceFromTarget Distance to target position (ticks)
+     * @param calculationDistance Distance to calculate curve of Sin wave (ticks)
+     * @param kValue Steepness of the Sin wave (0-1; 0 = standard wave, 1 = very steep wave)
+     * @return Power to run at in relation to distance from end point
+     */
+    public double calculateModularPower(double maxPower, double minPower, double distanceFromTarget, double calculationDistance, double kValue){
+        double a = maxPower / 2;
+        double b = 1 / calculationDistance;
+        double x = -distanceFromTarget;
+
+        double exponent = Math.pow((2 * (1 - x)), kValue);
+        double radians = x * Math.PI - ((calculationDistance * Math.PI) / 2);
+        double base = a + Math.sin(b * radians) / 2;
+
+        double y = Math.pow(base, exponent);
+
+        if(y < minPower){
+            y = minPower;
+        }
+
+        return y;
     }
 
     /**
@@ -659,6 +684,10 @@ public class AutoTesting extends LinearOpMode
         rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    /**
+     * Sets the target tick position for all drive motors
+     * @param target Target tick for wheels to move to
+     */
     public void encoderTarget(int target){
         leftDrive.setTargetPosition(target);
         leftBackDrive.setTargetPosition(target);
