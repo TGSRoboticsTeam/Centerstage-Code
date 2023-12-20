@@ -321,7 +321,7 @@ public class AutoTesting extends LinearOpMode
             }
 
             telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            //telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
             telemetry.addData("Target Slide Pos: ", targetTick);
             telemetry.update();
         }
