@@ -28,6 +28,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 import android.annotation.SuppressLint;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -42,6 +43,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.AutoClasses.AprilTagDetectionPipe;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
+
+import java.util.List;
 
 @Autonomous(name = "Auto Test Code", group = "Linear Opmode")
 public class AutoTesting extends LinearOpMode
@@ -274,6 +277,8 @@ public class AutoTesting extends LinearOpMode
      */
     public void moveSlides(double height){
         boolean liftOff = false;
+        boolean leftOff = false;
+        boolean rightOff = false;
 
         double initialTick = leftSlide.getCurrentPosition();
 
@@ -297,9 +302,14 @@ public class AutoTesting extends LinearOpMode
 
             slidePower(power);*/
 
-            if ((/*leftSlide.getCurrentPosition() > targetTick - 17.3 && */leftSlide.getCurrentPosition() < -targetTick + 17.3) || !leftSlide.isBusy()) {
+            if ((leftSlide.getCurrentPosition() > -targetTick - 50 && leftSlide.getCurrentPosition() < -targetTick + 50) || !leftSlide.isBusy() && !leftOff) {
                 slidePower(0);
-                liftOff = true;
+                leftOff = true;
+            }
+
+            if ((rightSlide.getCurrentPosition() > targetTick - 50 && rightSlide.getCurrentPosition() < targetTick + 50) || !rightSlide.isBusy() && !rightOff) {
+                slidePower(0);
+                rightOff = true;
             }
 
             if(leftSlide.getCurrentPosition() < -1250){
@@ -718,6 +728,12 @@ public class AutoTesting extends LinearOpMode
     }
 
     public void setUpHardware() { // Assigns motor names in phone to the objects in code
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
         leftDrive  = hardwareMap.get(DcMotorEx.class, "left_front_drive");
         leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back_drive");
         rightDrive = hardwareMap.get(DcMotorEx.class, "right_front_drive");
@@ -735,15 +751,13 @@ public class AutoTesting extends LinearOpMode
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightSlide.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftArm.setDirection(Servo.Direction.FORWARD);
-        rightArm.setDirection(Servo.Direction.REVERSE);
-
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightSlide.setDirection(DcMotorSimple.Direction.FORWARD);
 
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -753,8 +767,11 @@ public class AutoTesting extends LinearOpMode
         leftSlide.setMode(RUN_USING_ENCODER);
         rightSlide.setMode(RUN_USING_ENCODER);
 
-        leftArm.setPosition(0);
-        rightArm.setPosition(0);
+        leftArm.setDirection(Servo.Direction.FORWARD);
+        rightArm.setDirection(Servo.Direction.REVERSE);
+
+        leftArm.setPosition(.03);
+        rightArm.setPosition(.03);
         deposit.setPosition(.36);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
