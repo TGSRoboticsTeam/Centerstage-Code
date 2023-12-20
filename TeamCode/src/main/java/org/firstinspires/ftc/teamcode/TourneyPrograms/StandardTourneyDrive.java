@@ -71,7 +71,7 @@ public class StandardTourneyDrive extends LinearOpMode {
         // servo starting position
         liftServo.setPosition(.48);
 
-        leftClawRotate.setPosition(.06);
+        leftClawRotate.setPosition(.03);
 
         while (!isStarted()) {
 
@@ -188,10 +188,10 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             // Deposit rotation
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.17);
+                leftClawRotate.setPosition(0.26);
                 //rightClawRotate.setPosition(0.5);
             }else{
-                leftClawRotate.setPosition(.06);
+                leftClawRotate.setPosition(.03);
                 //rightClawRotate.setPosition(0);
             }
 

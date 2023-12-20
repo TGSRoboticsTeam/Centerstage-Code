@@ -75,6 +75,8 @@ public class YaelDrive extends LinearOpMode {
 
         deposit.setPosition(.35);
 
+        leftClawRotate.setPosition(.03);
+
         while (!isStarted()) {
             telemetry.addData("Servo Position: ", deposit.getPosition());
             telemetry.update();
@@ -191,10 +193,10 @@ public class YaelDrive extends LinearOpMode {
 
             // Deposit rotation
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.17);
+                leftClawRotate.setPosition(0.26);
                 //rightClawRotate.setPosition(0.5);
             }else{
-                leftClawRotate.setPosition(.06);
+                leftClawRotate.setPosition(.03);
                 //rightClawRotate.setPosition(0);
             }
 

@@ -127,11 +127,11 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
         moveInchAmount(true,30);
         waitTime(.5);
-        moveInchAmount(false, 20);
+        moveInchAmount(false, 29);
         waitTime(.5);
         turnNinety(false);
         waitTime(.5);
-        moveInchAmount(true, 42);
+        moveInchAmount(true, 44);
     }
 
     /**

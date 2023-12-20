@@ -122,15 +122,21 @@ public class AutoTesting extends LinearOpMode
 
         while (!isStarted() && !isStopRequested()) {
             if(gamepad1.dpad_up){
-                leftSlide.setPower(.5);
+                leftSlide.setPower(.15);
             }else if(gamepad1.dpad_down){
-                leftSlide.setPower(-.5);
+                leftSlide.setPower(-.15);
+            }else{
+                leftSlide.setPower(0);
             }
 
             telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
             telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
             telemetry.update();
         }
+
+        moveSlides(10);
+        waitTime(5);
+        moveSlides(0);
     }
 
     /**
@@ -274,7 +280,7 @@ public class AutoTesting extends LinearOpMode
         int targetTick = (int) (height * tickPerInchForLift);
         double fiveInches = (int) (5 * tickPerInchForLift);
 
-        double power = .25;
+        double power = .05;
 
         slideTarget(targetTick);
         slidePower(power);
@@ -291,7 +297,7 @@ public class AutoTesting extends LinearOpMode
 
             slidePower(power);*/
 
-            if ((leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3) || !leftSlide.isBusy()) {
+            if ((/*leftSlide.getCurrentPosition() > targetTick - 17.3 && */leftSlide.getCurrentPosition() < -targetTick + 17.3) || !leftSlide.isBusy()) {
                 slidePower(0);
                 liftOff = true;
             }
@@ -729,8 +735,8 @@ public class AutoTesting extends LinearOpMode
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        leftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightSlide.setDirection(DcMotorSimple.Direction.FORWARD);
         leftArm.setDirection(Servo.Direction.FORWARD);
         rightArm.setDirection(Servo.Direction.REVERSE);
 
