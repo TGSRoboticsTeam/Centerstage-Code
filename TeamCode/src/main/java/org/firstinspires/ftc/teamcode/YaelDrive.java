@@ -83,13 +83,13 @@ public class YaelDrive extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-            // Define variables
+            /* Define control variables */
+            // Grabber vars
+            int maxExtend = 3000;
+            double clawPosition = 2000;
+            // Isaac, here I defined the variable for you. I don't know what to do with this after that...
+            double motorMax = 0.85;
 
-            // The degrees it takes to make the thing automatically go up
-            double clawPosition = -1250;
-            double maxExtend = -3000;
-
-            // Define joystick controls
             // Drive
             double axial   = -gamepad1.left_stick_y;
             double lateral =  gamepad1.left_stick_x;
@@ -121,7 +121,7 @@ public class YaelDrive extends LinearOpMode {
                 yaw = 0;
             }
 
-            // Gives the joystick commands purpose
+            // Gives the joystick commands purpose, "mecanum" wheel stuff or whatever
             double rightFront = axial - lateral - yaw;
             double rightBack  = axial + lateral - yaw;
             double leftBack   = axial - lateral + yaw;
@@ -154,6 +154,7 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Grabber
+            // Makes it so you can release pixels individualy
             if (loadPixel){
                 deposit.setPosition(0.16);
                 pixelsReleased = 0;
