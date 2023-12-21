@@ -71,7 +71,6 @@ public class YaelDrive extends LinearOpMode {
 
         // Servo starting positions
         liftServo.setPosition(.2);
-        plane.setPosition(0);
         deposit.setPosition(.35);
 
         leftClawRotate.setPosition(.03);
@@ -172,7 +171,6 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Launches Plane
-            // ??? How does this do anything? There's a command above init that does the same thing...
             if (launchPlane) {
                 plane.setPosition(0);
             }
