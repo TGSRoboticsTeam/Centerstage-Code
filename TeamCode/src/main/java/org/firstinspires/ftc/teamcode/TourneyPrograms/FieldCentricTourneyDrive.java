@@ -83,6 +83,8 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         // servo starting position
         liftServo.setPosition(.45);
 
+        leftClawRotate.setPosition(.03);
+
         boolean liftFlipped = false;
         int pixelsReleased = 0;
 
@@ -186,10 +188,10 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             // Deposit rotation
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.17);
+                leftClawRotate.setPosition(0.26);
                 //rightClawRotate.setPosition(0.5);
             }else{
-                leftClawRotate.setPosition(.06);
+                leftClawRotate.setPosition(.03);
                 //rightClawRotate.setPosition(0);
             }
 
