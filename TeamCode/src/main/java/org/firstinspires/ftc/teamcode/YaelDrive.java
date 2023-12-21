@@ -159,7 +159,7 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Grabber
-            // Makes it so you can release pixels individualy
+            // Makes it so you can release pixels individually
             if (loadPixel){
                 deposit.setPosition(0.16);
                 pixelsReleased = 0;
@@ -205,20 +205,6 @@ public class YaelDrive extends LinearOpMode {
                 leftClawRotate.setPosition(.03);
                 //rightClawRotate.setPosition(0);
             }
-
-            /*if(gamepad2.dpad_up){
-                rotationPosition += .1;
-            }else if (gamepad2.dpad_down){
-                rotationPosition -= .1;
-            }
-
-            if(clawPosition > 1){
-                rotationPosition = 1;
-            }else if(clawPosition <= -.1){
-                rotationPosition = 0;
-            }
-
-            leftClawRotate.setPosition(rotationPosition);*/
 
             if(flipLift){
                 liftServo.setPosition(.3);
