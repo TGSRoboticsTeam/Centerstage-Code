@@ -69,14 +69,14 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // servo starting position
+        // Servo starting positions
         liftServo.setPosition(.2);
         plane.setPosition(0);
-
         deposit.setPosition(.35);
 
         leftClawRotate.setPosition(.03);
 
+        // Do we need this anymore?
         while (!isStarted()) {
             telemetry.addData("Servo Position: ", deposit.getPosition());
             telemetry.update();
@@ -171,6 +171,7 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Launches Plane
+            // ??? How does this do anything? There's a command above init that does the same thing...
             if (launchPlane) {
                 plane.setPosition(0);
             }
