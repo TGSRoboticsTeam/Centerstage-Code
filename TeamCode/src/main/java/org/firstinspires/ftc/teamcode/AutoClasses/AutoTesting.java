@@ -185,7 +185,7 @@ public class AutoTesting extends LinearOpMode
                         power = 1;
                     }
 
-                    double headingError = optimalAngleChange(originHeading);
+                    double headingError = optimalAngleChange(originHeading, getAngle());
 
                     leftVelo(power - (headingError * -.1));
                     rightVelo(power + (headingError * -.1));
@@ -233,7 +233,7 @@ public class AutoTesting extends LinearOpMode
                         power = 1;
                     }
 
-                    double headingError = optimalAngleChange(originHeading);
+                    double headingError = optimalAngleChange(originHeading, getAngle());
 
                     leftVelo(power - (headingError * -.1));
                     rightVelo(power + (headingError * -.1));
@@ -428,39 +428,26 @@ public class AutoTesting extends LinearOpMode
     }
 
     /**
-     * Turns to the desired heading as specified in targetAngle, assuming starting position is 0 degrees
+     * Turns to the specified angle.
      * @param targetAngle Target angle to rotate to
      */
     public void turnToAngle(double targetAngle){
         double originalAngle = getAngle();
-        double changeInAngle = optimalAngleChange(targetAngle);
-        double turningCorrection = (angleCorrectionCW / 90) * changeInAngle;
+        double changeInAngle = optimalAngleChange(targetAngle, originalAngle);
 
-        boolean CW = optimalDirection(targetAngle);
+        boolean CW = optimalDirection(targetAngle, originalAngle);
 
         if(CW) {
-            if(originalAngle - changeInAngle < 0 && !(originalAngle < 0)) {
-                while (opModeIsActive() && (getAngle() < originalAngle + 5 || getAngle() > originalAngle - changeInAngle + turningCorrection + 360)) {
-                    leftVelo(.75);
-                    rightVelo(-.75);
-                }
+            if(originalAngle + Math.abs(changeInAngle) > 360){
+                // Run turning with angle checks within a range
             }else{
-                while (opModeIsActive() && getAngle() > originalAngle - changeInAngle  + turningCorrection && getAngle() < originalAngle + 5) {
-                    leftVelo(.75);
-                    rightVelo(-.75);
-                }
+                // Run turning with simple > checks
             }
         }else{
-            if(originalAngle + changeInAngle > 360) {
-                while (opModeIsActive() && (getAngle() > originalAngle - 5 || getAngle() < originalAngle + changeInAngle - turningCorrection - 360)) {
-                    leftVelo(-.75);
-                    rightVelo(.75);
-                }
+            if(true){
+
             }else{
-                while (opModeIsActive() && getAngle() < originalAngle + changeInAngle - turningCorrection && getAngle() > originalAngle - 5) {
-                    leftVelo(-.75);
-                    rightVelo(.75);
-                }
+
             }
         }
         motorsOff();
@@ -498,7 +485,7 @@ public class AutoTesting extends LinearOpMode
                     power = .25;
                 }
 
-                double headingError = optimalAngleChange(originHeading);
+                double headingError = optimalAngleChange(originHeading, getAngle());
 
                 leftVelo(power + (headingError * -.1));
                 rightVelo(power - (headingError * -.1));
@@ -519,7 +506,7 @@ public class AutoTesting extends LinearOpMode
                     power = .25;
                 }
 
-                double headingError = optimalAngleChange(originHeading);
+                double headingError = optimalAngleChange(originHeading, getAngle());
 
                 leftVelo(-power + (headingError * -.1));
                 rightVelo(-power - (headingError * -.1));
@@ -646,18 +633,18 @@ public class AutoTesting extends LinearOpMode
      * (Desmos graph example: https://www.desmos.com/calculator/gsujcy9qjs)
      * @param maxPower Maximum power allowed to return (0-1)
      * @param minPower Minimum power to return
-     * @param distanceFromTarget Distance to target position (ticks)
-     * @param calculationDistance Distance to calculate curve of Sin wave (ticks)
+     * @param distanceFromTarget Distance to target position
+     * @param maxDistance Distance to calculate curve of Sin wave
      * @param kValue Steepness of the Sin wave (0-1; 0 = standard wave, 1 = very steep wave)
      * @return Power to run at in relation to distance from end point
      */
-    public double calculateModularPower(double maxPower, double minPower, double distanceFromTarget, double calculationDistance, double kValue){
+    public double calculateModularPower(double maxPower, double minPower, double distanceFromTarget, double maxDistance, double kValue){
         double a = maxPower / 2;
-        double b = 1 / calculationDistance;
+        double b = 1 / maxDistance;
         double x = -distanceFromTarget;
 
         double exponent = Math.pow((2 * (1 - x)), kValue);
-        double radians = x * Math.PI - ((calculationDistance * Math.PI) / 2);
+        double radians = x * Math.PI - ((maxDistance * Math.PI) / 2);
         double base = a + Math.sin(b * radians) / 2;
 
         double y = Math.pow(base, exponent);
@@ -716,8 +703,8 @@ public class AutoTesting extends LinearOpMode
      * @param target Target heading to face
      * @return true (CW) or false (CCW)
      */
-    public boolean optimalDirection(double target){
-        if(optimalAngleChange(target) < 0){
+    public boolean optimalDirection(double target, double curAngle){
+        if(optimalAngleChange(target, curAngle) < 0){
             return false;
         }else{
             return true;
@@ -725,14 +712,15 @@ public class AutoTesting extends LinearOpMode
     }
 
     /**
-     * Finds the smallest angle change needed to reach the target angle from current angle
+     * Finds the smallest angle change needed to reach the target angle from current angle.
+     * A negative value means a counterclockwise direction, positive is clockwise.
      * @param target Target angle to reach
      * @return Shortest angle to target
      */
-    public double optimalAngleChange(double target) {
-        double x = target - getAngle();
-        double y = target - getAngle() - 360;
-        double z = target - getAngle() + 360;
+    public double optimalAngleChange(double target, double curAngle) {
+        double x = target - curAngle;
+        double y = target - curAngle - 360;
+        double z = target - curAngle + 360;
 
         double absX = Math.abs(x);
         double absZ = Math.abs(y);
