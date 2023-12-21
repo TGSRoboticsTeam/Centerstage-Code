@@ -75,7 +75,7 @@ public class YaelDrive extends LinearOpMode {
 
         leftClawRotate.setPosition(.03);
 
-        // Do we need this anymore?
+        // Need this so that the code will stay initialized until you hit play on the phone
         while (!isStarted()) {
             telemetry.addData("Servo Position: ", deposit.getPosition());
             telemetry.update();
@@ -84,9 +84,15 @@ public class YaelDrive extends LinearOpMode {
         while (opModeIsActive()) {
             /* Define control variables */
             // Grabber vars
-            int maxExtend = 3000;
-            double clawPosition = 2000;
-            // Isaac, here I defined the variable for you. I don't know what to do with this after that...
+
+            // The two following variables are negative because the left linear slides encoder
+            // goes negative as it goes up, and that's what we had been using.
+            int maxExtend = -3000;
+
+            // This height worked when testing servo positions.
+            double clawPosition = -1250;
+
+            // I'll explain limiting max power when we get back
             double motorMax = 0.85;
 
             // Drive
