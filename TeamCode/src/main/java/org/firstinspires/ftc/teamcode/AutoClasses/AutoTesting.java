@@ -124,16 +124,7 @@ public class AutoTesting extends LinearOpMode
         setUpHardware();
 
         while (!isStarted() && !isStopRequested()) {
-            if(gamepad1.dpad_up){
-                leftSlide.setPower(.15);
-            }else if(gamepad1.dpad_down){
-                leftSlide.setPower(-.15);
-            }else{
-                leftSlide.setPower(0);
-            }
-
-            telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            telemetry.addLine("Waiting on start");
             telemetry.update();
         }
 
@@ -159,7 +150,7 @@ public class AutoTesting extends LinearOpMode
         double driveTrainCorrection = 1;
 
         double originHeading = getAngle();
-        double power = 0;
+        double power;
 
         double oneRotationDistance = diameter * Math.PI; // In cm
         double rotationAmount = (oneFootCm / 12) / oneRotationDistance;
@@ -273,14 +264,12 @@ public class AutoTesting extends LinearOpMode
 
     /**
      * Moves the linear slides to the specified height in inches
-     * @param height
+     * @param height Height for slides to move to
      */
     public void moveSlides(double height){
         boolean liftOff = false;
         boolean leftOff = false;
         boolean rightOff = false;
-
-        double initialTick = leftSlide.getCurrentPosition();
 
         int targetTick = (int) (height * tickPerInchForLift);
         double fiveInches = (int) (5 * tickPerInchForLift);
@@ -524,7 +513,7 @@ public class AutoTesting extends LinearOpMode
      */
     public void moveInchesAtHeading(boolean forward, double inches){
         double originHeading = getAngle();
-        double power = 0;
+        double power;
 
         double driveTrainCorrection = 1;
 
@@ -693,7 +682,7 @@ public class AutoTesting extends LinearOpMode
      * run smoother and more accurate power changes. By using the Sin wave, the power will be at
      * a lower level for longer than with linear movement allowing encoders to update more frequently
      * per inch travelled and making it more precise.
-     * (Desmos graph example: https://www.desmos.com/calculator/gsujcy9qjs)
+     * (<a href="https://www.desmos.com/calculator/gsujcy9qjs">Desmos Graph Example</a>)
      * @param maxPower Maximum power allowed to return (0-1)
      * @param minPower Minimum power to return
      * @param remainingDistance Distance to target position
@@ -767,11 +756,7 @@ public class AutoTesting extends LinearOpMode
      * @return true (CW) or false (CCW)
      */
     public boolean optimalDirection(double target, double curAngle){
-        if(optimalAngleChange(target, curAngle) < 0){
-            return false;
-        }else{
-            return true;
-        }
+        return !(optimalAngleChange(target, curAngle) < 0);
     }
 
     /**
