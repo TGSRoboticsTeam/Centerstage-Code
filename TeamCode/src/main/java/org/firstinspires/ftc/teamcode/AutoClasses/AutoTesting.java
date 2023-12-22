@@ -437,19 +437,82 @@ public class AutoTesting extends LinearOpMode
 
         boolean CW = optimalDirection(targetAngle, originalAngle);
 
+        double power;
+
         if(CW) {
-            if(originalAngle + Math.abs(changeInAngle) > 360){
-                // Run turning with angle checks within a range
+            if(originalAngle + Math.abs(changeInAngle) + 10 > 360){ // If turning will bring it close to or greater than 360 degrees
+                boolean inNewCircle = false;
+
+                while(opModeIsActive() && (!inNewCircle || getAngle() < targetAngle)){
+                    double curAngle = getAngle();
+                    double remainingDistance = Math.abs(optimalAngleChange(targetAngle, curAngle));
+
+                    if(remainingDistance < 45){
+                        power = calculateModularPower(1, .4, remainingDistance, 45, .2);
+                    }else{
+                        power = 1;
+                    }
+
+                    leftVelo(power);
+                    rightVelo(-power);
+
+                    if(curAngle > 0 && curAngle < originalAngle){
+                        inNewCircle = true;
+                    }
+                }
             }else{
-                // Run turning with simple > checks
+                while(opModeIsActive() && getAngle() < targetAngle){
+                    double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
+
+                    if(remainingDistance < 45){
+                        power = calculateModularPower(1, .4, remainingDistance, 45, .2);
+                    }else{
+                        power = 1;
+                    }
+
+                    leftVelo(power);
+                    rightVelo(-power);
+                }
             }
+
+            motorsOff();
         }else{
-            if(true){
+            if(originalAngle - Math.abs(changeInAngle) - 10 < 0){
+                boolean inNewCircle = false;
 
+                while(opModeIsActive() && (!inNewCircle || getAngle() > targetAngle)){
+                    double curAngle = getAngle();
+                    double remainingDistance = Math.abs(optimalAngleChange(targetAngle, curAngle));
+
+                    if(remainingDistance < 45){
+                        power = calculateModularPower(1, .4, remainingDistance, 45, .2);
+                    }else{
+                        power = 1;
+                    }
+
+                    leftVelo(-power);
+                    rightVelo(power);
+
+                    if(curAngle < 360 && curAngle > originalAngle){
+                        inNewCircle = true;
+                    }
+                }
             }else{
+                while(opModeIsActive() && getAngle() > targetAngle){
+                    double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
+                    if(remainingDistance < 45){
+                        power = calculateModularPower(1, .4, remainingDistance, 45, .2);
+                    }else{
+                        power = 1;
+                    }
+
+                    leftVelo(-power);
+                    rightVelo(power);
+                }
             }
         }
+        
         motorsOff();
     }
 
@@ -568,14 +631,14 @@ public class AutoTesting extends LinearOpMode
         resetEncoders();
     }
 
-    public void leftVelo(double maxPercent){ //sets power for left wheels
-        leftWheel(maxPercent);
-        leftBackWheel(maxPercent);
+    public void leftVelo(double power){ //sets power for left wheels
+        leftWheel(power);
+        leftBackWheel(power);
     }
 
-    public void rightVelo(double maxPercent){ //sets power for right wheels
-        rightWheel(maxPercent);
-        rightBackWheel(maxPercent);
+    public void rightVelo(double power){ //sets power for right wheels
+        rightWheel(power);
+        rightBackWheel(power);
     }
 
     public void leftWheel(double percent){
@@ -633,15 +696,15 @@ public class AutoTesting extends LinearOpMode
      * (Desmos graph example: https://www.desmos.com/calculator/gsujcy9qjs)
      * @param maxPower Maximum power allowed to return (0-1)
      * @param minPower Minimum power to return
-     * @param distanceFromTarget Distance to target position
+     * @param remainingDistance Distance to target position
      * @param maxDistance Distance to calculate curve of Sin wave
      * @param kValue Steepness of the Sin wave (0-1; 0 = standard wave, 1 = very steep wave)
      * @return Power to run at in relation to distance from end point
      */
-    public double calculateModularPower(double maxPower, double minPower, double distanceFromTarget, double maxDistance, double kValue){
+    public double calculateModularPower(double maxPower, double minPower, double remainingDistance, double maxDistance, double kValue){
         double a = maxPower / 2;
         double b = 1 / maxDistance;
-        double x = -distanceFromTarget;
+        double x = -remainingDistance;
 
         double exponent = Math.pow((2 * (1 - x)), kValue);
         double radians = x * Math.PI - ((maxDistance * Math.PI) / 2);
@@ -744,7 +807,11 @@ public class AutoTesting extends LinearOpMode
         }
     }
 
-    public void setUpHardware() { // Assigns motor names in phone to the objects in code
+    /**
+     * Setup all hardware.
+     */
+    public void setUpHardware() {
+        // Bulk reading
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
         for (LynxModule hub : allHubs) {
