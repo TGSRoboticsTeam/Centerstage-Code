@@ -512,7 +512,7 @@ public class AutoTesting extends LinearOpMode
                 }
             }
         }
-        
+
         motorsOff();
     }
 
