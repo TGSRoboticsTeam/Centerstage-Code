@@ -437,13 +437,15 @@ public class AutoTesting extends LinearOpMode
                     double remainingDistance = Math.abs(optimalAngleChange(targetAngle, curAngle));
 
                     if(remainingDistance < 45){
-                        power = calculateModularPower(1, .4, remainingDistance, 45, .2);
+                        power = calculateModularPower(1, .3, remainingDistance, 45, .2);
                     }else{
                         power = 1;
                     }
 
-                    leftVelo(power);
-                    rightVelo(-power);
+                    leftDrive.setPower(power);
+                    leftBackDrive.setPower(power);
+                    rightDrive.setPower(-power);
+                    rightBackDrive.setPower(-power);
 
                     if(curAngle > 0 && curAngle < originalAngle){
                         inNewCircle = true;
@@ -454,13 +456,15 @@ public class AutoTesting extends LinearOpMode
                     double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
                     if(remainingDistance < 45){
-                        power = calculateModularPower(1, .4, remainingDistance, 45, .2);
+                        power = calculateModularPower(1, .3, remainingDistance, 45, .2);
                     }else{
                         power = 1;
                     }
 
-                    leftVelo(power);
-                    rightVelo(-power);
+                    leftDrive.setPower(power);
+                    leftBackDrive.setPower(power);
+                    rightDrive.setPower(-power);
+                    rightBackDrive.setPower(-power);
                 }
             }
 
@@ -479,8 +483,10 @@ public class AutoTesting extends LinearOpMode
                         power = 1;
                     }
 
-                    leftVelo(-power);
-                    rightVelo(power);
+                    leftDrive.setPower(-power);
+                    leftBackDrive.setPower(-power);
+                    rightDrive.setPower(power);
+                    rightBackDrive.setPower(power);
 
                     if(curAngle < 360 && curAngle > originalAngle){
                         inNewCircle = true;
@@ -496,8 +502,10 @@ public class AutoTesting extends LinearOpMode
                         power = 1;
                     }
 
-                    leftVelo(-power);
-                    rightVelo(power);
+                    leftDrive.setPower(-power);
+                    leftBackDrive.setPower(-power);
+                    rightDrive.setPower(power);
+                    rightBackDrive.setPower(power);
                 }
             }
         }
