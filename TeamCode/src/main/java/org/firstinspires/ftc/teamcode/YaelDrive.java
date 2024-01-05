@@ -99,6 +99,7 @@ public class YaelDrive extends LinearOpMode {
             double axial   = -gamepad1.left_stick_y;
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
+            boolean slowDown = gamepad1.left_bumper;
 
             float raiseSlides = gamepad2.right_trigger;
             float lowerSlides = gamepad2.left_trigger;
@@ -132,6 +133,9 @@ public class YaelDrive extends LinearOpMode {
             double leftBack   = axial - lateral + yaw;
             double leftFront  = axial + lateral + yaw;
             double max;
+            // Multipiyes the wheels power by a decimal value to lower the speed;
+            double changeInSpeed = 0.2;
+
 
             max = Math.max(Math.abs(leftFront), Math.abs(rightFront));
             max = Math.max(max, Math.abs(leftBack));
@@ -142,6 +146,13 @@ public class YaelDrive extends LinearOpMode {
                 rightFront /= max;
                 leftBack   /= max;
                 rightBack  /= max;
+            }
+
+            if (slowDown){
+                leftFront  *= changeInSpeed;
+                rightFront *= changeInSpeed;
+                leftBack   *= changeInSpeed;
+                rightBack  *= changeInSpeed;
             }
 
             // Associates buttons/joysticks to motors/servos:
