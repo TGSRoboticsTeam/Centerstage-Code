@@ -99,6 +99,9 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             double x   =  gamepad1.left_stick_x;
             double rx  =  gamepad1.right_stick_x;
 
+            boolean slowDown = gamepad1.left_bumper;
+            double changeInSpeed = 0.2;
+
             // Pixel grabber mechanism
             float raiseSlides = gamepad2.right_trigger;
             float lowerSlides = gamepad2.left_trigger;
@@ -135,6 +138,13 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             double backLeftPower = (rotY - rotX + rx) / denominator;
             double frontRightPower = (rotY - rotX - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
+
+            if (slowDown){
+                frontLeftPower  *= changeInSpeed;
+                frontRightPower *= changeInSpeed;
+                backLeftPower   *= changeInSpeed;
+                backRightPower  *= changeInSpeed;
+            }
 
             leftFrontDrive.setPower(frontLeftPower);
             leftBackDrive.setPower(backLeftPower);

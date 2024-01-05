@@ -90,6 +90,9 @@ public class StandardTourneyDrive extends LinearOpMode {
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
 
+            boolean slowDown = gamepad1.left_bumper;
+            double changeInSpeed = 0.2;
+
             float raiseSlides = gamepad2.right_trigger;
             float lowerSlides = gamepad2.left_trigger;
 
@@ -132,6 +135,13 @@ public class StandardTourneyDrive extends LinearOpMode {
                 rightFront /= max;
                 leftBack   /= max;
                 rightBack  /= max;
+            }
+
+            if (slowDown){
+                leftFront  *= changeInSpeed;
+                rightFront *= changeInSpeed;
+                leftBack   *= changeInSpeed;
+                rightBack  *= changeInSpeed;
             }
 
             // Associates buttons/joysticks to motors/servos:

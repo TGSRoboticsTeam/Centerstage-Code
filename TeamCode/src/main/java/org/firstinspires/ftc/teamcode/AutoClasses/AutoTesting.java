@@ -128,9 +128,18 @@ public class AutoTesting extends LinearOpMode
             telemetry.update();
         }
 
-        moveSlides(10);
-        waitTime(5);
-        moveSlides(0);
+        moveInchAmount(true, 36);
+        waitTime(3);
+        moveInchAmount(false,36);
+        waitTime(3);
+        moveInchAmount(true, 12);
+        turnToAngle(45);
+        waitTime(3);
+        turnToAngle(180);
+        waitTime(3);
+        turnToAngle(270);
+        waitTime(3);
+        turnToAngle(10);
     }
 
     /**
@@ -600,20 +609,23 @@ public class AutoTesting extends LinearOpMode
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
                 if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
-                    power = calculateModularPower(1, .1, (totalTicks - leftBackDrive.getCurrentPosition()), oneFoot, .3);
+                    power = calculateModularPower(.75, .1, (totalTicks - leftBackDrive.getCurrentPosition()), oneFoot, .4);
                 }else{
-                    power = 1;
+                    power = .75;
                 }
 
                 motorsOn(power);
                 telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
+                telemetry.addData("Target Tick:", totalTicks);
+                telemetry.addData("One Foot Ticks:", oneFoot);
+                telemetry.addData("Distance Remaining: ", totalTicks - leftBackDrive.getCurrentPosition());
                 telemetry.update();
             }
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
-                    power = calculateModularPower(1, .1, (totalTicks - leftBackDrive.getCurrentPosition()), oneFoot, .3);
+                if((Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())) < oneFoot) {
+                    power = calculateModularPower(.75, .1, (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), oneFoot, .4);
                 }else{
                     power = 1;
                 }
@@ -621,11 +633,14 @@ public class AutoTesting extends LinearOpMode
                 motorsOn(-power);
 
                 telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
+                telemetry.addData("Target Tick:", totalTicks);
                 telemetry.update();
             }
         }
         motorsOff();
         resetEncoders();
+        telemetry.addLine("Pathing finished");
+        telemetry.update();
     }
 
     public void leftVelo(double power){ //sets power for left wheels
@@ -699,6 +714,10 @@ public class AutoTesting extends LinearOpMode
      * @return Power to run at in relation to distance from end point
      */
     public double calculateModularPower(double maxPower, double minPower, double remainingDistance, double maxDistance, double kValue){
+        if(remainingDistance < 0){
+            return minPower;
+        }
+
         double a = maxPower / 2;
         double b = 1 / maxDistance;
         double x = -remainingDistance;
