@@ -62,6 +62,8 @@ public class YaelDrive extends LinearOpMode {
 
         int pixelsReleased = 0;
 
+        boolean liftFlipped = false;
+
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -217,10 +219,12 @@ public class YaelDrive extends LinearOpMode {
                 //rightClawRotate.setPosition(0);
             }
 
-            if(flipLift){
+            if(flipLift && !liftFlipped){
                 liftServo.setPosition(.3);
+                liftFlipped = true;
             }else if (unflipLift) {
                 liftServo.setPosition(.48);
+                liftFlipped = false;
             }
 
             lift.setPower(raiseLift-lowerLift);

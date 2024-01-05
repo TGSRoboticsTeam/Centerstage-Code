@@ -205,10 +205,12 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
                 //rightClawRotate.setPosition(0);
             }
 
-            if(flipLift){
+            if(flipLift && !liftFlipped){
                 liftServo.setPosition(.3);
+                liftFlipped = true;
             }else if (unflipLift) {
                 liftServo.setPosition(.48);
+                liftFlipped = false;
             }
 
             lift.setPower(raiseLift-lowerLift);
