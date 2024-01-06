@@ -124,7 +124,7 @@ public class BlueOpenCv extends LinearOpMode {
             Imgproc.cvtColor(frame, hsvFrame, Imgproc.COLOR_BGR2HSV);
 
             Scalar lowerYellow = new Scalar(100, 50, 50);
-            Scalar upperYellow = new Scalar(140, 255, 255);
+            Scalar upperYellow = new Scalar(120, 255, 255);
 
 
             Mat yellowMask = new Mat();
