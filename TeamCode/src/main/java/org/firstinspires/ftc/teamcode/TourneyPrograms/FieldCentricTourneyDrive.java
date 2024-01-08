@@ -81,7 +81,7 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         imu.initialize(parameters);
 
         // servo starting position
-        liftServo.setPosition(.45);
+        liftServo.setPosition(.44);
 
         leftClawRotate.setPosition(.03);
 
@@ -206,10 +206,10 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             }
 
             if(flipLift && !liftFlipped){
-                liftServo.setPosition(.3);
+                liftServo.setPosition(.25);
                 liftFlipped = true;
             }else if (unflipLift) {
-                liftServo.setPosition(.48);
+                liftServo.setPosition(.44);
                 liftFlipped = false;
             }
 

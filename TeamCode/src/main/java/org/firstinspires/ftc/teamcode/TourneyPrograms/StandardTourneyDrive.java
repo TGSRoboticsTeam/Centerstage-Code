@@ -71,7 +71,7 @@ public class StandardTourneyDrive extends LinearOpMode {
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // servo starting position
-        liftServo.setPosition(.48);
+        liftServo.setPosition(.44);
 
         leftClawRotate.setPosition(.03);
 
@@ -208,10 +208,10 @@ public class StandardTourneyDrive extends LinearOpMode {
             }
 
             if(flipLift && !liftFlipped){
-                liftServo.setPosition(.3);
+                liftServo.setPosition(.25);
                 liftFlipped = true;
             }else if (unflipLift) {
-                liftServo.setPosition(.48);
+                liftServo.setPosition(.44);
                 liftFlipped = false;
             }
 

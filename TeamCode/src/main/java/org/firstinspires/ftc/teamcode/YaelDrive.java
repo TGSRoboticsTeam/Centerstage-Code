@@ -72,7 +72,7 @@ public class YaelDrive extends LinearOpMode {
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Servo starting positions
-        liftServo.setPosition(.2);
+        liftServo.setPosition(.44);
         deposit.setPosition(.35);
 
         leftClawRotate.setPosition(.03);
@@ -220,10 +220,10 @@ public class YaelDrive extends LinearOpMode {
             }
 
             if(flipLift && !liftFlipped){
-                liftServo.setPosition(.3);
+                liftServo.setPosition(.25);
                 liftFlipped = true;
             }else if (unflipLift) {
-                liftServo.setPosition(.48);
+                liftServo.setPosition(.44);
                 liftFlipped = false;
             }
 
