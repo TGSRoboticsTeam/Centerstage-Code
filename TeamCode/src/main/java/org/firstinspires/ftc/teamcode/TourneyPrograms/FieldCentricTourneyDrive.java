@@ -190,7 +190,7 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             if (-rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(raiseSlides);
-            }else if (-leftLinearSlide.getCurrentPosition() < maxExtend) {
+            }else if (-rightLinearSlide.getCurrentPosition() < maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
