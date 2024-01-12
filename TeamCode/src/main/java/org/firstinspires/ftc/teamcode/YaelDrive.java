@@ -202,21 +202,21 @@ public class YaelDrive extends LinearOpMode {
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            /*if (rightLinearSlide.getCurrentPosition() < 0) {
+            if (-rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(raiseSlides);
-            }else if (leftLinearSlide.getCurrentPosition() > -maxExtend) {
+            }else if (-leftLinearSlide.getCurrentPosition() < maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }*/
+            }
 
             // Deposit rotation
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
                 leftClawRotate.setPosition(0.26);
-                //rightClawRotate.setPosition(0.5);
+                rightClawRotate.setPosition(1-0.26);
             }else{
                 leftClawRotate.setPosition(.03);
-                //rightClawRotate.setPosition(0);
+                rightClawRotate.setPosition(1-.03);
             }
 
             if(flipLift && !liftFlipped){
