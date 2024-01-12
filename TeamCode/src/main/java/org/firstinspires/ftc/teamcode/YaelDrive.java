@@ -211,10 +211,20 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Deposit rotation
+            /*
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
                 leftClawRotate.setPosition(0.26);
                 rightClawRotate.setPosition(1-0.26);
             }else{
+                leftClawRotate.setPosition(.03);
+                rightClawRotate.setPosition(1-.03);
+            }
+             */
+
+            if(gamepad1.dpad_up){
+                leftClawRotate.setPosition(0.26);
+                rightClawRotate.setPosition(1-0.26);
+            }else if (gamepad1.dpad_down){
                 leftClawRotate.setPosition(.03);
                 rightClawRotate.setPosition(1-.03);
             }
