@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -11,8 +13,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @TeleOp(name = "Yael Drive", group = "Yael Drive")
 
+@Config
 public class YaelDrive extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -45,9 +50,6 @@ public class YaelDrive extends LinearOpMode {
 
         lift.setDirection(DcMotor.Direction.FORWARD);
 
-        leftClawRotate.setDirection(Servo.Direction.REVERSE);
-        rightClawRotate.setDirection(Servo.Direction.FORWARD);
-
         leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
         rightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
 
@@ -64,6 +66,8 @@ public class YaelDrive extends LinearOpMode {
 
         boolean liftFlipped = false;
 
+        boolean depositRotated = false;
+
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -73,15 +77,21 @@ public class YaelDrive extends LinearOpMode {
 
         // Servo starting positions
         liftServo.setPosition(.44);
-        deposit.setPosition(.35);
+        deposit.setPosition(0.34);
 
-        leftClawRotate.setPosition(.84);
-        rightClawRotate.setPosition(.32);
+        leftClawRotate.setPosition(0.722);
+        rightClawRotate.setPosition(0.148);
+
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
         // Need this so that the code will stay initialized until you hit play on the phone
         while (!isStarted()) {
-            telemetry.addData("Servo Position: ", deposit.getPosition());
-            telemetry.update();
+            liftServo.setPosition(.44);
+            deposit.setPosition(0.61);
+
+            leftClawRotate.setPosition(0.722);
+            rightClawRotate.setPosition(0.148);
         }
 
         while (opModeIsActive()) {
@@ -90,13 +100,10 @@ public class YaelDrive extends LinearOpMode {
 
             // The two following variables are negative because the left linear slides encoder
             // goes negative as it goes up, and that's what we had been using.
-            int maxExtend = -3000;
+            int maxExtend = -2500;
 
             // This height worked when testing servo positions.
-            double clawPosition = -1250;
-
-            // I'll explain limiting max power when we get back
-            double motorMax = 0.85;
+            double clawPosition = -1000;
 
             // Drive
             double axial   = -gamepad1.left_stick_y;
@@ -136,7 +143,8 @@ public class YaelDrive extends LinearOpMode {
             double leftBack   = axial - lateral + yaw;
             double leftFront  = axial + lateral + yaw;
             double max;
-            // Multipiyes the wheels power by a decimal value to lower the speed;
+
+            // Multiplies the wheels power by a decimal value to lower the speed;
             double changeInSpeed = 0.2;
 
 
@@ -175,14 +183,14 @@ public class YaelDrive extends LinearOpMode {
             // Grabber
             // Makes it so you can release pixels individually
             if (loadPixel){
-                deposit.setPosition(0.16);
+                deposit.setPosition(0.34);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(.26);
+                    deposit.setPosition(.55);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(.36);
+                    deposit.setPosition(.61);
                 }
             }
 
@@ -195,13 +203,13 @@ public class YaelDrive extends LinearOpMode {
                 plane.setPosition(0);
             }
 
-            /*if (leftLinearSlide.getCurrentPosition() > 0) {
+            if (leftLinearSlide.getCurrentPosition() > 0) {
                 leftLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
                 leftLinearSlide.setPower(-lowerSlides);
             }else{
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
-            }*/
+            }
 
             if (-rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(raiseSlides);
@@ -214,12 +222,20 @@ public class YaelDrive extends LinearOpMode {
             // Deposit rotation
 
             if (rightLinearSlide.getCurrentPosition() > -clawPosition){
-                leftClawRotate.setPosition(1);
-                rightClawRotate.setPosition(.5);
+                leftClawRotate.setPosition(0.505);
+                rightClawRotate.setPosition(0.358);
             }else{
-                leftClawRotate.setPosition(.84);
-                rightClawRotate.setPosition(.32);
+                leftClawRotate.setPosition(0.73);
+                rightClawRotate.setPosition(0.14);
             }
+
+            /*if(gamepad1.dpad_up){
+                leftClawRotate.setPosition(0.505);
+                rightClawRotate.setPosition(0.358);
+            }else if(gamepad1.dpad_down){
+                leftClawRotate.setPosition(0.722);
+                rightClawRotate.setPosition(0.148);
+            }*/
 
             if(flipLift && !liftFlipped){
                 liftServo.setPosition(.25);
@@ -235,11 +251,12 @@ public class YaelDrive extends LinearOpMode {
                 lift.setPower(0);
             }
 
-            telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
-            telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
-            telemetry.addData("Right Servo", rightClawRotate.getPosition());
-            telemetry.addData("Left Servo", leftClawRotate.getPosition());
-            telemetry.update();
+            dashboardTelemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Right Servo", rightClawRotate.getPosition());
+            dashboardTelemetry.addData("Left Servo", leftClawRotate.getPosition());
+            dashboardTelemetry.addData("Deposit", deposit.getPosition());
+            dashboardTelemetry.update();
         }
     }
 }
