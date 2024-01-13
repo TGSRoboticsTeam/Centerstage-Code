@@ -52,8 +52,8 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         leftClawRotate.setDirection(Servo.Direction.REVERSE);
         rightClawRotate.setDirection(Servo.Direction.FORWARD);
 
-        leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
-        rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
 
         // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -83,7 +83,8 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         // servo starting position
         liftServo.setPosition(.44);
 
-        leftClawRotate.setPosition(.03);
+        leftClawRotate.setPosition(.84);
+        rightClawRotate.setPosition(.32);
 
         boolean liftFlipped = false;
         int pixelsReleased = 0;
@@ -188,21 +189,21 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            if (-rightLinearSlide.getCurrentPosition() > 0) {
+            /*if (-rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(raiseSlides);
             }else if (-rightLinearSlide.getCurrentPosition() < maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
+            }*/
 
             // Deposit rotation
             if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.26);
-                rightClawRotate.setPosition(1-0.26);
+                leftClawRotate.setPosition(1);
+                rightClawRotate.setPosition(.5);
             }else{
-                leftClawRotate.setPosition(.03);
-                rightClawRotate.setPosition(1-.03);
+                leftClawRotate.setPosition(.84);
+                rightClawRotate.setPosition(.32);
             }
 
             if(flipLift && !liftFlipped){

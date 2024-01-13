@@ -48,8 +48,8 @@ public class YaelDrive extends LinearOpMode {
         leftClawRotate.setDirection(Servo.Direction.REVERSE);
         rightClawRotate.setDirection(Servo.Direction.FORWARD);
 
-        leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
-        rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
 
         // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -75,7 +75,8 @@ public class YaelDrive extends LinearOpMode {
         liftServo.setPosition(.44);
         deposit.setPosition(.35);
 
-        leftClawRotate.setPosition(.03);
+        leftClawRotate.setPosition(.84);
+        rightClawRotate.setPosition(.32);
 
         // Need this so that the code will stay initialized until you hit play on the phone
         while (!isStarted()) {
@@ -194,13 +195,13 @@ public class YaelDrive extends LinearOpMode {
                 plane.setPosition(0);
             }
 
-            if (leftLinearSlide.getCurrentPosition() > 0) {
+            /*if (leftLinearSlide.getCurrentPosition() > 0) {
                 leftLinearSlide.setPower(raiseSlides);
             }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
                 leftLinearSlide.setPower(-lowerSlides);
             }else{
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
+            }*/
 
             if (-rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(raiseSlides);
@@ -211,22 +212,13 @@ public class YaelDrive extends LinearOpMode {
             }
 
             // Deposit rotation
-            /*
-            if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.26);
-                rightClawRotate.setPosition(1-0.26);
-            }else{
-                leftClawRotate.setPosition(.03);
-                rightClawRotate.setPosition(1-.03);
-            }
-             */
 
-            if(gamepad1.dpad_up){
-                leftClawRotate.setPosition(0.26);
-                rightClawRotate.setPosition(1-0.26);
-            }else if (gamepad1.dpad_down){
-                leftClawRotate.setPosition(.03);
-                rightClawRotate.setPosition(1-.03);
+            if (rightLinearSlide.getCurrentPosition() > -clawPosition){
+                leftClawRotate.setPosition(1);
+                rightClawRotate.setPosition(.5);
+            }else{
+                leftClawRotate.setPosition(.84);
+                rightClawRotate.setPosition(.32);
             }
 
             if(flipLift && !liftFlipped){
@@ -245,6 +237,8 @@ public class YaelDrive extends LinearOpMode {
 
             telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
+            telemetry.addData("Right Servo", rightClawRotate.getPosition());
+            telemetry.addData("Left Servo", leftClawRotate.getPosition());
             telemetry.update();
         }
     }
