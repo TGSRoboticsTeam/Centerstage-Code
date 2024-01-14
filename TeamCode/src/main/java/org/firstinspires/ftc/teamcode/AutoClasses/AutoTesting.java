@@ -442,11 +442,6 @@ public class AutoTesting extends LinearOpMode
      * @param targetAngle Target angle to rotate to
      */
     public void turnToAngle(double targetAngle){
-        double originalAngle = getAngle();
-        double changeInAngle = optimalAngleChange(targetAngle, originalAngle);
-
-        boolean CCW = optimalDirection(targetAngle, originalAngle);
-
         double power;
 
         while(Math.abs(optimalAngleChange(targetAngle, getAngle())) > .1){
