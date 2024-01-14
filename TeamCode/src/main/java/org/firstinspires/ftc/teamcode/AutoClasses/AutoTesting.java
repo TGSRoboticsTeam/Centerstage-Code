@@ -449,7 +449,7 @@ public class AutoTesting extends LinearOpMode
 
         double power;
 
-        while(Math.abs(optimalAngleChange(targetAngle, getAngle())) > .25){
+        while(Math.abs(optimalAngleChange(targetAngle, getAngle())) > .1){
             double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
             if(remainingDistance < 45){
