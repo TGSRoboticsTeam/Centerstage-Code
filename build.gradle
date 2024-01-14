@@ -27,7 +27,3 @@ allprojects {
 repositories {
     mavenCentral()
 }
-
-repositories {
-    jcenter()
-}
