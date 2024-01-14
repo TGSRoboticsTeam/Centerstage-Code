@@ -66,8 +66,6 @@ public class YaelDrive extends LinearOpMode {
 
         boolean liftFlipped = false;
 
-        boolean depositRotated = false;
-
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -77,7 +75,7 @@ public class YaelDrive extends LinearOpMode {
 
         // Servo starting positions
         liftServo.setPosition(.44);
-        deposit.setPosition(0.34);
+        deposit.setPosition(0.61);
 
         leftClawRotate.setPosition(0.722);
         rightClawRotate.setPosition(0.148);

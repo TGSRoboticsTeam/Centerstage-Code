@@ -27,6 +27,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -37,6 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -118,6 +120,9 @@ public class AutoTesting extends LinearOpMode
 
     AprilTagDetection tagOfInterest = null;
 
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
     @Override
     public void runOpMode()
     {
@@ -128,18 +133,24 @@ public class AutoTesting extends LinearOpMode
             telemetry.update();
         }
 
-        moveInchAmount(true, 36);
-        waitTime(3);
-        moveInchAmount(false,36);
-        waitTime(3);
-        moveInchAmount(true, 12);
-        turnToAngle(45);
+        /*turnToAngle(45);
         waitTime(3);
         turnToAngle(180);
         waitTime(3);
         turnToAngle(270);
         waitTime(3);
-        turnToAngle(10);
+        turnToAngle(90);
+        waitTime(3);
+        turnToAngle(0);*/
+
+        while(opModeIsActive()) {
+            dashboardTelemetry.addData("Heading", getAngle());
+            dashboardTelemetry.addData("Optimal change in angle 45", optimalAngleChange(45, getAngle()));
+            dashboardTelemetry.addData("Optimal change in angle 90", optimalAngleChange(90, getAngle()));
+            dashboardTelemetry.addData("Optimal change in angle 180", optimalAngleChange(180, getAngle()));
+            dashboardTelemetry.addData("Optimal change in angle 270", optimalAngleChange(270, getAngle()));
+            dashboardTelemetry.update();
+        }
     }
 
     /**
@@ -446,7 +457,7 @@ public class AutoTesting extends LinearOpMode
                     double remainingDistance = Math.abs(optimalAngleChange(targetAngle, curAngle));
 
                     if(remainingDistance < 45){
-                        power = calculateModularPower(1, .3, remainingDistance, 45, .2);
+                        power = calculateModularPower(.75, .3, remainingDistance / 3.75, 45 / 3.75, .2);
                     }else{
                         power = 1;
                     }
@@ -465,7 +476,7 @@ public class AutoTesting extends LinearOpMode
                     double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
                     if(remainingDistance < 45){
-                        power = calculateModularPower(1, .3, remainingDistance, 45, .2);
+                        power = calculateModularPower(.75, .3, remainingDistance / 3.75, 45 / 3.75, .2);
                     }else{
                         power = 1;
                     }
@@ -487,7 +498,7 @@ public class AutoTesting extends LinearOpMode
                     double remainingDistance = Math.abs(optimalAngleChange(targetAngle, curAngle));
 
                     if(remainingDistance < 45){
-                        power = calculateModularPower(1, .4, remainingDistance, 45, .2);
+                        power = calculateModularPower(.75, .3, remainingDistance / 3.75, 45 / 3.75, .2);
                     }else{
                         power = 1;
                     }
@@ -506,7 +517,7 @@ public class AutoTesting extends LinearOpMode
                     double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
                     if(remainingDistance < 45){
-                        power = calculateModularPower(1, .4, remainingDistance, 45, .2);
+                        power = calculateModularPower(.75, .3, remainingDistance / 3.75, 45 / 3.75, .2);
                     }else{
                         power = 1;
                     }
@@ -609,32 +620,38 @@ public class AutoTesting extends LinearOpMode
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
                 if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
-                    power = calculateModularPower(.75, .1, (totalTicks - leftBackDrive.getCurrentPosition()), oneFoot, .4);
+                    power = calculateModularPower(.5, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
                 }else{
-                    power = .75;
+                    power = .5;
                 }
 
                 motorsOn(power);
-                telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
-                telemetry.addData("Target Tick:", totalTicks);
-                telemetry.addData("One Foot Ticks:", oneFoot);
-                telemetry.addData("Distance Remaining: ", totalTicks - leftBackDrive.getCurrentPosition());
-                telemetry.update();
+                dashboardTelemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
+                dashboardTelemetry.addData("Target Tick:", totalTicks);
+                dashboardTelemetry.addData("One Foot Ticks:", oneFoot);
+                dashboardTelemetry.addData("Distance Remaining: ", totalTicks - leftBackDrive.getCurrentPosition());
+                dashboardTelemetry.addData("Motor power:", leftBackDrive.getPower());
+                dashboardTelemetry.addData("Returned power", calculateModularPower(.5, .1, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15));
+                dashboardTelemetry.update();
             }
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
                 if((Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())) < oneFoot) {
-                    power = calculateModularPower(.75, .1, (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), oneFoot, .4);
+                    power = calculateModularPower(.5, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
                 }else{
-                    power = 1;
+                    power = .5;
                 }
 
                 motorsOn(-power);
 
-                telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
-                telemetry.addData("Target Tick:", totalTicks);
-                telemetry.update();
+                dashboardTelemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
+                dashboardTelemetry.addData("Target Tick:", totalTicks);
+                dashboardTelemetry.addData("One Foot Ticks:", oneFoot);
+                dashboardTelemetry.addData("Distance Remaining: ", totalTicks - leftBackDrive.getCurrentPosition());
+                dashboardTelemetry.addData("Motor power:", leftBackDrive.getPower());
+                dashboardTelemetry.addData("Returned power", calculateModularPower(.5, .1, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25));
+                dashboardTelemetry.update();
             }
         }
         motorsOff();
@@ -718,13 +735,12 @@ public class AutoTesting extends LinearOpMode
             return minPower;
         }
 
-        double a = maxPower / 2;
         double b = 1 / maxDistance;
         double x = -remainingDistance;
 
         double exponent = Math.pow((2 * (1 - x)), kValue);
         double radians = x * Math.PI - ((maxDistance * Math.PI) / 2);
-        double base = a + Math.sin(b * radians) / 2;
+        double base = maxPower * (.5 + Math.sin(b * radians) / 2);
 
         double y = Math.pow(base, exponent);
 
@@ -839,8 +855,8 @@ public class AutoTesting extends LinearOpMode
         rightSlide = hardwareMap.get(DcMotorEx.class, "right_linear_slide");
 
         deposit = hardwareMap.get(Servo.class, "claw");
-        leftArm = hardwareMap.get(Servo.class, "right_claw_rotation");
-        rightArm = hardwareMap.get(Servo.class, "left_claw_rotation");
+        rightArm = hardwareMap.get(Servo.class, "right_claw_rotation");
+        leftArm = hardwareMap.get(Servo.class, "left_claw_rotation");
 
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -863,12 +879,9 @@ public class AutoTesting extends LinearOpMode
         leftSlide.setMode(RUN_USING_ENCODER);
         rightSlide.setMode(RUN_USING_ENCODER);
 
-        leftArm.setDirection(Servo.Direction.FORWARD);
-        rightArm.setDirection(Servo.Direction.REVERSE);
-
-        leftArm.setPosition(.03);
-        rightArm.setPosition(.03);
-        deposit.setPosition(.36);
+        leftArm.setPosition(0.722);
+        rightArm.setPosition(0.148);
+        deposit.setPosition(.61);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
