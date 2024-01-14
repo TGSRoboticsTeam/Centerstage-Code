@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TestingClasses;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -24,34 +25,30 @@ import org.firstinspires.ftc.teamcode.Bot.Commands.TriggerDeposit;
 
 @TeleOp(name = "Subsystem Tests", group = "Testing")
 
-public class SubsystemTesting extends LinearOpMode {
+public class SubsystemTesting extends CommandOpMode {
+
+    GamepadEx driver = new GamepadEx(gamepad1);
+    GamepadEx placer = new GamepadEx(gamepad1);
+
+    CenterStageBot robot;
+
+    MoveSlides slides;
+
     @Override
-    public void runOpMode() {
-        GamepadEx driver = new GamepadEx(gamepad1);
-        GamepadEx placer = new GamepadEx(gamepad1);
+    public void initialize(){
+        driver = new GamepadEx(gamepad1);
+        placer = new GamepadEx(gamepad1);
 
-        CenterStageBot robot = new CenterStageBot(hardwareMap);
+        robot = new CenterStageBot(hardwareMap);
 
-        MoveSlides slides = new MoveSlides(robot.linearSlides, ()-> placer.getTrigger(
+        slides = new MoveSlides(robot.linearSlides, ()-> placer.getTrigger(
                 GamepadKeys.Trigger.RIGHT_TRIGGER) - placer.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+        placer.getGamepadButton(GamepadKeys.Button.A)
+                .whenPressed(robot.depositIntake);
+        placer.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(robot.depositOuttake);
 
-        // Need this so that the code will stay initialized until you hit play on the phone
-        while (!isStarted()) {
-
-        }
-
-        while (opModeIsActive()) {
-            robot.linearSlides.setDefaultCommand(slides);
-
-            placer.getGamepadButton(GamepadKeys.Button.A)
-                            .whenPressed(robot.depositIntake);
-            placer.getGamepadButton(GamepadKeys.Button.B)
-                            .whenPressed(robot.depositOuttake);
-
-            dashboardTelemetry.update();
-        }
+        robot.linearSlides.setDefaultCommand(slides);
     }
 }
