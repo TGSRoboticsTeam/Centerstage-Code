@@ -133,24 +133,25 @@ public class AutoTesting extends LinearOpMode
             telemetry.update();
         }
 
-        /*turnToAngle(45);
+        turnToAngle(90);
         waitTime(3);
-        turnToAngle(180);
+        turnToAngle(135);
         waitTime(3);
         turnToAngle(270);
         waitTime(3);
-        turnToAngle(90);
+        turnToAngle(180);
         waitTime(3);
-        turnToAngle(0);*/
+        turnToAngle(0);
+        waitTime(3);
 
-        while(opModeIsActive()) {
+        /*while(opModeIsActive()) {
             dashboardTelemetry.addData("Heading", getAngle());
             dashboardTelemetry.addData("Optimal change in angle 45", optimalAngleChange(45, getAngle()));
             dashboardTelemetry.addData("Optimal change in angle 90", optimalAngleChange(90, getAngle()));
             dashboardTelemetry.addData("Optimal change in angle 180", optimalAngleChange(180, getAngle()));
             dashboardTelemetry.addData("Optimal change in angle 270", optimalAngleChange(270, getAngle()));
             dashboardTelemetry.update();
-        }
+        }*/
     }
 
     /**
@@ -444,89 +445,29 @@ public class AutoTesting extends LinearOpMode
         double originalAngle = getAngle();
         double changeInAngle = optimalAngleChange(targetAngle, originalAngle);
 
-        boolean CW = optimalDirection(targetAngle, originalAngle);
+        boolean CCW = optimalDirection(targetAngle, originalAngle);
 
         double power;
 
-        if(CW) {
-            if(originalAngle + Math.abs(changeInAngle) + 10 > 360){ // If turning will bring it close to or greater than 360 degrees
-                boolean inNewCircle = false;
+        while(Math.abs(optimalAngleChange(targetAngle, getAngle())) > .25){
+            double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
-                while(opModeIsActive() && (!inNewCircle || getAngle() < targetAngle)){
-                    double curAngle = getAngle();
-                    double remainingDistance = Math.abs(optimalAngleChange(targetAngle, curAngle));
-
-                    if(remainingDistance < 45){
-                        power = calculateModularPower(.75, .3, remainingDistance / 3.75, 45 / 3.75, .2);
-                    }else{
-                        power = 1;
-                    }
-
-                    leftDrive.setPower(power);
-                    leftBackDrive.setPower(power);
-                    rightDrive.setPower(-power);
-                    rightBackDrive.setPower(-power);
-
-                    if(curAngle > 0 && curAngle < originalAngle){
-                        inNewCircle = true;
-                    }
-                }
+            if(remainingDistance < 45){
+                power = calculateModularPower(.6, .2, remainingDistance / 3.75, 45 / 3.75, .2);
             }else{
-                while(opModeIsActive() && getAngle() < targetAngle){
-                    double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
-
-                    if(remainingDistance < 45){
-                        power = calculateModularPower(.75, .3, remainingDistance / 3.75, 45 / 3.75, .2);
-                    }else{
-                        power = 1;
-                    }
-
-                    leftDrive.setPower(power);
-                    leftBackDrive.setPower(power);
-                    rightDrive.setPower(-power);
-                    rightBackDrive.setPower(-power);
-                }
+                power = .6;
             }
 
-            motorsOff();
-        }else{
-            if(originalAngle - Math.abs(changeInAngle) - 10 < 0){
-                boolean inNewCircle = false;
-
-                while(opModeIsActive() && (!inNewCircle || getAngle() > targetAngle)){
-                    double curAngle = getAngle();
-                    double remainingDistance = Math.abs(optimalAngleChange(targetAngle, curAngle));
-
-                    if(remainingDistance < 45){
-                        power = calculateModularPower(.75, .3, remainingDistance / 3.75, 45 / 3.75, .2);
-                    }else{
-                        power = 1;
-                    }
-
-                    leftDrive.setPower(-power);
-                    leftBackDrive.setPower(-power);
-                    rightDrive.setPower(power);
-                    rightBackDrive.setPower(power);
-
-                    if(curAngle < 360 && curAngle > originalAngle){
-                        inNewCircle = true;
-                    }
-                }
+            if(optimalDirection(targetAngle, getAngle())){
+                leftDrive.setPower(-power);
+                leftBackDrive.setPower(-power);
+                rightDrive.setPower(power);
+                rightBackDrive.setPower(power);
             }else{
-                while(opModeIsActive() && getAngle() > targetAngle){
-                    double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
-
-                    if(remainingDistance < 45){
-                        power = calculateModularPower(.75, .3, remainingDistance / 3.75, 45 / 3.75, .2);
-                    }else{
-                        power = 1;
-                    }
-
-                    leftDrive.setPower(-power);
-                    leftBackDrive.setPower(-power);
-                    rightDrive.setPower(power);
-                    rightBackDrive.setPower(power);
-                }
+                leftDrive.setPower(power);
+                leftBackDrive.setPower(power);
+                rightDrive.setPower(-power);
+                rightBackDrive.setPower(-power);
             }
         }
 
@@ -794,9 +735,9 @@ public class AutoTesting extends LinearOpMode
 
     /**
      * Finds whether turning clockwise or counterclockwise reaches the target heading faster.
-     * Returns true for clockwise and false for counterclockwise
+     * Returns true for counterclockwise and false for clockwise
      * @param target Target heading to face
-     * @return true (CW) or false (CCW)
+     * @return true (CCW) or false (CW)
      */
     public boolean optimalDirection(double target, double curAngle){
         return !(optimalAngleChange(target, curAngle) < 0);
@@ -814,8 +755,8 @@ public class AutoTesting extends LinearOpMode
         double z = target - curAngle + 360;
 
         double absX = Math.abs(x);
-        double absZ = Math.abs(y);
-        double absY = Math.abs(z);
+        double absY = Math.abs(y);
+        double absZ = Math.abs(z);
 
         double min = absX;
 
