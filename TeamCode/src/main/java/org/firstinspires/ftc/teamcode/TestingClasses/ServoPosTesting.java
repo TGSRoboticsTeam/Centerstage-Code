@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @TeleOp(name = "Servo Testing", group = "Testing")
-
+@Disabled
 public class ServoPosTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
