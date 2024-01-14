@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.TestingClasses;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -17,16 +19,20 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Bot.CenterStageBot;
+import org.firstinspires.ftc.teamcode.Bot.Commands.MoveSlides;
 
 @TeleOp(name = "Subsystem Tests", group = "Testing")
 
 public class SubsystemTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
+        GamepadEx driver = new GamepadEx(gamepad1);
+        GamepadEx placer = new GamepadEx(gamepad1);
+
         CenterStageBot robot = new CenterStageBot(hardwareMap);
 
-        Gamepad driver = gamepad1;
-        Gamepad placer = gamepad2;
+        MoveSlides slides = new MoveSlides(robot.linearSlides, ()-> driver.getTrigger(
+                GamepadKeys.Trigger.RIGHT_TRIGGER) - driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -37,6 +43,7 @@ public class SubsystemTesting extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
+            robot.linearSlides.setDefaultCommand(slides);
 
             dashboardTelemetry.update();
         }

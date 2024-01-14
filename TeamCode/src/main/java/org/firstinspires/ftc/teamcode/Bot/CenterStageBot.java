@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.Bot.Subsystems.Deposit;
 import org.firstinspires.ftc.teamcode.Bot.Subsystems.DualLinearSlide;
 
 public class CenterStageBot {
-    private final DualLinearSlide linearSlides;
-    private final Deposit deposit;
+    public final DualLinearSlide linearSlides;
+    public final Deposit deposit;
 
     public CenterStageBot(HardwareMap hardwareMap){
         linearSlides = new DualLinearSlide(hardwareMap, 2500, "left_linear_slide", "right_linear_slide");

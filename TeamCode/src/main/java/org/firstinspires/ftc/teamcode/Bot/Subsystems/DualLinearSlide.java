@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.Bot.Subsystems;
 
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Util.LimitedMotor;
 
-public class DualLinearSlide {
+public class DualLinearSlide extends SubsystemBase {
     private final LimitedMotor leftMotor, rightMotor;
     int maxHeight;
 
@@ -34,7 +35,7 @@ public class DualLinearSlide {
     }*/
 
     public double getAbsPosition(){
-        return (leftMotor.getPosition() + rightMotor.getPosition()) / 2;
+        return (Math.abs(leftMotor.getPosition()) + Math.abs(rightMotor.getPosition())) / 2;
     }
 
     public double getRightPosition(){
