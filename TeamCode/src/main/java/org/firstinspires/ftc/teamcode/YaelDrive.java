@@ -103,7 +103,7 @@ public class YaelDrive extends LinearOpMode {
             int maxExtend = -2500;
 
             // This height worked when testing servo positions.
-            double clawPosition = -1000;
+            double clawPosition = -750;
 
             // Drive
             double axial   = -gamepad1.left_stick_y;
