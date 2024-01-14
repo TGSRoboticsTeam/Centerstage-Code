@@ -8,18 +8,18 @@ import org.firstinspires.ftc.teamcode.Bot.Subsystems.Deposit;
 public class TriggerDeposit extends CommandBase {
 
     private final Deposit deposit;
-    private final GamepadKeys.Button input;
+    private final String motion;
 
-    public TriggerDeposit(Deposit deposit, GamepadKeys.Button input){
+    public TriggerDeposit(Deposit deposit, String motion){
         this.deposit = deposit;
-        this.input = input;
+        this.motion = motion;
 
         addRequirements(deposit);
     }
 
     @Override
     public void initialize(){
-        if(input == GamepadKeys.Button.A){
+        if(motion.equals("intake")){
             deposit.intake();
         }else{
             deposit.deposit();

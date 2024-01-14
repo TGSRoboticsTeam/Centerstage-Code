@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Bot.CenterStageBot;
 import org.firstinspires.ftc.teamcode.Bot.Commands.MoveSlides;
+import org.firstinspires.ftc.teamcode.Bot.Commands.TriggerDeposit;
 
 @TeleOp(name = "Subsystem Tests", group = "Testing")
 
@@ -31,8 +32,8 @@ public class SubsystemTesting extends LinearOpMode {
 
         CenterStageBot robot = new CenterStageBot(hardwareMap);
 
-        MoveSlides slides = new MoveSlides(robot.linearSlides, ()-> driver.getTrigger(
-                GamepadKeys.Trigger.RIGHT_TRIGGER) - driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+        MoveSlides slides = new MoveSlides(robot.linearSlides, ()-> placer.getTrigger(
+                GamepadKeys.Trigger.RIGHT_TRIGGER) - placer.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -44,6 +45,11 @@ public class SubsystemTesting extends LinearOpMode {
 
         while (opModeIsActive()) {
             robot.linearSlides.setDefaultCommand(slides);
+
+            placer.getGamepadButton(GamepadKeys.Button.A)
+                            .whenPressed(robot.depositIntake);
+            placer.getGamepadButton(GamepadKeys.Button.B)
+                            .whenPressed(robot.depositOuttake);
 
             dashboardTelemetry.update();
         }
