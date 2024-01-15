@@ -86,13 +86,18 @@ public class AutoTesting extends LinearOpMode
     public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation; // 155.23
 
     // Servo constants
-    static final double zeroPixelPos    = .36;
-    static final double onePixelPos     = .26;
-    static final double twoPixelPos     = .16;
+    static final double zeroPixelPos    = .61;
+    static final double onePixelPos     = .52;
+    static final double twoPixelPos     = .34;
     public double pixelsHeld = 0;
 
-    static final double armDownPos = .06;
-    static final double armUpPos = .17;
+    boolean depositRotated = false;
+
+    static final double leftArmUpPos = .505;
+    static final double leftArmDownPos = .73;
+
+    static final double rightArmUpPos = .358;
+    static final double rightArmDownPos = .14;
 
     // General constants
     double oneFootCm = 30.48;
@@ -133,25 +138,12 @@ public class AutoTesting extends LinearOpMode
             telemetry.update();
         }
 
-        turnToAngle(90);
+        moveSlides(5);
         waitTime(3);
-        turnToAngle(135);
+        moveSlides(10);
         waitTime(3);
-        turnToAngle(270);
+        moveSlides(0);
         waitTime(3);
-        turnToAngle(180);
-        waitTime(3);
-        turnToAngle(0);
-        waitTime(3);
-
-        /*while(opModeIsActive()) {
-            dashboardTelemetry.addData("Heading", getAngle());
-            dashboardTelemetry.addData("Optimal change in angle 45", optimalAngleChange(45, getAngle()));
-            dashboardTelemetry.addData("Optimal change in angle 90", optimalAngleChange(90, getAngle()));
-            dashboardTelemetry.addData("Optimal change in angle 180", optimalAngleChange(180, getAngle()));
-            dashboardTelemetry.addData("Optimal change in angle 270", optimalAngleChange(270, getAngle()));
-            dashboardTelemetry.update();
-        }*/
     }
 
     /**
@@ -217,12 +209,12 @@ public class AutoTesting extends LinearOpMode
                     liftOff = true;
                 }
 
-                if(leftSlide.getCurrentPosition() > 100){
-                    leftArm.setPosition(armUpPos);
-                    rightArm.setPosition(armUpPos);
+                if(leftSlide.getCurrentPosition() < -750){
+                    leftArm.setPosition(leftArmUpPos);
+                    rightArm.setPosition(rightArmUpPos);
                 }else{
-                    leftArm.setPosition(armDownPos);
-                    rightArm.setPosition(armDownPos);
+                    leftArm.setPosition(leftArmDownPos);
+                    rightArm.setPosition(rightArmDownPos);
                 }
 
                 if(runtime.seconds() > 8){
@@ -265,12 +257,12 @@ public class AutoTesting extends LinearOpMode
                     liftOff = true;
                 }
 
-                if(leftSlide.getCurrentPosition() > 100){
-                    leftArm.setPosition(armUpPos);
-                    rightArm.setPosition(armUpPos);
+                if(leftSlide.getCurrentPosition() < -750){
+                    leftArm.setPosition(leftArmUpPos);
+                    rightArm.setPosition(rightArmUpPos);
                 }else{
-                    leftArm.setPosition(armDownPos);
-                    rightArm.setPosition(armDownPos);
+                    leftArm.setPosition(leftArmDownPos);
+                    rightArm.setPosition(rightArmDownPos);
                 }
 
                 if(runtime.seconds() > 8){
@@ -312,28 +304,28 @@ public class AutoTesting extends LinearOpMode
 
             slidePower(power);*/
 
-            if ((leftSlide.getCurrentPosition() > -targetTick - 50 && leftSlide.getCurrentPosition() < -targetTick + 50) || !leftSlide.isBusy() && !leftOff) {
+            if ((leftSlide.getCurrentPosition() > -targetTick - 50 && leftSlide.getCurrentPosition() < -targetTick + 50) || !leftSlide.isBusy()) {
                 slidePower(0);
-                leftOff = true;
+                liftOff = true;
             }
 
-            if ((rightSlide.getCurrentPosition() > targetTick - 50 && rightSlide.getCurrentPosition() < targetTick + 50) || !rightSlide.isBusy() && !rightOff) {
+            if ((rightSlide.getCurrentPosition() > targetTick - 50 && rightSlide.getCurrentPosition() < targetTick + 50) || !rightSlide.isBusy()) {
                 slidePower(0);
-                rightOff = true;
+                liftOff = true;
             }
 
-            if(leftSlide.getCurrentPosition() < -1250){
-                leftArm.setPosition(armUpPos);
-                rightArm.setPosition(armUpPos);
+            if(leftSlide.getCurrentPosition() < -750){
+                leftArm.setPosition(leftArmUpPos);
+                rightArm.setPosition(rightArmUpPos);
             }else{
-                leftArm.setPosition(armDownPos);
-                rightArm.setPosition(armDownPos);
+                leftArm.setPosition(leftArmDownPos);
+                rightArm.setPosition(rightArmDownPos);
             }
 
-            telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
-            telemetry.addData("Target Slide Pos: ", targetTick);
-            telemetry.update();
+            dashboardTelemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Target Slide Pos: ", targetTick);
+            dashboardTelemetry.update();
         }
     }
 
@@ -357,6 +349,20 @@ public class AutoTesting extends LinearOpMode
         }else if (pixelsHeld == 1){
             deposit.setPosition(zeroPixelPos);
             pixelsHeld = 0;
+        }
+    }
+
+    public void rotateDeposit(){
+        if(!depositRotated){
+            leftArm.setPosition(0.505);
+            rightArm.setPosition(0.358);
+
+            depositRotated = true;
+        }else{
+            leftArm.setPosition(0.73);
+            rightArm.setPosition(0.14);
+
+            depositRotated = false;
         }
     }
 
@@ -444,7 +450,7 @@ public class AutoTesting extends LinearOpMode
     public void turnToAngle(double targetAngle){
         double power;
 
-        while(Math.abs(optimalAngleChange(targetAngle, getAngle())) > .1){
+        while(opModeIsActive() && Math.abs(optimalAngleChange(targetAngle, getAngle())) > .1){
             double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
             if(remainingDistance < 45){
@@ -804,8 +810,8 @@ public class AutoTesting extends LinearOpMode
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
