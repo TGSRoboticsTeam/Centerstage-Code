@@ -185,7 +185,7 @@ public class YaelDrive extends LinearOpMode {
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(.55);
+                    deposit.setPosition(.52);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
                     deposit.setPosition(.61);
@@ -249,8 +249,8 @@ public class YaelDrive extends LinearOpMode {
                 lift.setPower(0);
             }
 
-            dashboardTelemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
-            dashboardTelemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
+            //dashboardTelemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
+            //dashboardTelemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
             dashboardTelemetry.addData("Right Servo", rightClawRotate.getPosition());
             dashboardTelemetry.addData("Left Servo", leftClawRotate.getPosition());
             dashboardTelemetry.addData("Deposit", deposit.getPosition());
