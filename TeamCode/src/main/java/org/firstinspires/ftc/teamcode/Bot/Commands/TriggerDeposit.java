@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.Bot.Subsystems.Deposit;
 
 public class TriggerDeposit extends CommandBase {
 
-    private final Deposit deposit;
-    private final String motion;
+    private Deposit deposit;
+    private String motion;
 
     public TriggerDeposit(Deposit deposit, String motion){
         this.deposit = deposit;
