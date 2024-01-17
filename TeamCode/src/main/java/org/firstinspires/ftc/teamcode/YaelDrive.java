@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -62,16 +61,16 @@ public class YaelDrive extends LinearOpMode {
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        int pixelsReleased = 0;
-
-        boolean liftFlipped = false;
-
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Set up FtcDashboard telemetry
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
         // Servo starting positions
         liftServo.setPosition(.44);
@@ -80,8 +79,13 @@ public class YaelDrive extends LinearOpMode {
         leftClawRotate.setPosition(0.722);
         rightClawRotate.setPosition(0.148);
 
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+        int pixelsReleased = 0;
+
+        boolean liftFlipped = false;
+        int maxExtend = -2500;
+        double clawPosition = -750;
+
+        double changeInSpeed = 0.2;
 
         // Need this so that the code will stay initialized until you hit play on the phone
         while (!isStarted()) {
@@ -94,20 +98,18 @@ public class YaelDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             /* Define control variables */
-            // Grabber vars
-
-            // The two following variables are negative because the left linear slides encoder
-            // goes negative as it goes up, and that's what we had been using.
-            int maxExtend = -2500;
-
-            // This height worked when testing servo positions.
-            double clawPosition = -750;
 
             // Drive
             double axial   = -gamepad1.left_stick_y;
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
+
             boolean slowDown = gamepad1.left_bumper;
+
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
+            float raiseLift = gamepad1.right_trigger;
+            float lowerLift = gamepad1.left_trigger;
 
             float raiseSlides = gamepad2.right_trigger;
             float lowerSlides = gamepad2.left_trigger;
@@ -117,11 +119,6 @@ public class YaelDrive extends LinearOpMode {
             boolean unloadPixel = gamepad2.b;
 
             boolean launchPlane = gamepad2.x;
-
-            boolean flipLift = gamepad1.y;
-            boolean unflipLift = gamepad1.b;
-            float raiseLift = gamepad1.right_trigger;
-            float lowerLift = gamepad1.left_trigger;
 
             if (axial <= 0.1 && axial >= -0.1) {
                 axial = 0;
@@ -141,10 +138,6 @@ public class YaelDrive extends LinearOpMode {
             double leftBack   = axial - lateral + yaw;
             double leftFront  = axial + lateral + yaw;
             double max;
-
-            // Multiplies the wheels power by a decimal value to lower the speed;
-            double changeInSpeed = 0.2;
-
 
             max = Math.max(Math.abs(leftFront), Math.abs(rightFront));
             max = Math.max(max, Math.abs(leftBack));

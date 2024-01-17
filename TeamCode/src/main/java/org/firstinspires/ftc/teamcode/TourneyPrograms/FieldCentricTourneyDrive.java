@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TourneyPrograms;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,6 +14,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name = "FieldCentric Tourney Drive", group = "aa")
@@ -47,10 +49,7 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        lift.setDirection(DcMotor.Direction.FORWARD);
-
-        leftClawRotate.setDirection(Servo.Direction.REVERSE);
-        rightClawRotate.setDirection(Servo.Direction.FORWARD);
+        lift.setDirection(DcMotor.Direction.REVERSE);
 
         leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
         rightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
@@ -71,6 +70,25 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        // Set up FtcDashboard telemetry
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
+        // Servo starting positions
+        liftServo.setPosition(.44);
+        deposit.setPosition(0.61);
+
+        leftClawRotate.setPosition(0.722);
+        rightClawRotate.setPosition(0.148);
+
+        int pixelsReleased = 0;
+
+        boolean liftFlipped = false;
+        int maxExtend = -2500;
+        double clawPosition = -750;
+
+        double changeInSpeed = 0.2;
+
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
@@ -79,15 +97,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
-
-        // servo starting position
-        liftServo.setPosition(.44);
-
-        leftClawRotate.setPosition(.84);
-        rightClawRotate.setPosition(.32);
-
-        boolean liftFlipped = false;
-        int pixelsReleased = 0;
 
         while (!isStarted()) {
 
@@ -101,7 +110,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             double rx  =  gamepad1.right_stick_x;
 
             boolean slowDown = gamepad1.left_bumper;
-            double changeInSpeed = 0.2;
 
             // Pixel grabber mechanism
             float raiseSlides = gamepad2.right_trigger;
@@ -117,9 +125,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             boolean unflipLift = gamepad1.b;
             float raiseLift = gamepad1.right_trigger;
             float lowerLift = gamepad1.left_trigger;
-
-            double maxExtend = -3000;
-            double clawPosition = -1250;
 
             if(gamepad1.dpad_up){
                 imu.resetYaw();
@@ -161,14 +166,14 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             // Grabber
             if (loadPixel){
-                deposit.setPosition(0.16);
+                deposit.setPosition(0.34);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(.26);
+                    deposit.setPosition(.52);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(.36);
+                    deposit.setPosition(.61);
                 }
             }
 
@@ -189,21 +194,21 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
                 leftLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
-            /*if (-rightLinearSlide.getCurrentPosition() > 0) {
+            if (-rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(raiseSlides);
             }else if (-rightLinearSlide.getCurrentPosition() < maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }*/
+            }
 
             // Deposit rotation
-            if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(1);
-                rightClawRotate.setPosition(.5);
+            if (rightLinearSlide.getCurrentPosition() > -clawPosition){
+                leftClawRotate.setPosition(0.505);
+                rightClawRotate.setPosition(0.358);
             }else{
-                leftClawRotate.setPosition(.84);
-                rightClawRotate.setPosition(.32);
+                leftClawRotate.setPosition(0.73);
+                rightClawRotate.setPosition(0.14);
             }
 
             if(flipLift && !liftFlipped){
@@ -219,10 +224,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             if((lift.getPower() <= .05) && (lift.getPower() >= -.05)){
                 lift.setPower(0);
             }
-
-            telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
-            telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
-            telemetry.update();
         }
     }
 }

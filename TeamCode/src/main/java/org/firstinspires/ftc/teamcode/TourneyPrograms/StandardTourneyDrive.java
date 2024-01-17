@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TourneyPrograms;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -9,6 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @TeleOp(name = "Standard Tourney Drive", group = "aa")
 
@@ -42,13 +45,10 @@ public class StandardTourneyDrive extends LinearOpMode {
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        lift.setDirection(DcMotor.Direction.FORWARD);
+        lift.setDirection(DcMotor.Direction.REVERSE);
 
-        leftClawRotate.setDirection(Servo.Direction.REVERSE);
-        rightClawRotate.setDirection(Servo.Direction.FORWARD);
-
-        leftLinearSlide.setDirection(DcMotor.Direction.REVERSE);
-        rightLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
 
         // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -59,10 +59,6 @@ public class StandardTourneyDrive extends LinearOpMode {
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        int pixelsReleased = 0;
-
-        boolean liftFlipped = false;
-
         // Makes the motors output their rotation
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -70,22 +66,30 @@ public class StandardTourneyDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // servo starting position
-        liftServo.setPosition(.44);
+        // Set up FtcDashboard telemetry
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
-        leftClawRotate.setPosition(.03);
+        // Servo starting positions
+        liftServo.setPosition(.44);
+        deposit.setPosition(0.61);
+
+        leftClawRotate.setPosition(0.722);
+        rightClawRotate.setPosition(0.148);
+
+        int pixelsReleased = 0;
+
+        boolean liftFlipped = false;
+        int maxExtend = -2500;
+        double clawPosition = -750;
+
+        double changeInSpeed = 0.2;
 
         while (!isStarted()) {
 
         }
 
         while (opModeIsActive()) {
-            // Define variables
-
-            // The degrees it takes to make the thing automatically go up
-            double clawPosition = -1250;
-            double maxExtend = -3000;
-
             // Define joystick controls
             // Drive
             double axial   = -gamepad1.left_stick_y;
@@ -93,7 +97,11 @@ public class StandardTourneyDrive extends LinearOpMode {
             double yaw     =  gamepad1.right_stick_x;
 
             boolean slowDown = gamepad1.left_bumper;
-            double changeInSpeed = 0.2;
+
+            boolean flipLift = gamepad1.y;
+            boolean unflipLift = gamepad1.b;
+            float raiseLift = gamepad1.right_trigger;
+            float lowerLift = gamepad1.left_trigger;
 
             float raiseSlides = gamepad2.right_trigger;
             float lowerSlides = gamepad2.left_trigger;
@@ -103,11 +111,6 @@ public class StandardTourneyDrive extends LinearOpMode {
             boolean unloadPixel = gamepad2.b;
 
             boolean launchPlane = gamepad2.x;
-
-            boolean flipLift = gamepad1.y;
-            boolean unflipLift = gamepad1.b;
-            float raiseLift = gamepad1.right_trigger;
-            float lowerLift = gamepad1.left_trigger;
 
             if (axial <= 0.1 && axial >= -0.1) {
                 axial = 0;
@@ -162,14 +165,14 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             // Grabber
             if (loadPixel){
-                deposit.setPosition(0.16);
+                deposit.setPosition(0.34);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(.26);
+                    deposit.setPosition(.52);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(.36);
+                    deposit.setPosition(.61);
                 }
             }
 
@@ -192,19 +195,19 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             if (-rightLinearSlide.getCurrentPosition() > 0) {
                 rightLinearSlide.setPower(raiseSlides);
-            }else if (-rightLinearSlide.getCurrentPosition() < -maxExtend) {
+            }else if (-rightLinearSlide.getCurrentPosition() < maxExtend) {
                 rightLinearSlide.setPower(-lowerSlides);
             }else{
                 rightLinearSlide.setPower(raiseSlides - lowerSlides);
             }
 
             // Deposit rotation
-            if (leftLinearSlide.getCurrentPosition() < clawPosition){
-                leftClawRotate.setPosition(0.26);
-                rightClawRotate.setPosition(1-0.5);
+            if (rightLinearSlide.getCurrentPosition() > -clawPosition){
+                leftClawRotate.setPosition(0.505);
+                rightClawRotate.setPosition(0.358);
             }else{
-                leftClawRotate.setPosition(.03);
-                rightClawRotate.setPosition(1-.03);
+                leftClawRotate.setPosition(0.73);
+                rightClawRotate.setPosition(0.14);
             }
 
             if(flipLift && !liftFlipped){
@@ -220,10 +223,6 @@ public class StandardTourneyDrive extends LinearOpMode {
             if((lift.getPower() <= .05) && (lift.getPower() >= -.05)){
                 lift.setPower(0);
             }
-
-            telemetry.addData("Left Slide Pos: ", leftLinearSlide.getCurrentPosition());
-            telemetry.addData("Right Slide Pos: ", rightLinearSlide.getCurrentPosition());
-            telemetry.update();
         }
     }
 }
