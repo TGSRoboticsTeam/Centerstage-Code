@@ -2,16 +2,10 @@ package org.firstinspires.ftc.teamcode.AutoClasses;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -23,9 +17,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "Blue OpenCv")
+@Autonomous(name = "Red OpenCv")
 
-public class BlueOpenCv extends LinearOpMode {
+public class RedOpenCv extends LinearOpMode {
 
     double cX = 0;
     double cY = 0;
@@ -123,8 +117,8 @@ public class BlueOpenCv extends LinearOpMode {
             Mat hsvFrame = new Mat();
             Imgproc.cvtColor(frame, hsvFrame, Imgproc.COLOR_BGR2HSV);
 
-            Scalar lowerYellow = new Scalar(0, 40, 40);
-            Scalar upperYellow = new Scalar(10, 255, 255);
+            Scalar lowerYellow = new Scalar(100, 100, 100);
+            Scalar upperYellow = new Scalar(180, 255, 255);
 
 
             Mat yellowMask = new Mat();
