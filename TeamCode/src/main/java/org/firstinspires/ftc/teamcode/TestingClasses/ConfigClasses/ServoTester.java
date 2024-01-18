@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TestingClasses;
+package org.firstinspires.ftc.teamcode.TestingClasses.ConfigClasses;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
