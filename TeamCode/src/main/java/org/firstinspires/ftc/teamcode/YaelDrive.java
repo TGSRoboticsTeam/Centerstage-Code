@@ -79,6 +79,8 @@ public class YaelDrive extends LinearOpMode {
         leftClawRotate.setPosition(0.722);
         rightClawRotate.setPosition(0.148);
 
+        plane.setPosition(0);
+
         int pixelsReleased = 0;
 
         boolean liftFlipped = false;
@@ -191,7 +193,7 @@ public class YaelDrive extends LinearOpMode {
 
             // Launches Plane
             if (launchPlane) {
-                plane.setPosition(0);
+                plane.setPosition(1);
             }
 
             if (leftLinearSlide.getCurrentPosition() > 0) {
