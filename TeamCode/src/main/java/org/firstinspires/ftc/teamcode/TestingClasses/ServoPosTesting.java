@@ -11,12 +11,12 @@ import org.firstinspires.ftc.teamcode.TestingClasses.ConfigClasses.ServoTester;
 import org.firstinspires.ftc.teamcode.TestingClasses.ConfigClasses.ServoTester2;
 
 @TeleOp(name = "Servo Testing", group = "Testing")
-@Disabled
+
 public class ServoPosTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
-        ServoTester leftClawRotate = new ServoTester(hardwareMap, "left_claw_rotation", 1, 1);
-        ServoTester2 rightClawRotate = new ServoTester2(hardwareMap, "right_claw_rotation", 1, 1);
+        ServoTester leftClawRotate = new ServoTester(hardwareMap, "claw", 1, 1);
+        //ServoTester2 rightClawRotate = new ServoTester2(hardwareMap, "right_claw_rotation", 1, 1);
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -29,14 +29,14 @@ public class ServoPosTesting extends LinearOpMode {
         while (opModeIsActive()) {
             if(gamepad1.dpad_up){
                 leftClawRotate.setPositionUp();
-                rightClawRotate.setPositionUp();
+                //rightClawRotate.setPositionUp();
             }else if(gamepad1.dpad_down){
                 leftClawRotate.setPositionDown();
-                rightClawRotate.setPositionDown();
+                //rightClawRotate.setPositionDown();
             }
 
             dashboardTelemetry.addData("Left Servo: ", leftClawRotate.getPosition());
-            dashboardTelemetry.addData("Right Servo: ", rightClawRotate.getPosition());
+            //dashboardTelemetry.addData("Right Servo: ", rightClawRotate.getPosition());
             dashboardTelemetry.update();
         }
     }

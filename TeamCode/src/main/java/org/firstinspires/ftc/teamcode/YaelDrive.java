@@ -74,10 +74,10 @@ public class YaelDrive extends LinearOpMode {
 
         // Servo starting positions
         liftServo.setPosition(.44);
-        deposit.setPosition(0.61);
+        deposit.setPosition(0.25);
 
-        leftClawRotate.setPosition(0.722);
-        rightClawRotate.setPosition(0.148);
+        leftClawRotate.setPosition(0.83);
+        rightClawRotate.setPosition(0.7);
 
         plane.setPosition(0);
 
@@ -176,14 +176,14 @@ public class YaelDrive extends LinearOpMode {
             // Grabber
             // Makes it so you can release pixels individually
             if (loadPixel){
-                deposit.setPosition(0.34);
+                deposit.setPosition(0.04);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(.52);
+                    deposit.setPosition(.15);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(.61);
+                    deposit.setPosition(.25);
                 }
             }
 
@@ -215,11 +215,11 @@ public class YaelDrive extends LinearOpMode {
             // Deposit rotation
 
             if (rightLinearSlide.getCurrentPosition() > -clawPosition){
-                leftClawRotate.setPosition(0.505);
-                rightClawRotate.setPosition(0.358);
+                leftClawRotate.setPosition(0.61);
+                rightClawRotate.setPosition(0.92);
             }else{
-                leftClawRotate.setPosition(0.73);
-                rightClawRotate.setPosition(0.14);
+                leftClawRotate.setPosition(0.83);
+                rightClawRotate.setPosition(0.7);
             }
 
             /*if(gamepad1.dpad_up){
