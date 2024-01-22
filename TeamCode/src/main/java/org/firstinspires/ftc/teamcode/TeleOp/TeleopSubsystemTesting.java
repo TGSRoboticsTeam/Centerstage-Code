@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Plane;
 
 @TeleOp(name = "Subsystem Testing", group = "Testing")
 
-public class TeleopSubsystemTesting extends LinearOpMode {
+public class TeleOpSubsystemTesting extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -19,7 +19,8 @@ public class TeleopSubsystemTesting extends LinearOpMode {
         Plane plane = new Plane(hardwareMap);
 
         while(!opModeIsActive()){
-
+            telemetry.addLine("Waiting on start.");
+            telemetry.update();
         }
 
         while(opModeIsActive()){
