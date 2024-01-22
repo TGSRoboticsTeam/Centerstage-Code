@@ -8,7 +8,7 @@
  */
 
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.RandomClasses;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
