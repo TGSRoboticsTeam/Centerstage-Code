@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.AutoClasses;
+package org.firstinspires.ftc.teamcode.AutoClasses.DetectionPipelines;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
