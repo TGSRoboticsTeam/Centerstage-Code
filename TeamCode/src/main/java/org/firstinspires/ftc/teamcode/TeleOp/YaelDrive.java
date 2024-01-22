@@ -91,11 +91,7 @@ public class YaelDrive extends LinearOpMode {
 
         // Need this so that the code will stay initialized until you hit play on the phone
         while (!isStarted()) {
-            liftServo.setPosition(.44);
-            deposit.setPosition(0.61);
 
-            leftClawRotate.setPosition(0.722);
-            rightClawRotate.setPosition(0.148);
         }
 
         while (opModeIsActive()) {
@@ -221,14 +217,6 @@ public class YaelDrive extends LinearOpMode {
                 leftClawRotate.setPosition(0.83);
                 rightClawRotate.setPosition(0.7);
             }
-
-            /*if(gamepad1.dpad_up){
-                leftClawRotate.setPosition(0.505);
-                rightClawRotate.setPosition(0.358);
-            }else if(gamepad1.dpad_down){
-                leftClawRotate.setPosition(0.722);
-                rightClawRotate.setPosition(0.148);
-            }*/
 
             if(flipLift && !liftFlipped){
                 liftServo.setPosition(.25);
