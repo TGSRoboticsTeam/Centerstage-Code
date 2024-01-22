@@ -26,6 +26,9 @@ public class LinearSlides extends SubsystemBase {
 
         leftArm = hardwareMap.get(Servo.class, "left_claw_rotation");
         rightArm = hardwareMap.get(Servo.class, "right_claw_rotation");
+
+        leftArm.setPosition(leftArmDownPos);
+        rightArm.setPosition(rightArmDownPos);
     }
 
     public void setPower(double upPower, double downPower){
