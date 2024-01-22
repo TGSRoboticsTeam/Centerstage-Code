@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.TestingClasses.ConfigClasses;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Config
+@Disabled
 public class OpenCvHSVTester {
 
     // Use https://hyperskill.org/learn/step/13179 to calculate HSV values.
