@@ -4,4 +4,7 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 
 public class Hang extends SubsystemBase {
 
+    public Hang(){
+
+    }
 }

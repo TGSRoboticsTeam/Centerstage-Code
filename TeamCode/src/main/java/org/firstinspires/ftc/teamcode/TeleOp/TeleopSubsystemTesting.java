@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Deposit;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LinearSlides;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Plane;
+
+@TeleOp(name = "Subsystem Testing", group = "Testing")
 
 public class TeleopSubsystemTesting extends LinearOpMode {
 
@@ -12,6 +16,7 @@ public class TeleopSubsystemTesting extends LinearOpMode {
 
         LinearSlides linearSlides = new LinearSlides(hardwareMap);
         Deposit deposit = new Deposit(hardwareMap);
+        Plane plane = new Plane(hardwareMap);
 
         while(!opModeIsActive()){
 
@@ -24,6 +29,10 @@ public class TeleopSubsystemTesting extends LinearOpMode {
                 deposit.intake();
             }else if(gamepad2.b){
                 deposit.outtake();
+            }
+
+            if(gamepad2.x){
+                plane.launchPlane();
             }
         }
     }

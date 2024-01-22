@@ -27,6 +27,18 @@ public class LinearSlides extends SubsystemBase {
         leftArm = hardwareMap.get(Servo.class, "left_claw_rotation");
         rightArm = hardwareMap.get(Servo.class, "right_claw_rotation");
 
+        leftSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightSlide.setDirection(DcMotor.Direction.REVERSE);
+
+        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         leftArm.setPosition(leftArmDownPos);
         rightArm.setPosition(rightArmDownPos);
     }
