@@ -1,4 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 
-public class Deposit {
+import com.arcrobotics.ftclib.command.SubsystemBase;
+
+public class Deposit extends SubsystemBase {
+
 }

@@ -1,4 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 
-public class Hang {
+import com.arcrobotics.ftclib.command.SubsystemBase;
+
+public class Hang extends SubsystemBase {
+
 }

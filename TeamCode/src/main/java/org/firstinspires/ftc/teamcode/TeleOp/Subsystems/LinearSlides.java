@@ -1,4 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 
-public class LinearSlides {
+import com.arcrobotics.ftclib.command.SubsystemBase;
+
+public class LinearSlides extends SubsystemBase {
+
 }
