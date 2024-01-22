@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.Bot.Commands;
+package org.firstinspires.ftc.teamcode.CommandVersions.Commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import org.firstinspires.ftc.teamcode.Bot.Subsystems.DualLinearSlide;
+import org.firstinspires.ftc.teamcode.CommandVersions.Subsystems.DualLinearSlide;
 import java.util.function.DoubleSupplier;
 
 public class MoveSlides extends CommandBase{

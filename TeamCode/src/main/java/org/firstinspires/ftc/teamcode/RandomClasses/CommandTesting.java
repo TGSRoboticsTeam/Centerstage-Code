@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TestingClasses;
+package org.firstinspires.ftc.teamcode.RandomClasses;
 
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
@@ -6,8 +6,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Bot.CenterStageBot;
-import org.firstinspires.ftc.teamcode.Bot.Commands.MoveSlides;
+import org.firstinspires.ftc.teamcode.CommandVersions.CenterStageBot;
+import org.firstinspires.ftc.teamcode.CommandVersions.Commands.MoveSlides;
 
 @TeleOp(name = "Command Testing", group = "Testing")
 

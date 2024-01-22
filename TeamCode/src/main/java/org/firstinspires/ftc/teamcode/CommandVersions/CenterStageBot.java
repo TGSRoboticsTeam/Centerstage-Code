@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.Bot;
+package org.firstinspires.ftc.teamcode.CommandVersions;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.arcrobotics.ftclib.command.Robot;
 
-import org.firstinspires.ftc.teamcode.Bot.Commands.TriggerDeposit;
-import org.firstinspires.ftc.teamcode.Bot.Subsystems.Deposit;
-import org.firstinspires.ftc.teamcode.Bot.Subsystems.DualLinearSlide;
+import org.firstinspires.ftc.teamcode.CommandVersions.Commands.TriggerDeposit;
+import org.firstinspires.ftc.teamcode.CommandVersions.Subsystems.Deposit;
+import org.firstinspires.ftc.teamcode.CommandVersions.Subsystems.DualLinearSlide;
 
 public class CenterStageBot extends Robot {
     public final DualLinearSlide linearSlides;

@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.Bot.Commands;
+package org.firstinspires.ftc.teamcode.CommandVersions.Commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.Bot.Subsystems.Deposit;
+import org.firstinspires.ftc.teamcode.CommandVersions.Subsystems.Deposit;
 
 public class TriggerDeposit extends CommandBase {
 
