@@ -166,14 +166,14 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             // Grabber
             if (loadPixel){
-                deposit.setPosition(0.04);
+                deposit.setPosition(0.0);
                 pixelsReleased = 0;
             }else if (unloadPixel) {
                 if (pixelsReleased == 0) {
-                    deposit.setPosition(.15);
+                    deposit.setPosition(.16);
                     pixelsReleased = 1;
                 }else if (pixelsReleased == 2) {
-                    deposit.setPosition(.25);
+                    deposit.setPosition(0.25);
                 }
             }
 
