@@ -140,7 +140,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
      * @param distance Distance for robot to move
      * @param height Height to move to
      */
-    public void moveSlidesAndDrive(boolean forward, double distance, double height){
+    /*public void moveSlidesAndDrive(boolean forward, double distance, double height){
         int targetTick = (int) (tickPerInchForLift * height);
 
         boolean correctionsDone = false;
@@ -261,7 +261,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
             }
         }
         resetEncoders();
-    }
+    }*/
 
     /**
      * Moves the linear slides to the specified height in inches
@@ -417,37 +417,30 @@ public class BlueBackdropSideAuto extends LinearOpMode
      * @param targetAngle Target angle to rotate to
      */
     public void turnToAngle(double targetAngle){
-        double originalAngle = getAngle();
-        double changeInAngle = optimalAngleChange(targetAngle);
-        double turningCorrection = (angleCorrectionCW / 90) * changeInAngle;
+        double power;
 
-        boolean CW = optimalDirection(targetAngle);
+        while(opModeIsActive() && Math.abs(optimalAngleChange(targetAngle, getAngle())) > .1){
+            double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
-        if(CW) {
-            if(originalAngle - changeInAngle < 0 && !(originalAngle < 0)) {
-                while (opModeIsActive() && (getAngle() < originalAngle + 5 || getAngle() > originalAngle - changeInAngle + turningCorrection + 360)) {
-                    leftVelo(.75);
-                    rightVelo(-.75);
-                }
+            if(remainingDistance < 45){
+                power = calculateModularPower(.6, .2, remainingDistance / 3.75, 45 / 3.75, .2);
             }else{
-                while (opModeIsActive() && getAngle() > originalAngle - changeInAngle  + turningCorrection && getAngle() < originalAngle + 5) {
-                    leftVelo(.75);
-                    rightVelo(-.75);
-                }
+                power = .6;
             }
-        }else{
-            if(originalAngle + changeInAngle > 360) {
-                while (opModeIsActive() && (getAngle() > originalAngle - 5 || getAngle() < originalAngle + changeInAngle - turningCorrection - 360)) {
-                    leftVelo(-.75);
-                    rightVelo(.75);
-                }
+
+            if(optimalDirection(targetAngle, getAngle())){
+                leftDrive.setPower(-power);
+                leftBackDrive.setPower(-power);
+                rightDrive.setPower(power);
+                rightBackDrive.setPower(power);
             }else{
-                while (opModeIsActive() && getAngle() < originalAngle + changeInAngle - turningCorrection && getAngle() > originalAngle - 5) {
-                    leftVelo(-.75);
-                    rightVelo(.75);
-                }
+                leftDrive.setPower(power);
+                leftBackDrive.setPower(power);
+                rightDrive.setPower(-power);
+                rightBackDrive.setPower(-power);
             }
         }
+
         motorsOff();
     }
 
@@ -457,7 +450,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
      * @param forward True or false
      * @param inches Amount to move
      */
-    public void moveInchesAtHeading(boolean forward, double inches){
+    /*public void moveInchesAtHeading(boolean forward, double inches){
         double originHeading = getAngle();
         double power = 0;
         
@@ -515,7 +508,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
         }
         motorsOff();
         resetEncoders();
-    }
+    }*/
 
 
     /**
@@ -531,41 +524,30 @@ public class BlueBackdropSideAuto extends LinearOpMode
         double totalTicks = rotationAmount * ticksPerRotation * inches * wheelRatio * driveTrainCorrection;
         double oneFoot = rotationAmount * ticksPerRotation * 12 * wheelRatio * driveTrainCorrection;
 
+        double power;
+
         resetEncoders();
 
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
-                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (oneFoot);
-
-                if(power > 1){
-                    power = 1;
-                }
-
-                if(power < .15){
-                    power = .15;
+                if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
+                    power = calculateModularPower(.5, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
+                }else{
+                    power = .5;
                 }
 
                 motorsOn(power);
-                telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
-                telemetry.update();
             }
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
-                double power = Math.abs(totalTicks - leftBackDrive.getCurrentPosition()) / (oneFoot);
-
-                if(power > 1){
-                    power = 1;
-                }
-
-                if(power < .15){
-                    power = .15;
+                if((Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())) < oneFoot) {
+                    power = calculateModularPower(.5, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
+                }else{
+                    power = .5;
                 }
 
                 motorsOn(-power);
-
-                telemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
-                telemetry.update();
             }
         }
         motorsOff();
@@ -652,6 +634,40 @@ public class BlueBackdropSideAuto extends LinearOpMode
     }
 
     /**
+     * Uses a special Sin wave with a modular steepness (how quickly it drops from its peak) to
+     * run smoother and more accurate power changes. By using the Sin wave, the power will be at
+     * a lower level for longer than with linear movement allowing encoders to update more frequently
+     * per inch travelled and making it more precise.
+     * (<a href="https://www.desmos.com/calculator/gsujcy9qjs">Desmos Graph Example</a>)
+     * @param maxPower Maximum power allowed to return (0-1)
+     * @param minPower Minimum power to return
+     * @param remainingDistance Distance to target position
+     * @param maxDistance Distance to calculate curve of Sin wave
+     * @param kValue Steepness of the Sin wave (0-1; 0 = standard wave, 1 = very steep wave)
+     * @return Power to run at in relation to distance from end point
+     */
+    public double calculateModularPower(double maxPower, double minPower, double remainingDistance, double maxDistance, double kValue){
+        if(remainingDistance < 0){
+            return minPower;
+        }
+
+        double b = 1 / maxDistance;
+        double x = -remainingDistance;
+
+        double exponent = Math.pow((2 * (1 - x)), kValue);
+        double radians = x * Math.PI - ((maxDistance * Math.PI) / 2);
+        double base = maxPower * (.5 + Math.sin(b * radians) / 2);
+
+        double y = Math.pow(base, exponent);
+
+        if(y < minPower){
+            y = minPower;
+        }
+
+        return y;
+    }
+
+    /**
      * Retrieves IMU heading (+-180 deg), changes the angle to a 360 degree
      * measurement, and returns that heading.
      * @return Current Heading
@@ -668,31 +684,28 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
     /**
      * Finds whether turning clockwise or counterclockwise reaches the target heading faster.
-     * Returns true for clockwise and false for counterclockwise
+     * Returns true for counterclockwise and false for clockwise
      * @param target Target heading to face
-     * @return true (CW) or false (CCW)
+     * @return true (CCW) or false (CW)
      */
-    public boolean optimalDirection(double target){
-        if(optimalAngleChange(target) < 0){
-            return false;
-        }else{
-            return true;
-        }
+    public boolean optimalDirection(double target, double curAngle){
+        return !(optimalAngleChange(target, curAngle) < 0);
     }
 
     /**
-     * Finds the smallest angle change needed to reach the target angle from current angle
+     * Finds the smallest angle change needed to reach the target angle from current angle.
+     * A negative value means a counterclockwise direction, positive is clockwise.
      * @param target Target angle to reach
      * @return Shortest angle to target
      */
-    public double optimalAngleChange(double target) {
-        double x = target - getAngle();
-        double y = target - getAngle() - 360;
-        double z = target - getAngle() + 360;
+    public double optimalAngleChange(double target, double curAngle) {
+        double x = target - curAngle;
+        double y = target - curAngle - 360;
+        double z = target - curAngle + 360;
 
         double absX = Math.abs(x);
-        double absZ = Math.abs(y);
-        double absY = Math.abs(z);
+        double absY = Math.abs(y);
+        double absZ = Math.abs(z);
 
         double min = absX;
 
@@ -748,9 +761,9 @@ public class BlueBackdropSideAuto extends LinearOpMode
         leftSlide.setMode(RUN_USING_ENCODER);
         rightSlide.setMode(RUN_USING_ENCODER);
 
-        leftArm.setPosition(0);
-        rightArm.setPosition(0);
-        deposit.setPosition(.36);
+        leftArm.setPosition(.83);
+        rightArm.setPosition(0.7);
+        deposit.setPosition(.95);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();

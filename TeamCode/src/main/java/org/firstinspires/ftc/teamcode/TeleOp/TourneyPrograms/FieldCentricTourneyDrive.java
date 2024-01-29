@@ -16,6 +16,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Deposit;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Hang;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LinearSlides;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Plane;
 
 @TeleOp(name = "FieldCentric Tourney Drive", group = "aa")
 
@@ -28,31 +32,11 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-        DcMotor lift = hardwareMap.get(DcMotor.class, "lift_mechanism");
-
-        // Grabber/Linear slide setup
-        ServoImpl liftServo = hardwareMap.get(ServoImpl.class, "lift_flipper");
-
-        // Claw/Linear slide setup
-        ServoImpl deposit = hardwareMap.get(ServoImpl.class, "claw");
-        Servo leftClawRotate = hardwareMap.get(Servo.class, "left_claw_rotation");
-        Servo rightClawRotate = hardwareMap.get(Servo.class, "right_claw_rotation");
-
-        DcMotor leftLinearSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
-        DcMotor rightLinearSlide = hardwareMap.get(DcMotor.class, "right_linear_slide");
-
-        Servo plane = hardwareMap.get(Servo.class, "plane_launcher");
-
         // Sets the motor direction
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-
-        lift.setDirection(DcMotor.Direction.REVERSE);
-
-        leftLinearSlide.setDirection(DcMotor.Direction.FORWARD);
-        rightLinearSlide.setDirection(DcMotor.Direction.REVERSE);
 
         // Makes the motors stop moving when they receive an input of 0
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -60,32 +44,14 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Makes the motors output their rotation
-        leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
         // Set up FtcDashboard telemetry
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
-        // Servo starting positions
-        liftServo.setPosition(.44);
-        deposit.setPosition(0.25);
-
-        leftClawRotate.setPosition(0.83);
-        rightClawRotate.setPosition(0.7);
-
-        int pixelsReleased = 0;
-
-        boolean liftFlipped = false;
-        int maxExtend = -2500;
-        double clawPosition = -750;
+        LinearSlides linearSlides = new LinearSlides(hardwareMap);
+        Deposit deposit = new Deposit(hardwareMap);
+        Plane plane = new Plane(hardwareMap);
+        Hang hang = new Hang(hardwareMap);
 
         double changeInSpeed = 0.2;
 
@@ -110,21 +76,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             double rx  =  gamepad1.right_stick_x;
 
             boolean slowDown = gamepad1.left_bumper;
-
-            // Pixel grabber mechanism
-            float raiseSlides = gamepad2.right_trigger;
-            float lowerSlides = gamepad2.left_trigger;
-
-            // Lift
-            boolean loadPixel = gamepad2.a;
-            boolean unloadPixel = gamepad2.b;
-
-            boolean launchPlane = gamepad2.x;
-
-            boolean flipLift = gamepad1.y;
-            boolean unflipLift = gamepad1.b;
-            float raiseLift = gamepad1.right_trigger;
-            float lowerLift = gamepad1.left_trigger;
 
             if(gamepad1.dpad_up){
                 imu.resetYaw();
@@ -157,74 +108,28 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             rightFrontDrive.setPower(frontRightPower);
             rightBackDrive.setPower(backRightPower);
 
-            // Lift
-            lift.setPower(raiseLift-lowerLift);
+            hang.setPower(gamepad1.right_trigger, gamepad1.left_trigger);
 
-            if((lift.getPower() <= .05) && (lift.getPower() >= -.05)){
-                lift.setPower(0);
+            if(gamepad1.y){
+                hang.moveArm();
             }
 
-            // Grabber
-            if (loadPixel){
-                deposit.setPosition(0.0);
-                pixelsReleased = 0;
-            }else if (unloadPixel) {
-                if (pixelsReleased == 0) {
-                    deposit.setPosition(.16);
-                    pixelsReleased = 1;
-                }else if (pixelsReleased == 2) {
-                    deposit.setPosition(0.25);
-                }
+            if(gamepad1.x){
+                plane.launchPlane();
             }
 
-            if (!loadPixel && !unloadPixel && pixelsReleased == 1) {
-                pixelsReleased = 2;
+            linearSlides.setPower(gamepad2.right_trigger, gamepad2.left_trigger);
+
+            if(gamepad2.a) {
+                deposit.intake();
+            }else if(gamepad2.b){
+                deposit.outtake();
             }
 
-            // Launches Plane
-            if (launchPlane) {
-                plane.setPosition(1);
-            }
-
-            if (leftLinearSlide.getCurrentPosition() > 0) {
-                leftLinearSlide.setPower(raiseSlides);
-            }else if (leftLinearSlide.getCurrentPosition() < maxExtend) {
-                leftLinearSlide.setPower(-lowerSlides);
-            }else{
-                leftLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
-
-            if (-rightLinearSlide.getCurrentPosition() > 0) {
-                rightLinearSlide.setPower(raiseSlides);
-            }else if (-rightLinearSlide.getCurrentPosition() < maxExtend) {
-                rightLinearSlide.setPower(-lowerSlides);
-            }else{
-                rightLinearSlide.setPower(raiseSlides - lowerSlides);
-            }
-
-            // Deposit rotation
-
-            if (rightLinearSlide.getCurrentPosition() > -clawPosition){
-                leftClawRotate.setPosition(0.61);
-                rightClawRotate.setPosition(0.92);
-            }else{
-                leftClawRotate.setPosition(0.83);
-                rightClawRotate.setPosition(0.7);
-            }
-
-
-            if(flipLift && !liftFlipped){
-                liftServo.setPosition(.25);
-                liftFlipped = true;
-            }else if (unflipLift) {
-                liftServo.setPosition(.44);
-                liftFlipped = false;
-            }
-
-            lift.setPower(raiseLift-lowerLift);
-
-            if((lift.getPower() <= .05) && (lift.getPower() >= -.05)){
-                lift.setPower(0);
+            if(gamepad2.right_bumper){
+                deposit.closeAligner();
+            }else if(gamepad2.left_bumper){
+                deposit.openAligner();
             }
         }
     }

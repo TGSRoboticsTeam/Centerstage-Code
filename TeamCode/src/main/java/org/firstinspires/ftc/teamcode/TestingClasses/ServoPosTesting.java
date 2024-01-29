@@ -16,7 +16,7 @@ public class ServoPosTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
         ServoTester leftClawRotate = new ServoTester(hardwareMap, "claw", 1, 1);
-        //ServoTester2 rightClawRotate = new ServoTester2(hardwareMap, "right_claw_rotation", 1, 1);
+        //ServoTester2 rightClawRotate = new ServoTester2(hardwareMap, "right_aligner", 1, 1);
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
