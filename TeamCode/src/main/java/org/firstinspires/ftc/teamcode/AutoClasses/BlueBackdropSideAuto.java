@@ -423,7 +423,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
             double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
             if(remainingDistance < 45){
-                power = calculateModularPower(.6, .2, remainingDistance / 3.75, 45 / 3.75, .2);
+                power = calculateModularPower(1, .2, remainingDistance / 3.75, 45 / 3.75, .2);
             }else{
                 power = .6;
             }
@@ -531,7 +531,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
                 if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
-                    power = calculateModularPower(.5, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
+                    power = calculateModularPower(1, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
                 }else{
                     power = .5;
                 }
@@ -542,7 +542,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
                 if((Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())) < oneFoot) {
-                    power = calculateModularPower(.5, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
+                    power = calculateModularPower(1, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
                 }else{
                     power = .5;
                 }

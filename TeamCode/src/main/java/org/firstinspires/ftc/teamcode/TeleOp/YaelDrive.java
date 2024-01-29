@@ -15,8 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @TeleOp(name = "Yael Drive", group = "Yael Drive")
-
-@Config
+@Disabled
 public class YaelDrive extends LinearOpMode {
     @Override
     public void runOpMode() {

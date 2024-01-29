@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LinearSlides;
 import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Plane;
 
 @TeleOp(name = "Subsystem Testing", group = "Testing")
-
+@Disabled
 public class TeleOpSubsystemTesting extends LinearOpMode {
 
     @Override
