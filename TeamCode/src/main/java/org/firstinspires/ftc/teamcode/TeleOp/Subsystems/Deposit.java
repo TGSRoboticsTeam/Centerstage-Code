@@ -3,11 +3,18 @@ package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Deposit extends SubsystemBase {
 
     private final Servo deposit;
     private final Servo leftAligner, rightAligner;
+
+    private boolean retracted = false;
+
+    private ElapsedTime runtime = new ElapsedTime();
+    private double timerTime = 0;
+    private boolean timerSet = false;
 
     public enum DepositState {
         STORED(.95),
@@ -43,6 +50,13 @@ public class Deposit extends SubsystemBase {
         depositState = DepositState.TWO_PIXEL;
 
         deposit.setPosition(depositState.getValue());
+
+        leftAligner.setPosition(.18);
+        rightAligner.setPosition(.84);
+
+        setTimer(.5);
+
+        retracted = false;
     }
 
     public void outtake(){
@@ -50,7 +64,8 @@ public class Deposit extends SubsystemBase {
             depositState = DepositState.ONE_PIXEL;
 
             deposit.setPosition(depositState.getValue());
-        }else{
+            retracted = true;
+        }else if(!retracted){
             depositState = DepositState.STORED;
 
             deposit.setPosition(depositState.getValue());
@@ -58,12 +73,40 @@ public class Deposit extends SubsystemBase {
     }
 
     public void openAligner(){
-        leftAligner.setPosition(.17);
+        leftAligner.setPosition(.18);
         rightAligner.setPosition(.84);
     }
 
     public void closeAligner(){
-        leftAligner.setPosition(.5);
+        leftAligner.setPosition(.485);
         rightAligner.setPosition(.52);
+    }
+
+    public DepositState getDepositState(){
+        return depositState;
+    }
+
+    public void readyToRetract(){
+        retracted = false;
+    }
+
+    public void setTimer(double time){
+        timerTime = time;
+        runtime.reset();
+
+        timerSet = true;
+    }
+
+    public void checkTimer(){
+        if(runtime.time() >= timerTime){
+            timerSet = false;
+
+            leftAligner.setPosition(.18);
+            rightAligner.setPosition(.84);
+        }
+    }
+
+    public boolean isTimerSet(){
+        return timerSet;
     }
 }

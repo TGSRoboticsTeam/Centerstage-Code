@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp.TourneyPrograms;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -26,6 +29,8 @@ import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Plane;
 public class FieldCentricTourneyDrive extends LinearOpMode {
     @Override
     public void runOpMode() {
+        GamepadEx gamepadEx = new GamepadEx(gamepad2);
+
         // Motor Setup
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -71,6 +76,7 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         while (opModeIsActive()) {
             // Define joystick controls
             // Drive
+
             double y   = -gamepad1.left_stick_y;
             double x   =  gamepad1.left_stick_x;
             double rx  =  gamepad1.right_stick_x;
@@ -120,10 +126,18 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
 
             linearSlides.setPower(gamepad2.right_trigger, gamepad2.left_trigger);
 
+            if(!gamepad2.b){
+                deposit.readyToRetract();
+            }
+
             if(gamepad2.a) {
                 deposit.intake();
             }else if(gamepad2.b){
                 deposit.outtake();
+            }
+
+            if(deposit.isTimerSet()){
+                deposit.checkTimer();
             }
 
             if(gamepad2.right_bumper){
