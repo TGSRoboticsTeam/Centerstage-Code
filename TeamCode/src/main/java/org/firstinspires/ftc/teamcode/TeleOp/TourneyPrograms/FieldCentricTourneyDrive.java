@@ -135,7 +135,7 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             }else if(gamepad2.b){
                 deposit.outtake();
             }
-            
+
             if(deposit.isTimerSet()){
                 deposit.checkTimer();
             }
@@ -145,10 +145,6 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             }else if(gamepad2.left_bumper){
                 deposit.openAligner();
             }
-
-            dashboardTelemetry.addData("Deposit Pos", deposit.getDepositState());
-            dashboardTelemetry.addData("B pressed", gamepadEx.getButton(GamepadKeys.Button.B));
-            dashboardTelemetry.update();
         }
     }
 }

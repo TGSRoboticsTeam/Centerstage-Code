@@ -120,10 +120,24 @@ public class StandardTourneyDrive extends LinearOpMode {
 
             linearSlides.setPower(gamepad2.right_trigger, gamepad2.left_trigger);
 
+            if(!gamepad2.b){
+                deposit.readyToRetract();
+            }
+
             if(gamepad2.a) {
                 deposit.intake();
             }else if(gamepad2.b){
                 deposit.outtake();
+            }
+
+            if(deposit.isTimerSet()){
+                deposit.checkTimer();
+            }
+
+            if(gamepad2.right_bumper){
+                deposit.closeAligner();
+            }else if(gamepad2.left_bumper){
+                deposit.openAligner();
             }
         }
     }
