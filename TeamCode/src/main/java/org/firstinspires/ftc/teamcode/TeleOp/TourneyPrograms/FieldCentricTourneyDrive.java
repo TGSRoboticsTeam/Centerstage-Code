@@ -135,6 +135,10 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             }else if(gamepad2.b){
                 deposit.outtake();
             }
+            
+            if(deposit.isTimerSet()){
+                deposit.checkTimer();
+            }
 
             if(gamepad2.right_bumper){
                 deposit.closeAligner();
