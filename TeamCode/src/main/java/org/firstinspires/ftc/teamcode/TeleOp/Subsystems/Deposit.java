@@ -9,6 +9,8 @@ public class Deposit extends SubsystemBase {
     private final Servo deposit;
     private final Servo leftAligner, rightAligner;
 
+    private boolean retracted = false;
+
     public enum DepositState {
         STORED(.95),
         ONE_PIXEL(.86),
@@ -43,6 +45,11 @@ public class Deposit extends SubsystemBase {
         depositState = DepositState.TWO_PIXEL;
 
         deposit.setPosition(depositState.getValue());
+
+        leftAligner.setPosition(.18);
+        rightAligner.setPosition(.84);
+
+        retracted = false;
     }
 
     public void outtake(){
@@ -50,7 +57,8 @@ public class Deposit extends SubsystemBase {
             depositState = DepositState.ONE_PIXEL;
 
             deposit.setPosition(depositState.getValue());
-        }else{
+            retracted = true;
+        }else if(!retracted){
             depositState = DepositState.STORED;
 
             deposit.setPosition(depositState.getValue());
@@ -58,12 +66,20 @@ public class Deposit extends SubsystemBase {
     }
 
     public void openAligner(){
-        leftAligner.setPosition(.17);
+        leftAligner.setPosition(.18);
         rightAligner.setPosition(.84);
     }
 
     public void closeAligner(){
-        leftAligner.setPosition(.5);
+        leftAligner.setPosition(.485);
         rightAligner.setPosition(.52);
+    }
+
+    public DepositState getDepositState(){
+        return depositState;
+    }
+
+    public void readyToRetract(){
+        retracted = false;
     }
 }

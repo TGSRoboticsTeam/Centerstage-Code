@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.TestingClasses.ConfigClasses.ServoTester2;
 public class ServoPosTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
-        ServoTester leftClawRotate = new ServoTester(hardwareMap, "claw", 1, 1);
+        ServoTester leftClawRotate = new ServoTester(hardwareMap, "left_aligner", 1, 1);
         //ServoTester2 rightClawRotate = new ServoTester2(hardwareMap, "right_aligner", 1, 1);
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
