@@ -1,15 +1,21 @@
 package org.firstinspires.ftc.teamcode.TeleOp.TourneyPrograms;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.ServoImpl;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Subsystems.Deposit;
-import org.firstinspires.ftc.teamcode.Subsystems.Hang;
-import org.firstinspires.ftc.teamcode.Subsystems.LinearSlides;
-import org.firstinspires.ftc.teamcode.Subsystems.Plane;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Deposit;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Hang;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.LinearSlides;
+import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.Plane;
 
 @TeleOp(name = "Standard Tourney Drive", group = "aa")
 
