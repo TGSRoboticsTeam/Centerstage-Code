@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="2022 Steering Tourney Drive", group="Linear Opmode")
+@TeleOp(name="blah", group="Linear Opmode")
 @Disabled
 
 public class MecanumTeleOp extends LinearOpMode {

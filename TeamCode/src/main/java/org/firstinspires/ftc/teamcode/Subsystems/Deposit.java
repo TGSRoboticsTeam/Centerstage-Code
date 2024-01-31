@@ -51,8 +51,8 @@ public class Deposit extends SubsystemBase {
 
         deposit.setPosition(depositState.getValue());
 
-        leftAligner.setPosition(.18);
-        rightAligner.setPosition(.84);
+        /*leftAligner.setPosition(.18);
+        rightAligner.setPosition(.84);*/
 
         setTimer(.5);
 
@@ -98,7 +98,7 @@ public class Deposit extends SubsystemBase {
     }
 
     public void checkTimer(){
-        if(runtime.time() >= timerTime){
+        if(runtime.seconds() >= timerTime){
             timerSet = false;
 
             leftAligner.setPosition(.18);
