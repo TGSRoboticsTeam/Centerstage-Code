@@ -145,12 +145,10 @@ public class BlueBackdropLeftPark extends LinearOpMode
         waitTime(1);
         moveInchAmount(false, 44);
         turnToAngle(90);
-        moveSlides(15);
         strafeVelo(false, .5, 1);
         moveInchAmount(true, 3);
         //deposit
         moveInchAmount(false, 3);
-        moveSlides(0);
         strafeVelo(true, 1, 2);
         moveInchAmount(true, 12);
     }
@@ -331,8 +329,8 @@ public class BlueBackdropLeftPark extends LinearOpMode
                 rightArm.setPosition(rightArmDownPos);
             }
 
-            dashboardTelemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            dashboardTelemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Left slide encoder", leftSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Right slide encoder", rightSlide.getCurrentPosition());
             dashboardTelemetry.addData("Target Slide Pos: ", targetTick);
             dashboardTelemetry.update();
         }
