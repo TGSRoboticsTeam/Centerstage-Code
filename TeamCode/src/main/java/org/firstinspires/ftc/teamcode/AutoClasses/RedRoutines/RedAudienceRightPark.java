@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.AutoClasses.BlueRoutines;
+package org.firstinspires.ftc.teamcode.AutoClasses.RedRoutines;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
@@ -27,15 +27,17 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -43,9 +45,12 @@ import org.firstinspires.ftc.teamcode.AutoClasses.DetectionPipelines.AprilTagDet
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 
-@Autonomous(name = "Blue Backdrop Side", group = "Linear Opmode")
-public class BlueBackdropSideAuto extends LinearOpMode
+import java.util.List;
+
+@Autonomous(name = "Red Audience Right Park", group = "Red auto")
+public class RedAudienceRightPark extends LinearOpMode
 {
+    // Motor and servo initial setup
     // Motor and servo initial setup
     public DcMotorEx leftDrive;
     public DcMotorEx rightDrive;
@@ -80,13 +85,18 @@ public class BlueBackdropSideAuto extends LinearOpMode
     public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation; // 155.23
 
     // Servo constants
-    static final double zeroPixelPos    = .36;
-    static final double onePixelPos     = .26;
-    static final double twoPixelPos     = .16;
+    static final double zeroPixelPos    = .61;
+    static final double onePixelPos     = .52;
+    static final double twoPixelPos     = .34;
     public double pixelsHeld = 0;
 
-    static final double armDownPos = .06;
-    static final double armUpPos = .17;
+    boolean depositRotated = false;
+
+    static final double leftArmUpPos = .505;
+    static final double leftArmDownPos = .73;
+
+    static final double rightArmUpPos = .358;
+    static final double rightArmDownPos = .14;
 
     // General constants
     double oneFootCm = 30.48;
@@ -114,24 +124,25 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
     AprilTagDetection tagOfInterest = null;
 
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
     @Override
     public void runOpMode()
     {
         setUpHardware();
 
         while (!isStarted() && !isStopRequested()) {
-            telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            telemetry.addLine("Waiting on start");
             telemetry.update();
         }
 
-        moveInchAmount(true,30);
-        waitTime(.5);
-        moveInchAmount(false, 29);
-        waitTime(.5);
-        turnNinety(false);
-        waitTime(.5);
-        moveInchAmount(true, 44);
+        moveSlides(5);
+        waitTime(3);
+        moveSlides(10);
+        waitTime(3);
+        moveSlides(0);
+        waitTime(3);
     }
 
     /**
@@ -140,7 +151,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
      * @param distance Distance for robot to move
      * @param height Height to move to
      */
-    /*public void moveSlidesAndDrive(boolean forward, double distance, double height){
+    public void moveSlidesAndDrive(boolean forward, double distance, double height){
         int targetTick = (int) (tickPerInchForLift * height);
 
         boolean correctionsDone = false;
@@ -151,7 +162,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
         double driveTrainCorrection = 1;
 
         double originHeading = getAngle();
-        double power = 0;
+        double power;
 
         double oneRotationDistance = diameter * Math.PI; // In cm
         double rotationAmount = (oneFootCm / 12) / oneRotationDistance;
@@ -177,7 +188,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
                         power = 1;
                     }
 
-                    double headingError = optimalAngleChange(originHeading);
+                    double headingError = optimalAngleChange(originHeading, getAngle());
 
                     leftVelo(power - (headingError * -.1));
                     rightVelo(power + (headingError * -.1));
@@ -197,12 +208,12 @@ public class BlueBackdropSideAuto extends LinearOpMode
                     liftOff = true;
                 }
 
-                if(leftSlide.getCurrentPosition() > 100){
-                    leftArm.setPosition(armUpPos);
-                    rightArm.setPosition(armUpPos);
+                if(leftSlide.getCurrentPosition() < -750){
+                    leftArm.setPosition(leftArmUpPos);
+                    rightArm.setPosition(rightArmUpPos);
                 }else{
-                    leftArm.setPosition(armDownPos);
-                    rightArm.setPosition(armDownPos);
+                    leftArm.setPosition(leftArmDownPos);
+                    rightArm.setPosition(rightArmDownPos);
                 }
 
                 if(runtime.seconds() > 8){
@@ -225,7 +236,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
                         power = 1;
                     }
 
-                    double headingError = optimalAngleChange(originHeading);
+                    double headingError = optimalAngleChange(originHeading, getAngle());
 
                     leftVelo(power - (headingError * -.1));
                     rightVelo(power + (headingError * -.1));
@@ -245,12 +256,12 @@ public class BlueBackdropSideAuto extends LinearOpMode
                     liftOff = true;
                 }
 
-                if(leftSlide.getCurrentPosition() > 100){
-                    leftArm.setPosition(armUpPos);
-                    rightArm.setPosition(armUpPos);
+                if(leftSlide.getCurrentPosition() < -750){
+                    leftArm.setPosition(leftArmUpPos);
+                    rightArm.setPosition(rightArmUpPos);
                 }else{
-                    leftArm.setPosition(armDownPos);
-                    rightArm.setPosition(armDownPos);
+                    leftArm.setPosition(leftArmDownPos);
+                    rightArm.setPosition(rightArmDownPos);
                 }
 
                 if(runtime.seconds() > 8){
@@ -261,21 +272,21 @@ public class BlueBackdropSideAuto extends LinearOpMode
             }
         }
         resetEncoders();
-    }*/
+    }
 
     /**
      * Moves the linear slides to the specified height in inches
-     * @param height
+     * @param height Height for slides to move to
      */
     public void moveSlides(double height){
         boolean liftOff = false;
-
-        double initialTick = leftSlide.getCurrentPosition();
+        boolean leftOff = false;
+        boolean rightOff = false;
 
         int targetTick = (int) (height * tickPerInchForLift);
         double fiveInches = (int) (5 * tickPerInchForLift);
 
-        double power = .25;
+        double power = .05;
 
         slideTarget(targetTick);
         slidePower(power);
@@ -292,23 +303,28 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
             slidePower(power);*/
 
-            if ((leftSlide.getCurrentPosition() > targetTick - 17.3 && leftSlide.getCurrentPosition() < targetTick + 17.3) || !leftSlide.isBusy()) {
+            if ((leftSlide.getCurrentPosition() > -targetTick - 50 && leftSlide.getCurrentPosition() < -targetTick + 50) || !leftSlide.isBusy()) {
                 slidePower(0);
                 liftOff = true;
             }
 
-            if(leftSlide.getCurrentPosition() < -1250){
-                leftArm.setPosition(armUpPos);
-                rightArm.setPosition(armUpPos);
-            }else{
-                leftArm.setPosition(armDownPos);
-                rightArm.setPosition(armDownPos);
+            if ((rightSlide.getCurrentPosition() > targetTick - 50 && rightSlide.getCurrentPosition() < targetTick + 50) || !rightSlide.isBusy()) {
+                slidePower(0);
+                liftOff = true;
             }
 
-            telemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            //telemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
-            telemetry.addData("Target Slide Pos: ", targetTick);
-            telemetry.update();
+            if(leftSlide.getCurrentPosition() < -750){
+                leftArm.setPosition(leftArmUpPos);
+                rightArm.setPosition(rightArmUpPos);
+            }else{
+                leftArm.setPosition(leftArmDownPos);
+                rightArm.setPosition(rightArmDownPos);
+            }
+
+            dashboardTelemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Target Slide Pos: ", targetTick);
+            dashboardTelemetry.update();
         }
     }
 
@@ -332,6 +348,20 @@ public class BlueBackdropSideAuto extends LinearOpMode
         }else if (pixelsHeld == 1){
             deposit.setPosition(zeroPixelPos);
             pixelsHeld = 0;
+        }
+    }
+
+    public void rotateDeposit(){
+        if(!depositRotated){
+            leftArm.setPosition(0.505);
+            rightArm.setPosition(0.358);
+
+            depositRotated = true;
+        }else{
+            leftArm.setPosition(0.73);
+            rightArm.setPosition(0.14);
+
+            depositRotated = false;
         }
     }
 
@@ -413,7 +443,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
     }
 
     /**
-     * Turns to the desired heading as specified in targetAngle, assuming starting position is 0 degrees
+     * Turns to the specified angle.
      * @param targetAngle Target angle to rotate to
      */
     public void turnToAngle(double targetAngle){
@@ -423,7 +453,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
             double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
             if(remainingDistance < 45){
-                power = calculateModularPower(1, .2, remainingDistance / 3.75, 45 / 3.75, .2);
+                power = calculateModularPower(.6, .2, remainingDistance / 3.75, 45 / 3.75, .2);
             }else{
                 power = .6;
             }
@@ -450,10 +480,10 @@ public class BlueBackdropSideAuto extends LinearOpMode
      * @param forward True or false
      * @param inches Amount to move
      */
-    /*public void moveInchesAtHeading(boolean forward, double inches){
+    public void moveInchesAtHeading(boolean forward, double inches){
         double originHeading = getAngle();
-        double power = 0;
-        
+        double power;
+
         double driveTrainCorrection = 1;
 
         double rotationAmount = (oneFootCm / 12) / circumference;
@@ -476,7 +506,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
                     power = .25;
                 }
 
-                double headingError = optimalAngleChange(originHeading);
+                double headingError = optimalAngleChange(originHeading, getAngle());
 
                 leftVelo(power + (headingError * -.1));
                 rightVelo(power - (headingError * -.1));
@@ -497,7 +527,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
                     power = .25;
                 }
 
-                double headingError = optimalAngleChange(originHeading);
+                double headingError = optimalAngleChange(originHeading, getAngle());
 
                 leftVelo(-power + (headingError * -.1));
                 rightVelo(-power - (headingError * -.1));
@@ -508,7 +538,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
         }
         motorsOff();
         resetEncoders();
-    }*/
+    }
 
 
     /**
@@ -531,37 +561,54 @@ public class BlueBackdropSideAuto extends LinearOpMode
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
                 if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
-                    power = calculateModularPower(1, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
+                    power = calculateModularPower(.5, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
                 }else{
                     power = .5;
                 }
 
                 motorsOn(power);
+                dashboardTelemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
+                dashboardTelemetry.addData("Target Tick:", totalTicks);
+                dashboardTelemetry.addData("One Foot Ticks:", oneFoot);
+                dashboardTelemetry.addData("Distance Remaining: ", totalTicks - leftBackDrive.getCurrentPosition());
+                dashboardTelemetry.addData("Motor power:", leftBackDrive.getPower());
+                dashboardTelemetry.addData("Returned power", calculateModularPower(.5, .1, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15));
+                dashboardTelemetry.update();
             }
         }else{
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
                 if((Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())) < oneFoot) {
-                    power = calculateModularPower(1, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
+                    power = calculateModularPower(.5, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
                 }else{
                     power = .5;
                 }
 
                 motorsOn(-power);
+
+                dashboardTelemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
+                dashboardTelemetry.addData("Target Tick:", totalTicks);
+                dashboardTelemetry.addData("One Foot Ticks:", oneFoot);
+                dashboardTelemetry.addData("Distance Remaining: ", totalTicks - leftBackDrive.getCurrentPosition());
+                dashboardTelemetry.addData("Motor power:", leftBackDrive.getPower());
+                dashboardTelemetry.addData("Returned power", calculateModularPower(.5, .1, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25));
+                dashboardTelemetry.update();
             }
         }
         motorsOff();
         resetEncoders();
+        telemetry.addLine("Pathing finished");
+        telemetry.update();
     }
 
-    public void leftVelo(double maxPercent){ //sets power for left wheels
-        leftWheel(maxPercent);
-        leftBackWheel(maxPercent);
+    public void leftVelo(double power){ //sets power for left wheels
+        leftWheel(power);
+        leftBackWheel(power);
     }
 
-    public void rightVelo(double maxPercent){ //sets power for right wheels
-        rightWheel(maxPercent);
-        rightBackWheel(maxPercent);
+    public void rightVelo(double power){ //sets power for right wheels
+        rightWheel(power);
+        rightBackWheel(power);
     }
 
     public void leftWheel(double percent){
@@ -586,7 +633,7 @@ public class BlueBackdropSideAuto extends LinearOpMode
     @SuppressWarnings("StatementWithEmptyBody")
     public void waitTime(double time){ // Waits for time (seconds)
         runtime.reset();
-        while(opModeIsActive() && runtime.seconds()<time){
+        while(opModeIsActive() && runtime.seconds() < time){
         }
     }
 
@@ -602,35 +649,13 @@ public class BlueBackdropSideAuto extends LinearOpMode
 
     /**
      * Turns all wheels on at specified power
-     * @param power Percent of power to run at
+     * @param power Power to run at
      */
     public void motorsOn(double power){
         leftDrive.setPower(power);
         rightDrive.setPower(power);
         rightBackDrive.setPower(power);
         leftBackDrive.setPower(power);
-    }
-
-    /**
-     * Resets all wheel encoders to be at 0 and to run without encoders
-     */
-    public void resetEncoders() { // Reset all encoder positions
-        leftDrive.setMode(STOP_AND_RESET_ENCODER);
-        leftBackDrive.setMode(STOP_AND_RESET_ENCODER);
-        rightDrive.setMode(STOP_AND_RESET_ENCODER);
-        rightBackDrive.setMode(STOP_AND_RESET_ENCODER);
-
-        leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    public void encoderTarget(int target){
-        leftDrive.setTargetPosition(target);
-        leftBackDrive.setTargetPosition(target);
-        rightDrive.setTargetPosition(target);
-        rightBackDrive.setTargetPosition(target);
     }
 
     /**
@@ -665,6 +690,32 @@ public class BlueBackdropSideAuto extends LinearOpMode
         }
 
         return y;
+    }
+
+    /**
+     * Resets all wheel encoders to be at 0 and to run without encoders
+     */
+    public void resetEncoders() { // Reset all encoder positions
+        leftDrive.setMode(STOP_AND_RESET_ENCODER);
+        leftBackDrive.setMode(STOP_AND_RESET_ENCODER);
+        rightDrive.setMode(STOP_AND_RESET_ENCODER);
+        rightBackDrive.setMode(STOP_AND_RESET_ENCODER);
+
+        leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    /**
+     * Sets the target tick position for all drive motors
+     * @param target Target tick for wheels to move to
+     */
+    public void encoderTarget(int target){
+        leftDrive.setTargetPosition(target);
+        leftBackDrive.setTargetPosition(target);
+        rightDrive.setTargetPosition(target);
+        rightBackDrive.setTargetPosition(target);
     }
 
     /**
@@ -725,7 +776,17 @@ public class BlueBackdropSideAuto extends LinearOpMode
         }
     }
 
-    public void setUpHardware() { // Assigns motor names in phone to the objects in code
+    /**
+     * Setup all hardware.
+     */
+    public void setUpHardware() {
+        // Bulk reading
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
         leftDrive  = hardwareMap.get(DcMotorEx.class, "left_front_drive");
         leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back_drive");
         rightDrive = hardwareMap.get(DcMotorEx.class, "right_front_drive");
@@ -735,23 +796,21 @@ public class BlueBackdropSideAuto extends LinearOpMode
         rightSlide = hardwareMap.get(DcMotorEx.class, "right_linear_slide");
 
         deposit = hardwareMap.get(Servo.class, "claw");
-        leftArm = hardwareMap.get(Servo.class, "right_claw_rotation");
-        rightArm = hardwareMap.get(Servo.class, "left_claw_rotation");
+        rightArm = hardwareMap.get(Servo.class, "right_claw_rotation");
+        leftArm = hardwareMap.get(Servo.class, "left_claw_rotation");
 
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        leftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftArm.setDirection(Servo.Direction.FORWARD);
-        rightArm.setDirection(Servo.Direction.REVERSE);
-
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlide.setDirection(DcMotor.Direction.FORWARD);
+        rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -761,9 +820,9 @@ public class BlueBackdropSideAuto extends LinearOpMode
         leftSlide.setMode(RUN_USING_ENCODER);
         rightSlide.setMode(RUN_USING_ENCODER);
 
-        leftArm.setPosition(.83);
-        rightArm.setPosition(0.7);
-        deposit.setPosition(.95);
+        leftArm.setPosition(0.722);
+        rightArm.setPosition(0.148);
+        deposit.setPosition(.61);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
