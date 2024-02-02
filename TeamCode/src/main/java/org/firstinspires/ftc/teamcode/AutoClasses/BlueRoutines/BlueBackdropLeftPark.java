@@ -1,24 +1,3 @@
-/*
- * Copyright (c) 2021 OpenFTC Team
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package org.firstinspires.ftc.teamcode.AutoClasses.BlueRoutines;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
@@ -64,7 +43,7 @@ public class BlueBackdropLeftPark extends LinearOpMode
     public Servo rightArm;
     public Servo deposit;
 
-    public Deposit aligner = new Deposit(hardwareMap);
+    Deposit aligner;
 
     // Sensors
     BNO055IMU imu;
@@ -119,19 +98,63 @@ public class BlueBackdropLeftPark extends LinearOpMode
         }
 
         // Right Randomization:
-        moveInchAmount(true, 24);
+        /*moveInchAmount(true, 28);
         turnToAngle(270);
-        moveInchAmount(true, 7);
-        //deposit
-        waitTime(1);
-        moveInchAmount(false, 44);
+        moveInchAmount(true, 8);
+        aligner.closeAligner();
+        waitTime(.5);
+        moveInchAmount(false, 38);
         turnToAngle(90);
-        strafeVelo(false, .5, 1);
-        moveInchAmount(true, 3);
-        //deposit
-        moveInchAmount(false, 3);
-        strafeVelo(true, 1, 2);
-        moveInchAmount(true, 12);
+        strafeVelo(false, .5, .15);
+        turnToAngle(90);
+        moveSlides(10);
+        moveInchAmount(true, 4);
+        aligner.openAligner();
+        waitTime(.5);
+        moveInchAmount(false, 5);
+        moveSlides(0);
+        strafeVelo(true, .5, 1.92);
+        turnToAngle(90);
+        moveInchAmount(true, 9);*/
+
+        // Left Randomization
+        moveInchAmount(true, 28);
+        turnToAngle(270);
+        moveInchAmount(false, 18);
+        aligner.closeAligner();
+        waitTime(.5);
+        moveInchAmount(false, 13);
+        turnToAngle(90);
+        strafeVelo(true, .5, .3);
+        turnToAngle(90);
+        moveSlides(10);
+        moveInchAmount(true, 4);
+        aligner.openAligner();
+        waitTime(.5);
+        moveInchAmount(false, 5);
+        moveSlides(0);
+        strafeVelo(true, .5, 1.4);
+        turnToAngle(90);
+        moveInchAmount(true, 9);
+
+        // Middle Randomization
+        /*moveInchAmount(true, 30);
+        aligner.closeAligner();
+        waitTime(.5);
+        moveInchAmount(false, 4);
+        turnToAngle(90);
+        moveInchAmount(true, 32);
+        strafeVelo(false, .5, .25);
+        turnToAngle(90);
+        moveSlides(10);
+        moveInchAmount(true, 4);
+        aligner.openAligner();
+        waitTime(.5);
+        moveInchAmount(false, 5);
+        moveSlides(0);
+        strafeVelo(true, .5, 1.5);
+        turnToAngle(90);
+        moveInchAmount(true, 9);*/
     }
 
     /**
@@ -281,16 +304,13 @@ public class BlueBackdropLeftPark extends LinearOpMode
         slidePower(power);
 
         while(!liftOff && opModeIsActive()) {
-            /*power = Math.abs(targetTick - leftSlide.getCurrentPosition()) / (fiveInches);
-
-            if(power > 1){
+            if((Math.abs(targetTick) - Math.abs(rightSlide.getCurrentPosition())) < fiveInches){
+                power = calculateModularPower(1, .2, (Math.abs(targetTick) - Math.abs(rightSlide.getCurrentPosition())) / 64.8, 12, .25);
+            }else{
                 power = 1;
             }
-            if(power < .15){
-                power = .15;
-            }
 
-            slidePower(power);*/
+            slidePower(power);
 
             if ((leftSlide.getCurrentPosition() > -targetTick - 50 && leftSlide.getCurrentPosition() < -targetTick + 50) || !leftSlide.isBusy()) {
                 slidePower(0);
@@ -309,11 +329,6 @@ public class BlueBackdropLeftPark extends LinearOpMode
                 leftArm.setPosition(leftArmDownPos);
                 rightArm.setPosition(rightArmDownPos);
             }
-
-            dashboardTelemetry.addData("Left slide encoder", leftSlide.getCurrentPosition());
-            dashboardTelemetry.addData("Right slide encoder", rightSlide.getCurrentPosition());
-            dashboardTelemetry.addData("Target Slide Pos: ", targetTick);
-            dashboardTelemetry.update();
         }
     }
 
@@ -369,9 +384,9 @@ public class BlueBackdropLeftPark extends LinearOpMode
 
     public void strafeVelo(boolean isLeft, double power, double time){
         //Strafe left or right
-        int direction = -1;
+        int direction = 1;
         if(isLeft){
-            direction = 1;
+            direction = -1;
         }
         runtime.reset();
         while(opModeIsActive() && runtime.seconds() < time){
@@ -442,9 +457,9 @@ public class BlueBackdropLeftPark extends LinearOpMode
             double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
             if(remainingDistance < 45){
-                power = calculateModularPower(.6, .2, remainingDistance / 3.75, 45 / 3.75, .2);
+                power = calculateModularPower(1, .1, remainingDistance / 3.75, 45 / 3.75, .2);
             }else{
-                power = .6;
+                power = 1;
             }
 
             if(optimalDirection(targetAngle, getAngle())){
@@ -550,9 +565,9 @@ public class BlueBackdropLeftPark extends LinearOpMode
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
                 if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
-                    power = calculateModularPower(.5, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
+                    power = calculateModularPower(1, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, 3);
                 }else{
-                    power = .5;
+                    power = 1;
                 }
 
                 motorsOn(power);
@@ -561,9 +576,9 @@ public class BlueBackdropLeftPark extends LinearOpMode
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
                 if((Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())) < oneFoot) {
-                    power = calculateModularPower(.5, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
+                    power = calculateModularPower(1, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, 3);
                 }else{
-                    power = .5;
+                    power = 1;
                 }
 
                 motorsOn(-power);
@@ -760,6 +775,8 @@ public class BlueBackdropLeftPark extends LinearOpMode
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+
+        aligner = new Deposit(hardwareMap);
 
         leftDrive  = hardwareMap.get(DcMotorEx.class, "left_front_drive");
         leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back_drive");

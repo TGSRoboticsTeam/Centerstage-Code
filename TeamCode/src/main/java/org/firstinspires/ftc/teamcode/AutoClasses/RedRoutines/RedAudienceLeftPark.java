@@ -47,8 +47,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.List;
 
-@Autonomous(name = "Red Backdrop Left Park", group = "Red auto")
-public class RedBackdropLeftPark extends LinearOpMode
+@Autonomous(name = "Red Audience Left Park", group = "Red auto")
+public class RedAudienceLeftPark extends LinearOpMode
 {
     // Motor and servo initial setup
     // Motor and servo initial setup
