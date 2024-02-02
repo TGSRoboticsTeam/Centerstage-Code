@@ -51,7 +51,6 @@ import java.util.List;
 public class AutoTesting extends LinearOpMode
 {
     // Motor and servo initial setup
-    // Motor and servo initial setup
     public DcMotorEx leftDrive;
     public DcMotorEx rightDrive;
     public DcMotorEx leftBackDrive;
@@ -101,28 +100,7 @@ public class AutoTesting extends LinearOpMode
     // General constants
     double oneFootCm = 30.48;
 
-    OpenCvCamera camera;
-    AprilTagDetectionPipeline aprilTagDetectionPipeline;
-
     static final double FEET_PER_METER = 3.28084;
-
-    // Lens intrinsics
-    // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
-    // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
-
-    // UNITS ARE METERS
-    double tagsize = 0.166;
-
-    int ID_TAG_OF_INTEREST_1 = 7; // Tags from the 36h11 family
-    int ID_TAG_OF_INTEREST_2 = 9;
-    int ID_TAG_OF_INTEREST_3 = 12;
-
-    AprilTagDetection tagOfInterest = null;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
@@ -285,22 +263,19 @@ public class AutoTesting extends LinearOpMode
         int targetTick = (int) (height * tickPerInchForLift);
         double fiveInches = (int) (5 * tickPerInchForLift);
 
-        double power = .5;
+        double power = 1;
 
         slideTarget(targetTick);
         slidePower(power);
 
         while(!liftOff && opModeIsActive()) {
-            /*power = Math.abs(targetTick - leftSlide.getCurrentPosition()) / (fiveInches);
-
-            if(power > 1){
+            if((targetTick - Math.abs(rightSlide.getCurrentPosition())) < fiveInches){
+                power = calculateModularPower(1, .2, (targetTick - Math.abs(rightSlide.getCurrentPosition())) / 64.8, 12, .15);
+            }else{
                 power = 1;
             }
-            if(power < .15){
-                power = .15;
-            }
 
-            slidePower(power);*/
+            slidePower(power);
 
             if ((leftSlide.getCurrentPosition() > -targetTick - 50 && leftSlide.getCurrentPosition() < -targetTick + 50) || !leftSlide.isBusy()) {
                 slidePower(0);
@@ -456,9 +431,9 @@ public class AutoTesting extends LinearOpMode
             double remainingDistance = Math.abs(optimalAngleChange(targetAngle, getAngle()));
 
             if(remainingDistance < 45){
-                power = calculateModularPower(.6, .2, remainingDistance / 3.75, 45 / 3.75, .2);
+                power = calculateModularPower(1, .2, remainingDistance / 3.75, 45 / 3.75, .2);
             }else{
-                power = .6;
+                power = 1;
             }
 
             if(optimalDirection(targetAngle, getAngle())){
@@ -564,9 +539,9 @@ public class AutoTesting extends LinearOpMode
         if(forward){
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() < totalTicks){
                 if((totalTicks - leftBackDrive.getCurrentPosition()) < oneFoot) {
-                    power = calculateModularPower(.5, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
+                    power = calculateModularPower(1, .2, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15);
                 }else{
-                    power = .5;
+                    power = 1;
                 }
 
                 motorsOn(power);
@@ -575,9 +550,9 @@ public class AutoTesting extends LinearOpMode
             totalTicks = -totalTicks;
             while(opModeIsActive() && leftBackDrive.getCurrentPosition() > totalTicks){
                 if((Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())) < oneFoot) {
-                    power = calculateModularPower(.5, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
+                    power = calculateModularPower(1, .2, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25);
                 }else{
-                    power = .5;
+                    power = 1;
                 }
 
                 motorsOn(-power);

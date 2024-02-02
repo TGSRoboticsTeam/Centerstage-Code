@@ -42,6 +42,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.AutoClasses.DetectionPipelines.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.Subsystems.Deposit;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 
@@ -50,7 +51,6 @@ import java.util.List;
 @Autonomous(name = "Blue Backdrop Left Park", group = "Blue auto")
 public class BlueBackdropLeftPark extends LinearOpMode
 {
-    // Motor and servo initial setup
     // Motor and servo initial setup
     public DcMotorEx leftDrive;
     public DcMotorEx rightDrive;
@@ -63,6 +63,8 @@ public class BlueBackdropLeftPark extends LinearOpMode
     public Servo leftArm;
     public Servo rightArm;
     public Servo deposit;
+
+    public Deposit aligner = new Deposit(hardwareMap);
 
     // Sensors
     BNO055IMU imu;
@@ -101,28 +103,7 @@ public class BlueBackdropLeftPark extends LinearOpMode
     // General constants
     double oneFootCm = 30.48;
 
-    OpenCvCamera camera;
-    AprilTagDetectionPipeline aprilTagDetectionPipeline;
-
     static final double FEET_PER_METER = 3.28084;
-
-    // Lens intrinsics
-    // UNITS ARE PIXELS
-    // NOTE: this calibration is for the C920 webcam at 800x448.
-    // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
-
-    // UNITS ARE METERS
-    double tagsize = 0.166;
-
-    int ID_TAG_OF_INTEREST_1 = 7; // Tags from the 36h11 family
-    int ID_TAG_OF_INTEREST_2 = 9;
-    int ID_TAG_OF_INTEREST_3 = 12;
-
-    AprilTagDetection tagOfInterest = null;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();

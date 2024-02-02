@@ -78,8 +78,8 @@ public class Deposit extends SubsystemBase {
     }
 
     public void closeAligner(){
-        leftAligner.setPosition(.485);
-        rightAligner.setPosition(.52);
+        leftAligner.setPosition(.51);
+        rightAligner.setPosition(.48);
     }
 
     public DepositState getDepositState(){
