@@ -47,7 +47,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.List;
 
-@Autonomous(name = "Auto Test Code", group = "Linear Opmode")
+@Autonomous(name = "Auto testing", group = "Blue auto")
 public class AutoTesting extends LinearOpMode
 {
     // Motor and servo initial setup
@@ -137,12 +137,11 @@ public class AutoTesting extends LinearOpMode
             telemetry.update();
         }
 
-        moveSlides(5);
-        waitTime(3);
+        // Right Randomization:
         moveSlides(10);
-        waitTime(3);
         moveSlides(0);
-        waitTime(3);
+        moveSlides(10);
+        moveSlides(0);
     }
 
     /**
@@ -286,7 +285,7 @@ public class AutoTesting extends LinearOpMode
         int targetTick = (int) (height * tickPerInchForLift);
         double fiveInches = (int) (5 * tickPerInchForLift);
 
-        double power = .05;
+        double power = .5;
 
         slideTarget(targetTick);
         slidePower(power);
@@ -321,8 +320,12 @@ public class AutoTesting extends LinearOpMode
                 rightArm.setPosition(rightArmDownPos);
             }
 
-            dashboardTelemetry.addData("Left slide encoder: ", leftSlide.getCurrentPosition());
-            dashboardTelemetry.addData("Right slide encoder: ", rightSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Left Motor Velo", leftSlide.getVelocity());
+            dashboardTelemetry.addData("Right Motor Velo", rightSlide.getVelocity());
+            dashboardTelemetry.addData("Left Motor Pos", leftSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Right Motor Pos", rightSlide.getCurrentPosition());
+            dashboardTelemetry.addData("Left Motor Target", leftSlide.getTargetPosition());
+            dashboardTelemetry.addData("Right Motor Target", rightSlide.getTargetPosition());
             dashboardTelemetry.addData("Target Slide Pos: ", targetTick);
             dashboardTelemetry.update();
         }
@@ -567,13 +570,6 @@ public class AutoTesting extends LinearOpMode
                 }
 
                 motorsOn(power);
-                dashboardTelemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
-                dashboardTelemetry.addData("Target Tick:", totalTicks);
-                dashboardTelemetry.addData("One Foot Ticks:", oneFoot);
-                dashboardTelemetry.addData("Distance Remaining: ", totalTicks - leftBackDrive.getCurrentPosition());
-                dashboardTelemetry.addData("Motor power:", leftBackDrive.getPower());
-                dashboardTelemetry.addData("Returned power", calculateModularPower(.5, .1, (1 / circumference) * (totalTicks - leftBackDrive.getCurrentPosition()), 12, .15));
-                dashboardTelemetry.update();
             }
         }else{
             totalTicks = -totalTicks;
@@ -585,14 +581,6 @@ public class AutoTesting extends LinearOpMode
                 }
 
                 motorsOn(-power);
-
-                dashboardTelemetry.addData("Encoder Value:", leftBackDrive.getCurrentPosition());
-                dashboardTelemetry.addData("Target Tick:", totalTicks);
-                dashboardTelemetry.addData("One Foot Ticks:", oneFoot);
-                dashboardTelemetry.addData("Distance Remaining: ", totalTicks - leftBackDrive.getCurrentPosition());
-                dashboardTelemetry.addData("Motor power:", leftBackDrive.getPower());
-                dashboardTelemetry.addData("Returned power", calculateModularPower(.5, .1, (1 / circumference) * (Math.abs(totalTicks) - Math.abs(leftBackDrive.getCurrentPosition())), 12, .25));
-                dashboardTelemetry.update();
             }
         }
         motorsOff();
