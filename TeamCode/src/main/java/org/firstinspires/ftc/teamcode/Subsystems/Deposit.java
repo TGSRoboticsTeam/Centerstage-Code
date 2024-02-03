@@ -17,9 +17,9 @@ public class Deposit extends SubsystemBase {
     private boolean timerSet = false;
 
     public enum DepositState {
-        STORED(.95),
-        ONE_PIXEL(.86),
-        TWO_PIXEL(.7);
+        STORED(.28),
+        ONE_PIXEL(.14),
+        TWO_PIXEL(0);
 
         private final double pos;
 

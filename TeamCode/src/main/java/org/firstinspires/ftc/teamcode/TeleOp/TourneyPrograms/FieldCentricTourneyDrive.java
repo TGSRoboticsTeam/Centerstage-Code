@@ -55,8 +55,8 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT, // Change to left if doesn't work
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, // Change to left if doesn't work
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
@@ -136,6 +136,10 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
             }else if(gamepad2.left_bumper){
                 deposit.openAligner();
             }
+
+            telemetry.addData("Left Slide Encoder: ", linearSlides.getLeftSlideEncoder());
+            telemetry.addData("Right Slide Encoder: ", linearSlides.getRightSlideEncoder());
+            telemetry.update();
         }
     }
 }

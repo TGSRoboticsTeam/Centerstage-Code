@@ -72,6 +72,7 @@ public class RedOpenCv extends LinearOpMode {
         controlHubCam.openCameraDevice();
         controlHubCam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
     }
+
     class YellowBlobDetectionPipeline extends OpenCvPipeline {
         @Override
         public Mat processFrame(Mat input) {

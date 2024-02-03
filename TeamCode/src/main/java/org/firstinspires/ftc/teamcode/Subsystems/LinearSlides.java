@@ -10,15 +10,15 @@ public class LinearSlides extends SubsystemBase {
     private final DcMotor leftSlide, rightSlide;
     private final Servo leftArm, rightArm;
 
-    private final int maxHeight = -2500;
+    private final int maxHeight = 2500;
 
     private final double armRotationPos = -750;
 
-    private final double leftArmUpPos = .61;
-    private final double leftArmDownPos = .83;
+    private final double leftArmUpPos = .631;
+    private final double leftArmDownPos = .855;
 
-    private final double rightArmUpPos = .92;
-    private final double rightArmDownPos = .7;
+    private final double rightArmUpPos = .885;
+    private final double rightArmDownPos = .665;
 
     public LinearSlides(HardwareMap hardwareMap){
         leftSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");
@@ -44,17 +44,17 @@ public class LinearSlides extends SubsystemBase {
     }
 
     public void setPower(double upPower, double downPower){
-        if (leftSlide.getCurrentPosition() > 0) {
+        if (leftSlide.getCurrentPosition() < 0) {
             leftSlide.setPower(upPower);
-        }else if (leftSlide.getCurrentPosition() < maxHeight) {
+        }else if (leftSlide.getCurrentPosition() > maxHeight) {
             leftSlide.setPower(-downPower);
         }else{
             leftSlide.setPower(upPower - downPower);
         }
 
-        if (-rightSlide.getCurrentPosition() > 0) {
+        if (rightSlide.getCurrentPosition() < 0) {
             rightSlide.setPower(upPower);
-        }else if (-rightSlide.getCurrentPosition() < maxHeight) {
+        }else if (rightSlide.getCurrentPosition() > maxHeight) {
             rightSlide.setPower(-downPower);
         }else{
             rightSlide.setPower(upPower - downPower);
@@ -67,5 +67,13 @@ public class LinearSlides extends SubsystemBase {
             leftArm.setPosition(leftArmDownPos);
             rightArm.setPosition(rightArmDownPos);
         }
+    }
+
+    public double getLeftSlideEncoder(){
+        return leftSlide.getCurrentPosition();
+    }
+
+    public double getRightSlideEncoder(){
+        return rightSlide.getCurrentPosition();
     }
 }
