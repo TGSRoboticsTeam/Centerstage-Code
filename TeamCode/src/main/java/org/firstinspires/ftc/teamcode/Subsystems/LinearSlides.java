@@ -14,11 +14,11 @@ public class LinearSlides extends SubsystemBase {
 
     private final double armRotationPos = -750;
 
-    private final double leftArmUpPos = .631;
-    private final double leftArmDownPos = .855;
+    private final double leftArmUpPos = .68;
+    private final double leftArmDownPos = .91;
 
-    private final double rightArmUpPos = .885;
-    private final double rightArmDownPos = .665;
+    private final double rightArmUpPos = .835;
+    private final double rightArmDownPos = .61;
 
     public LinearSlides(HardwareMap hardwareMap){
         leftSlide = hardwareMap.get(DcMotor.class, "left_linear_slide");

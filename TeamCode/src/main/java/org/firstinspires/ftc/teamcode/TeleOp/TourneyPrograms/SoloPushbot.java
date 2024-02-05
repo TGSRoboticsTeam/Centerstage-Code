@@ -35,6 +35,8 @@ public class SoloPushbot extends LinearOpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         Deposit deposit = new Deposit(hardwareMap);
+        Hang hang = new Hang(hardwareMap);
+        Plane plane = new Plane(hardwareMap);
 
         // Set up FtcDashboard telemetry
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -103,6 +105,16 @@ public class SoloPushbot extends LinearOpMode {
                 deposit.closeAligner();
             }else if(gamepad1.left_bumper){
                 deposit.openAligner();
+            }
+
+            if(gamepad1.dpad_left){
+                hang.moveArm();
+            }
+
+            hang.setPower(gamepad1.right_trigger, gamepad1.left_trigger);
+
+            if(gamepad1.dpad_up){
+                plane.launchPlane();
             }
         }
     }

@@ -82,18 +82,18 @@ public class BlueBackdropLeftPark extends LinearOpMode
     public double tickPerInchForLift = (1 / pulleyCircumference) * ticksPerRotation; // 155.23
 
     // Servo constants
-    static final double zeroPixelPos    = .61;
-    static final double onePixelPos     = .52;
-    static final double twoPixelPos     = .34;
+    static final double zeroPixelPos    = .28;
+    static final double onePixelPos     = .14;
+    static final double twoPixelPos     = .0;
     public double pixelsHeld = 0;
 
     boolean depositRotated = false;
 
-    static final double leftArmUpPos = .505;
-    static final double leftArmDownPos = .73;
+    private final double leftArmUpPos = .68;
+    private final double leftArmDownPos = .91;
 
-    static final double rightArmUpPos = .358;
-    static final double rightArmDownPos = .14;
+    private final double rightArmUpPos = .835;
+    private final double rightArmDownPos = .61;
 
     // General constants
     double oneFootCm = 30.48;
@@ -131,6 +131,8 @@ public class BlueBackdropLeftPark extends LinearOpMode
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         FtcDashboard.getInstance().startCameraStream(controlHubCam, 30);
 
+        intake();
+
         while (!isStarted() && !isStopRequested()) {
             if((int) cX > 300){
                 propPosition = PropPosition.CENTER;
@@ -145,7 +147,7 @@ public class BlueBackdropLeftPark extends LinearOpMode
             moveInchAmount(true, 28);
             turnToAngle(270);
             moveInchAmount(false, 18);
-            aligner.closeAligner();
+            deposit();
             waitTime(.5);
             moveInchAmount(false, 13);
             turnToAngle(90);
@@ -153,7 +155,7 @@ public class BlueBackdropLeftPark extends LinearOpMode
             turnToAngle(90);
             moveSlides(10);
             moveInchAmount(true, 4);
-            aligner.openAligner();
+            deposit();
             waitTime(.5);
             moveInchAmount(false, 5);
             moveSlides(0);
@@ -162,7 +164,7 @@ public class BlueBackdropLeftPark extends LinearOpMode
             moveInchAmount(true, 9);
         }else{
             moveInchAmount(true, 30);
-            aligner.closeAligner();
+            deposit();
             waitTime(.5);
             moveInchAmount(false, 4);
             turnToAngle(90);
@@ -171,7 +173,7 @@ public class BlueBackdropLeftPark extends LinearOpMode
             turnToAngle(90);
             moveSlides(10);
             moveInchAmount(true, 4);
-            aligner.openAligner();
+            deposit();
             waitTime(.5);
             moveInchAmount(false, 5);
             moveSlides(0);
@@ -387,20 +389,20 @@ public class BlueBackdropLeftPark extends LinearOpMode
         slidePower(power);
 
         while(!liftOff && opModeIsActive()) {
-            if((Math.abs(targetTick) - Math.abs(rightSlide.getCurrentPosition())) < fiveInches){
-                power = calculateModularPower(1, .2, (Math.abs(targetTick) - Math.abs(rightSlide.getCurrentPosition())) / 64.8, 12, .25);
+            if((Math.abs(targetTick - leftSlide.getCurrentPosition())) < fiveInches){ // abs(target - cur)
+                power = calculateModularPower(1, .1, (Math.abs(targetTick - leftSlide.getCurrentPosition())) / 64.8, 12, .2);
             }else{
                 power = 1;
             }
 
             slidePower(power);
 
-            if ((leftSlide.getCurrentPosition() > -targetTick - 50 && leftSlide.getCurrentPosition() < -targetTick + 50) || !leftSlide.isBusy()) {
+            if ((leftSlide.getCurrentPosition() > targetTick - 40 && leftSlide.getCurrentPosition() < targetTick + 40) || !leftSlide.isBusy()) {
                 slidePower(0);
                 liftOff = true;
             }
 
-            if ((rightSlide.getCurrentPosition() > targetTick - 50 && rightSlide.getCurrentPosition() < targetTick + 50) || !rightSlide.isBusy()) {
+            if ((rightSlide.getCurrentPosition() > targetTick - 40 && rightSlide.getCurrentPosition() < targetTick + 40) || !rightSlide.isBusy()) {
                 slidePower(0);
                 liftOff = true;
             }

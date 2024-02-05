@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.TestingClasses.ConfigClasses.ServoTester2;
 public class ServoPosTesting extends LinearOpMode {
     @Override
     public void runOpMode() {
-        ServoTester servo1 = new ServoTester(hardwareMap, "claw", 1, 1);
+        ServoTester servo1 = new ServoTester(hardwareMap, "left_claw_rotation", 1, 1);
         ServoTester2 servo2 = new ServoTester2(hardwareMap, "right_claw_rotation", 1, 1);
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -29,14 +29,14 @@ public class ServoPosTesting extends LinearOpMode {
         while (opModeIsActive()) {
             if(gamepad1.dpad_up){
                 servo1.setPositionUp();
-                //servo2.setPositionUp();
+                servo2.setPositionUp();
             }else if(gamepad1.dpad_down){
                 servo1.setPositionDown();
-                //servo2.setPositionDown();
+                servo2.setPositionDown();
             }
 
             dashboardTelemetry.addData("Servo One", servo1.getPosition());
-            //dashboardTelemetry.addData("Servo Two", servo2.getPosition());
+            dashboardTelemetry.addData("Servo Two", servo2.getPosition());
             dashboardTelemetry.update();
         }
     }

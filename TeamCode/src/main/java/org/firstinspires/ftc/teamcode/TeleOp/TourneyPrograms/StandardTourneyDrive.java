@@ -128,9 +128,9 @@ public class StandardTourneyDrive extends LinearOpMode {
                 deposit.checkTimer();
             }
 
-            if(gamepad2.right_bumper){
+            if(gamepad1.right_bumper){
                 deposit.closeAligner();
-            }else if(gamepad2.left_bumper){
+            }else if(gamepad1.left_bumper){
                 deposit.openAligner();
             }
         }
