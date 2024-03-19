@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp.TourneyPrograms;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Deposit;
 import org.firstinspires.ftc.teamcode.Subsystems.Hang;
 import org.firstinspires.ftc.teamcode.Subsystems.LinearSlides;
 import org.firstinspires.ftc.teamcode.Subsystems.Plane;
-
+@Disabled
 @TeleOp(name = "Standard Tourney Drive", group = "aa")
 
 public class StandardTourneyDrive extends LinearOpMode {
