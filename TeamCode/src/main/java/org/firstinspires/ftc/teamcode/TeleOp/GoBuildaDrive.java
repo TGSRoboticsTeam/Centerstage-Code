@@ -21,10 +21,10 @@ public class FieldCentricTourneyDrive extends LinearOpMode {
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
         // Motor Setup
-        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
-        DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "front_Left");
+        DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "back_Left");
+        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "front_Right");
+        DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "back_Right");
 
         // Sets the motor direction
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
