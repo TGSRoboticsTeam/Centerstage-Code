@@ -13,9 +13,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Disabled
-@TeleOp(name = "FieldCentric Tourney Drive", group = "aa")
+@TeleOp(name = "GoBuildaDrive", group = "aa")
 
-public class FieldCentricTourneyDrive extends LinearOpMode {
+public class GoBuildaDrive extends LinearOpMode {
     @Override
     public void runOpMode() {
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
