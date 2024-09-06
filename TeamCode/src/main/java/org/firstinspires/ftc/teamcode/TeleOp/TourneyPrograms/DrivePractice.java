@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 
 @Disabled
-@TeleOp(name = "Standard Tourney Drive", group = "aa")
+@TeleOp(name = "Drive Practice", group = "aa")
 
 public class DrivePractice extends LinearOpMode {
     @Override
