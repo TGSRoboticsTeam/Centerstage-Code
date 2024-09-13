@@ -18,6 +18,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class GoBuildaDrive extends LinearOpMode {
     @Override
     public void runOpMode() {
+        // Yo, what is up Ethan :)
+
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
         // Motor Setup
