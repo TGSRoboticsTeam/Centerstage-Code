@@ -62,7 +62,6 @@ public class GoBuildaDrive extends LinearOpMode {
         while (opModeIsActive()) {
             // Define joystick controls
             // Drive
-
             double y   = -gamepad1.left_stick_y;
             double x   =  gamepad1.left_stick_x;
             double rx  =  gamepad1.right_stick_x;
